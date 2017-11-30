@@ -37,10 +37,17 @@ var PlaylistModel = function(args) {
     };
 
     this.getPosterThumbnailUrl = function() {
-        for (i = 0; i < _this.images.length; i++) {
-            var image = _this.images[i];
-            if (image.layout == "") return image.url;
+        if (_this.images){
+            for (i = 0; i < _this.images.length; i++) {
+                var image = _this.images[i];
+                if (image.layout == "") return image.url;
+            }
         }
+
         return appDefaults.thumbnailUrl;
     };
+
+    this.smallThumbnailUrl = this.getRegularThumbnailUrl();
+    this.largeThumbnailUrl = this.getLargeThumbnailUrl();
+    this.posterThumbnailUrl = this.getPosterThumbnailUrl();
 };

@@ -1,5 +1,5 @@
 <script id="media-grid-view-template" type="text/x-handlebars-template">
-    <div class="media-grid-view {{ css.classes.theme }}" id="{{ css.ids.id }}">
+    <div class="media-grid-view {{ css.classes.theme }} invisible" id="{{ css.ids.id }}">
         <div class="app-icon-container">
             <img class="app-icon" src="{{ images.appIcon }}" alt="App Icon">
         </div>
@@ -17,15 +17,15 @@
                 </div>
 
                 <div class="media-grid-row-thumbnails-container">
-                    {{#each data}}
-                        {{#ifCond thumbnailLayout "==" "landscape" }}
+                    {{#each content}}
+                        {{#ifCond ../thumbnailLayout "==" "landscape" }}
                         <img
                             src="{{smallThumbnailUrl}}"
                             alt="Small thumbnail for {{title}}"
                             class="{{ ../../css.classes.theme }} media-grid-thumbnail" />
                         {{/ifCond}}
 
-                        {{#ifCond thumbnailLayout "==" "poster"}}
+                        {{#ifCond ../thumbnailLayout "==" "poster"}}
                         <img
                             src="{{posterThumbnailUrl}}"
                             alt="Poster thumbnail for {{title}}"

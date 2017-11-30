@@ -28,7 +28,11 @@
                                     [ playlists[i]._id, {per_page: 50} ]
                                 ]);
 
-                                playlistChildrenArray.push({type: "videos"})
+                                playlistChildrenArray.push({
+                                    type: "videos",
+                                    title: playlists[i].title,
+                                    thumbnailLayout: playlists[i].thumbnail_layout
+                                });
                             }
                             // playlist of playlists
                             else {
@@ -37,7 +41,11 @@
                                     [ {parent_id: playlists[i]._id, per_page: 50} ]
                                 ]);
 
-                                playlistChildrenArray.push({type: "playlists"})
+                                playlistChildrenArray.push({
+                                    type: "playlists",
+                                    title: playlists[i].title,
+                                    thumbnailLayout: playlists[i].thumbnail_layout
+                                })
                             }
                         }
 
@@ -52,9 +60,23 @@
 
 
                     } else {
-                        zypeApi.getPlaylistVideos(playlistId, {per_page: 50}).then(function(resp){
-                            playlistChildrenArray.push({type: "videos", content: resp.response});
-                            resolve(playlistChildrenArray);
+                        zypeApi.getPlaylist(playlistId).then(function(playlistResp){
+
+                          if(playlistResp){
+                              var playlist = playlistResp.response;
+                              zypeApi.getPlaylistVideos(playlistId, {per_page: 50}).then(function(resp){
+                                  playlistChildrenArray.push({
+                                      type: "videos",
+                                      title: playlist.title,
+                                      thumbnailLayout: playlist.thumbnail_layout,
+                                      content: resp.response
+                                  });
+                                  resolve(playlistChildrenArray);
+                              });
+                          } else {
+                              reject("Unable to load content");
+                          }
+
                         });
                     }
                 });
