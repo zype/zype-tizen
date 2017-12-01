@@ -62,6 +62,12 @@
             view.init(viewArgs);
         };
 
+        // TODO: add logic to figure out if user can navigate to next thumbnail based on direction input
+        this.canMove = function(direction){
+
+        };
+
+        // TODO: add logic for handling button presses
         this.handleButtonPress = function(buttonPress){
             console.log("Inside MediaGridController. Got this key: ", buttonPress);
             console.log("\tMediaGridController.playlistLevel", this.playlistLevel);

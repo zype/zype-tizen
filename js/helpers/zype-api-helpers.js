@@ -38,7 +38,7 @@
                             else {
                                 functionCallsArray.push([
                                     zypeApi.getPlaylists,
-                                    [ {parent_id: playlists[i]._id, per_page: 50} ]
+                                    [ {parent_id: playlists[i]._id, per_page: 50, sort: "priority", order: "dsc"} ]
                                 ]);
 
                                 playlistChildrenArray.push({

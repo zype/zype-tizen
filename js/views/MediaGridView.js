@@ -33,7 +33,7 @@
             $(this.id).removeClass('invisble');
         };
 
-        this.focusCurrentThumbnail = function(){
+        this.focusSmallThumbnail = function(){
             $(mediaGridContainerId + " .media-grid-thumbnail").each(function(index, value){
                 var thumbnailFocused = $(this).hasClass("focused-thumbnail");
                 if (thumbnailFocused) $(this).removeClass("focused-thumbnail");
@@ -42,6 +42,25 @@
             var currentRow = $(mediaGridContainerId + " .media-grid-row")[this.currentPosition[0]];
             var currentThumbnail = $(currentRow).find(".media-grid-thumbnail")[this.currentPosition[1]];
             $(currentThumbnail).addClass("focused-thumbnail");
+        };
+
+        this.focusLargeThumbnail = function(){
+            var focusedContent = this.focusedContent();
+            var rowNum = this.currentPosition[0];
+            var thumbnailLayout = this.mediaContent[rowNum].thumbnailLayout;
+
+            if (thumbnailLayout == "poster") {
+                var largeThumb = $(this.id + " .large-thumbnail");
+                largeThumb.attr("src", focusedContent.posterThumbnailUrl);
+            } else {
+                var largeThumb = $(this.id + " .large-thumbnail");
+                largeThumb.attr("src", focusedContent.largeThumbnailUrl);
+            }
+        };
+
+        this.focusCurrentThumbnail = function(){
+            this.focusSmallThumbnail();
+            this.focusLargeThumbnail();
         };
 
         this.registerHandler('loadComplete', function() {

@@ -43,7 +43,7 @@ var VideoModel = function(args) {
             }
         }
 
-        return appDefaults.thumbnailUrl;
+        return this.getRegularThumbnailUrl();
     };
 
     this.smallThumbnailUrl = this.getRegularThumbnailUrl();

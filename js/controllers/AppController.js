@@ -16,8 +16,6 @@
         this.mediaGridContent = [];
         this.mediaGridControllers = [];
 
-
-
         this.init = function(args){
             this.zypeApi.getApp().then(function(resp){
                 if (resp){
