@@ -4,16 +4,38 @@
             <img class="app-icon" src="{{ images.appIcon }}" alt="App Icon">
         </div>
 
-        <img
+        <div class="large-thumbnail-container">
+          <img
             src="assets/images/placeholder.png"
             alt="Large thumbnail"
             class="large-thumbnail" />
+        </div>
 
-        <div class="media-grid-rows">
+        <div class="large-thumbnail-overlay-container">
+          <img
+            src="assets/images/overlay.png"
+            alt="thumbnail overlay"
+            class="large-thumbnail-overlay" />
+        </div>
+
+        <div class="focused-content-info-container">
+            <div class="focused-content-info-title-container">
+                <h1 class="focused-content-info-title {{ css.classes.theme }}">
+                    TitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitle
+                </h1>
+            </div>
+            <div class="focused-content-info-description-container">
+                <p class="focused-content-info-description {{ css.classes.theme }}">
+                    DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription
+                </p>
+            </div>
+        </div>
+
+        <div class="media-grid-rows-container">
             {{#each rowData}}
-            <div class="media-grid-row">
-                <div class="media-grid-row-title">
-                    {{title}}
+            <div class="media-grid-row {{thumbnailLayout}} ">
+                <div class="media-grid-row-title-container">
+                    <h2 class="media-grid-row-title">{{title}}</h2>
                 </div>
 
                 <div class="media-grid-row-thumbnails-container">
@@ -22,14 +44,14 @@
                         <img
                             src="{{smallThumbnailUrl}}"
                             alt="Small thumbnail for {{title}}"
-                            class="{{ ../../css.classes.theme }} media-grid-thumbnail" />
+                            class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
                         {{/ifCond}}
 
                         {{#ifCond ../thumbnailLayout "==" "poster"}}
                         <img
                             src="{{posterThumbnailUrl}}"
                             alt="Poster thumbnail for {{title}}"
-                            class="{{ ../../css.classes.theme }} media-grid-thumbnail" />
+                            class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-poster-thumbnail" />
                         {{/ifCond}}
                     {{/each}}
                 </div>
