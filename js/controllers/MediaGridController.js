@@ -60,18 +60,104 @@
 
             var view = new MediaGridView();
             view.init(viewArgs);
+            this.view = view;
         };
 
-        // TODO: add logic to figure out if user can navigate to next thumbnail based on direction input
-        this.canMove = function(direction){
+        this.canMoveVertically = function(dir){
+            var currentPos = this.view.currentPosition;
+            if (dir == TvKeys.UP){
+                return (currentPos && currentPos[0] - 1 > -1) ? true : false;
+            } else if (dir == TvKeys.DOWN) {
+                return (currentPos && currentPos[0] + 1 < this.mediaContent.length) ? true : false;
+            } else {
+                return false;
+            }
+        };
 
+        this.canMoveHorizontally = function(dir){
+            var currentPos = this.view.currentPosition;
+            var currentRowContent = this.mediaContent[currentPos[0]].content;
+
+            if (dir == TvKeys.LEFT){
+                return (currentPos[1] - 1 >= 0) ? true : false;
+            } else if (dir == TvKeys.RIGHT) {
+                return (currentPos[1] + 1 < currentRowContent.length ) ? true : false;
+            }
+        }
+
+        this.getNewTopPosition = function(dir){
+            var currentTopPos = this.view.currentRowsTopPosition;
+            if (dir == TvKeys.UP) {
+                return currentTopPos + this.view.getRowHeightAtIndex(this.view.currentPosition[0]);
+            } else if (dir == TvKeys.DOWN) {
+                var newRowIndex = this.view.currentPosition[0] + 1;
+                return currentTopPos - this.view.getRowHeightAtIndex(newRowIndex);
+            }
+        };
+
+        this.getNewPosition = function(dir){
+            if(this.view){
+                switch (dir) {
+                  case TvKeys.UP:
+                      var currPos = this.view.currentPosition;
+                      currPos[0] = currPos[0] - 1;
+                      currPos[1] = 0;
+                      return currPos;
+                  case TvKeys.DOWN:
+                      var currPos = this.view.currentPosition;
+                      currPos[0] = currPos[0] + 1;
+                      currPos[1] = 0;
+                      return currPos;
+                  case TvKeys.LEFT:
+                      var currPos = this.view.currentPosition;
+                      currPos[1] = currPos[1] - 1;
+                      return currPos;
+                  case TvKeys.RIGHT:
+                      var currPos = this.view.currentPosition;
+                      currPos[1] = currPos[1] + 1;
+                      return currPos;
+                  default:
+                      return this.view.currentPosition;
+                }
+            }
         };
 
         // TODO: add logic for handling button presses
         this.handleButtonPress = function(buttonPress){
-            console.log("Inside MediaGridController. Got this key: ", buttonPress);
-            console.log("\tMediaGridController.playlistLevel", this.playlistLevel);
-            console.log("\tThis is the data", this.mediaContent);
+            if (this.view){
+                switch (buttonPress) {
+                    case TvKeys.UP:
+                    case TvKeys.DOWN:
+                        var canMove = this.canMoveVertically(buttonPress);
+                        if (canMove) {
+                            var newTopPosition = _this.getNewTopPosition(buttonPress);
+                            this.view.updateRowsTopPercentage(newTopPosition);
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+                        }
+                        break;
+                    case TvKeys.LEFT:
+                    case TvKeys.RIGHT:
+                        var canMove = this.canMoveHorizontally(buttonPress);
+                        if (canMove) {
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+                        }
+                        break;
+
+                    // TODO: add handlers for selection
+                    case TvKeys.ENTER:
+                      break;
+
+                    // TODO: add handlers for back button
+                    case TvKeys.RETURN:
+                      break;
+                    default:
+                      break;
+                }
+            }
         };
 
         this.registerHandler('buttonPress', this.handleButtonPress, this);

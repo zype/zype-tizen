@@ -26,12 +26,15 @@
             </div>
             <div class="focused-content-info-description-container">
                 <p class="focused-content-info-description {{ css.classes.theme }}">
-                    DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription
+                    DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription
                 </p>
             </div>
         </div>
 
-        <div class="media-grid-rows-container">
+        <div class="invisible-overlay"></div>
+
+        <div class="media-grid-rows-window">
+          <div class="media-grid-rows-container">
             {{#each rowData}}
             <div class="media-grid-row {{thumbnailLayout}} ">
                 <div class="media-grid-row-title-container">
@@ -57,6 +60,8 @@
                 </div>
             </div>
             {{/each}}
+
+          </div>
         </div>
 
     </div>

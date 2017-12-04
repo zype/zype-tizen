@@ -1,3 +1,23 @@
+/**
+ * Tizen keys in emulator
+ *
+ *  10148 - 123
+ *  10253 - ...
+ *  38    - Up
+ *  37    - Left
+ *  39    - Right
+ *  40    - Down
+ *  13    - Select
+ *  10009 - Back
+ *  10252 - Play/Pause
+ *  447   - Volume Down
+ *  448   - Volume Up
+ *  449   - Mute
+ *  427   - Channel Down
+ *  428   - Channel Up
+ *
+ */
+
 var TvKeys = {
     N1: 49,
     N2: 50,
@@ -35,4 +55,4 @@ var TvKeys = {
     PLAY: 415,
     STOP: 413,
     PLAYPAUSE: 10252
-}
+};

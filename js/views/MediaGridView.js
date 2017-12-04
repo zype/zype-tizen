@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridView = function() {
-        EventsHandler.call(this, ["loadComplete"]);
+        EventsHandler.call(this, ["loadComplete", "show", "hide", "moveIndex"]);
         var _this = this;
 
         var templateId = "#media-grid-view-template";
@@ -10,6 +10,7 @@
 
         this.id = null;
         this.currentPosition = [];
+        this.currentRowsTopPosition = null;
 
         // used in view's id, so DOM can be manipulated
         this.playlistLevel = null;
@@ -63,15 +64,56 @@
             this.focusLargeThumbnail();
         };
 
+        this.getRowHeightAtIndex = function(index){
+            var nextRow = $(this.id + " .media-grid-row")[index];
+            return $(nextRow).height();
+        };
+
+        this.hideRowsAboveLimit = function(){
+            $(this.id + " .media-grid-row").each(function(index, value){
+                var row = $(this);
+                if (row.hasClass('invisible')){
+                  $(this).removeClass('invisible');
+                }
+
+                if ($(this).position().top < 0){
+                    $(this).addClass('invisible');
+                }
+            });
+        };
+
+        this.updateFocusedInfoDisplay = function(){
+            var focusedContent = this.focusedContent();
+            $(this.id + " .focused-content-info-title").text(focusedContent.title);
+            $(this.id + " .focused-content-info-description").text(focusedContent.description);
+        };
+
+        this.updateRowsTopPercentage = function(percent){
+            this.currentRowsTopPosition = percent;
+            $(this.id + " .media-grid-rows-container").css({top: String(percent) + 'px'});
+            this.hideRowsAboveLimit();
+        };
+
+        this.registerHandler('show', this.show, this);
+        this.registerHandler('hide', this.hide, this);
+
         this.registerHandler('loadComplete', function() {
             this.focusCurrentThumbnail();
+            this.updateFocusedInfoDisplay();
             this.show();
         }, this);
+
+        this.handleButtonPress = function(buttonPress){
+            var myText = "TizenKey: " + TvKeys[buttonPress] + "\n";
+            myText += "buttonPress: " + buttonPress;
+            $(this.id + " .focused-content-info-description").text(myText);
+        };
 
         this.init = function(args) {
             this.mediaContent = args.mediaContent;
             this.playlistLevel = args.playlistLevel;
             this.currentPosition = [0, 0];
+            this.currentRowsTopPosition = 0;
 
             this.id = "#" + args.css.ids.id;
 

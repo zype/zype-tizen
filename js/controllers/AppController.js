@@ -14,7 +14,9 @@
         });
 
         this.mediaGridContent = [];
-        this.mediaGridControllers = [];
+        this.mediaGridControllersCount = 0;
+
+        this.controllers = [];
 
         this.init = function(args){
             this.zypeApi.getApp().then(function(resp){
@@ -27,9 +29,9 @@
         };
 
         this.handleButtonPress = function(keyCode){
-            if (_this.mediaGridControllers.length > 0){
-                var controller = this.mediaGridControllers[0];
-                controller.trigger('buttonPress', keyCode);
+            if (this.controllers.length > 0){
+                var currentController = this.controllers[this.controllers.length - 1];
+                currentController.trigger('buttonPress', keyCode);
             }
         };
 
@@ -39,11 +41,12 @@
 
                 var mediaGridController = new MediaGridController();
                 mediaGridController.init({
-                    playlistLevel: _this.mediaGridControllers.length,
+                    playlistLevel: _this.mediaGridControllersCount,
                     mediaContent: data
                 });
 
-                _this.mediaGridControllers.push(mediaGridController);
+                _this.controllers.push(mediaGridController);
+                _this.mediaGridControllersCount += 1;
             });
         };
 

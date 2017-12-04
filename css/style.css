@@ -9,14 +9,6 @@
     overflow: hidden;
 }
 
-.light-theme {
-    background: #ffffff;
-}
-
-.dark-theme {
-    background: #000000;
-}
-
 .invisible {
     visibility: hidden;
 }
