@@ -11,6 +11,7 @@
         this.id = null;
         this.currentPosition = [];
         this.currentRowsTopPosition = null;
+        this.rowsLeftPositions = [];
 
         // used in view's id, so DOM can be manipulated
         this.playlistLevel = null;
@@ -94,6 +95,38 @@
             this.hideRowsAboveLimit();
         };
 
+        this.shiftRowAtIndex = function(rowIndex, dir){
+            var row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[rowIndex];
+            var focusedThumb = $(row).find(".media-grid-thumbnail")[0];
+            var thumbnailWidth = $(focusedThumb).width();
+
+            if (dir == TvKeys.RIGHT){
+                var newLeftPosition = this.rowsLeftPositions[rowIndex] + thumbnailWidth;
+                this.rowsLeftPositions[rowIndex] = newLeftPosition;
+                $(row).css({ "margin-left": String(newLeftPosition) + 'px' });
+            } else if (dir == TvKeys.LEFT) {
+                var newLeftPosition = this.rowsLeftPositions[rowIndex] - thumbnailWidth;
+                this.rowsLeftPositions[rowIndex] = newLeftPosition;
+                $(row).css({ "margin-left": String(newLeftPosition) + 'px' });
+            }
+        };
+
+        this.getFocusedThumbnailInfo = function(){
+            var focusedThumbnail = $(this.id + " .focused-thumbnail")[0];
+
+            if (focusedThumbnail){
+                var focusedThumbnailInfo = {
+                    height: $(focusedThumbnail).height(),
+                    width: $(focusedThumbnail).width(),
+                    top: $(focusedThumbnail).position().top,
+                    left: $(focusedThumbnail).position().left
+                };
+                return focusedThumbnailInfo;
+            } else {
+                return null;
+            }
+        };
+
         this.registerHandler('show', this.show, this);
         this.registerHandler('hide', this.hide, this);
 
@@ -114,6 +147,10 @@
             this.playlistLevel = args.playlistLevel;
             this.currentPosition = [0, 0];
             this.currentRowsTopPosition = 0;
+
+            for (var i = 0; i < this.mediaContent.length; i++) {
+                this.rowsLeftPositions.push(0);
+            }
 
             this.id = "#" + args.css.ids.id;
 

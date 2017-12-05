@@ -122,6 +122,18 @@
             }
         };
 
+        // gets info on current focused thumbnail
+        // figures out if thumbnail is touching edge
+        this.thumbnailOnEdge = function(focusedThumbnail){
+            var windowWidth = $(window).width();
+            var thumbnailRightPosition = focusedThumbnail.left + focusedThumbnail.width;
+
+            var touchesLeftEdge = (focusedThumbnail.left < 0 || thumbnailRightPosition < 0);
+            var touchesRightEdge = (focusedThumbnail.left > windowWidth || thumbnailRightPosition > windowWidth);
+
+            return (touchesLeftEdge || touchesRightEdge) ? true : false;
+        };
+
         // TODO: add logic for handling button presses
         this.handleButtonPress = function(buttonPress){
             if (this.view){
@@ -144,6 +156,18 @@
                             this.view.currentPosition = this.getNewPosition(buttonPress);
                             this.view.focusCurrentThumbnail();
                             this.view.updateFocusedInfoDisplay();
+
+                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
+                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
+
+                            if (touchesEdge){
+                                var rowIndex = this.view.currentPosition[0];
+                                if (buttonPress == TvKeys.LEFT){
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
+                                } else {
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
+                                }
+                            }
                         }
                         break;
 
