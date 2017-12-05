@@ -17,6 +17,23 @@
 
         this.view = null;
 
+        this.init = function(args){
+            this.playlistLevel = args.playlistLevel;
+            this.mediaContent = args.mediaContent;
+
+            var structuredData = this.structuredData(this.mediaContent);
+
+            var viewArgs = {
+                mediaContent: structuredData,
+                playlistLevel: this.playlistLevel,
+                css: mediaGridCss(this.playlistLevel)
+            };
+
+            var view = new MediaGridView();
+            view.init(viewArgs);
+            this.view = view;
+        };
+
         this.structuredData = function(mediaContent){
             var structuredData = [];
 
@@ -44,23 +61,6 @@
             }
 
             return structuredData;
-        };
-
-        this.init = function(args){
-            this.playlistLevel = args.playlistLevel;
-            this.mediaContent = args.mediaContent;
-
-            var structuredData = this.structuredData(this.mediaContent);
-
-            var viewArgs = {
-                mediaContent: structuredData,
-                playlistLevel: this.playlistLevel,
-                css: mediaGridCss(this.playlistLevel)
-            };
-
-            var view = new MediaGridView();
-            view.init(viewArgs);
-            this.view = view;
         };
 
         this.canMoveVertically = function(dir){

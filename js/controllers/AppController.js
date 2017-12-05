@@ -85,8 +85,10 @@
 
                 // TODO: need code for creating VideoDetailsController with view
                 if (itemSelected.contentType == "videos"){
-                    // var newController = new VideoDetailsController();
-                    // newController.init();
+                    var newController = new VideoDetailsController();
+                    newController.init(itemSelected.content);
+
+                    this.controllers.push(newController);
                 } else if (itemSelected.contentType == "playlists") {
                     this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
                 }

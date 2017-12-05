@@ -5,15 +5,18 @@
         EventsHandler.call(this, ["loadComplete", "show", "hide", "moveIndex"]);
         var _this = this;
 
+        // id of handlebars template
         var templateId = "#media-grid-view-template";
+        // id of div to attach view to
         var mediaGridContainerId = "#media-grid-container";
 
-        this.id = null;
+        this.id = null;   // id of view once attached to DOM
         this.currentPosition = [];
         this.currentRowsTopPosition = null;
         this.rowsLeftPositions = [];
 
         // used in view's id, so DOM can be manipulated
+        // TODO: delete later if playlist level is not being used
         this.playlistLevel = null;
         this.mediaContent = null;
 
@@ -149,6 +152,7 @@
 
         this.init = function(args) {
             this.mediaContent = args.mediaContent;
+            // TODO: delete later if playlist level is not being used
             this.playlistLevel = args.playlistLevel;
             this.currentPosition = [0, 0];
             this.currentRowsTopPosition = 0;
