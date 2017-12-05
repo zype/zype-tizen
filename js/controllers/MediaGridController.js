@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridController = function(){
-        EventsHandler.call(this, ['buttonPress']);
+        EventsHandler.call(this, ['buttonPress', 'show', 'hide']);
         var _this = this;
 
         var mediaGridCss = function(id){
@@ -134,6 +134,14 @@
             return (touchesLeftEdge || touchesRightEdge) ? true : false;
         };
 
+        this.focusedContent = function(){
+            var currentPosition = this.view.currentPosition;
+            return {
+                content: this.mediaContent[currentPosition[0]].content[currentPosition[1]],
+                contentType: this.mediaContent[currentPosition[0]].type
+            };
+        };
+
         // TODO: add logic for handling button presses
         this.handleButtonPress = function(buttonPress){
             if (this.view){
@@ -145,6 +153,7 @@
                             var newTopPosition = _this.getNewTopPosition(buttonPress);
                             this.view.updateRowsTopPercentage(newTopPosition);
                             this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
                             this.view.focusCurrentThumbnail();
                             this.view.updateFocusedInfoDisplay();
                         }
@@ -173,10 +182,14 @@
 
                     // TODO: add handlers for selection
                     case TvKeys.ENTER:
+
+                      this.view.hide();
                       break;
 
                     // TODO: add handlers for back button
                     case TvKeys.RETURN:
+                    case TvKeys.BACK:
+                      this.view.hide();
                       break;
                     default:
                       break;
@@ -184,7 +197,12 @@
             }
         };
 
+        this.hide = function(){ this.view.hide(); };
+        this.show = function(){ this.view.show(); };
+
         this.registerHandler('buttonPress', this.handleButtonPress, this);
+        this.registerHandler('show', this.show, this);
+        this.registerHandler('hide', this.hide, this);
     };
 
     exports.MediaGridController = MediaGridController;

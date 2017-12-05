@@ -32,11 +32,26 @@
             if (this.controllers.length > 0){
                 var currentController = this.controllers[this.controllers.length - 1];
                 currentController.trigger('buttonPress', keyCode);
+
+                switch (keyCode) {
+                  case TvKeys.ENTER:
+                    this.handleEnterButtonPress();
+                    break;
+                  case TvKeys.RETURN:
+                  case TvKeys.BACK:
+                    this.handleBackButtonPress();
+                    break;
+                  default:
+                    break;
+                }
             }
         };
 
         this.addMediaContent = function(playlistId, playlistLevel){
             ZypeApiHelpers.getPlaylistChildren(this.zypeApi, playlistId).then(function(data){
+                console.log("got this playlist id: ", playlistId);
+                console.log("new content: ", data);
+
                 _this.mediaGridContent.push(data);
 
                 var mediaGridController = new MediaGridController();
@@ -48,6 +63,37 @@
                 _this.controllers.push(mediaGridController);
                 _this.mediaGridControllersCount += 1;
             });
+        };
+
+        this.handleBackButtonPress = function(){
+            var lastController = this.controllers.pop();
+            if (this.controllers.length == 0){
+                this.exitApp();
+            } else {
+                var previousController = _this.controllers[_this.controllers.length - 1];
+                previousController.trigger('show');
+            }
+        };
+
+        this.handleEnterButtonPress = function(){
+            var controller = this.controllers[this.controllers.length - 1];
+            var controllerName = ObjectHelpers.getObjectName(controller);
+
+            switch (controllerName) {
+              case "MediaGridController":
+                var itemSelected = controller.focusedContent();
+
+                // TODO: need code for creating VideoDetailsController with view
+                if (itemSelected.contentType == "videos"){
+                    // var newController = new VideoDetailsController();
+                    // newController.init();
+                } else if (itemSelected.contentType == "playlists") {
+                    this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
+                }
+                break;
+              default:
+                break;
+            }
         };
 
         this.forceExitApp = function(message){

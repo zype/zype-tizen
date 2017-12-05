@@ -15,8 +15,7 @@
                 zypeApi.getPlaylists(params).then(function(playlistsResp){
                     var playlistChildrenArray = [];
 
-
-                    if (playlistsResp) {
+                    if (playlistsResp && playlistsResp.response.length > 0) {
                         var playlists = playlistsResp.response;
 
                         var functionCallsArray = [];
@@ -60,7 +59,7 @@
 
 
                     } else {
-                        zypeApi.getPlaylist(playlistId).then(function(playlistResp){
+                        zypeApi.getPlaylist(playlistId, {}).then(function(playlistResp){
 
                           if(playlistResp){
                               var playlist = playlistResp.response;
@@ -71,6 +70,7 @@
                                       thumbnailLayout: playlist.thumbnail_layout,
                                       content: resp.response
                                   });
+
                                   resolve(playlistChildrenArray);
                               });
                           } else {

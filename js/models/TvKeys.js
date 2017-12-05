@@ -8,7 +8,8 @@
  *  39    - Right
  *  40    - Down
  *  13    - Select
- *  10009 - Back
+ *  10009 - TV return button
+ *  8     - Backspace / Delete button on keyboard
  *  10252 - Play/Pause
  *  447   - Volume Down
  *  448   - Volume Up
@@ -38,6 +39,7 @@ var TvKeys = {
     TOOLS: 10135,
     ENTER: 13,
     RETURN: 10009,
+    BACK: 8,
     INFO: 457,
     EXIT: 10182,
     UP: 38,
