@@ -49,9 +49,6 @@
 
         this.addMediaContent = function(playlistId, playlistLevel){
             ZypeApiHelpers.getPlaylistChildren(this.zypeApi, playlistId).then(function(data){
-                console.log("got this playlist id: ", playlistId);
-                console.log("new content: ", data);
-
                 _this.mediaGridContent.push(data);
 
                 var mediaGridController = new MediaGridController();
@@ -81,20 +78,27 @@
 
             switch (controllerName) {
               case "MediaGridController":
-                var itemSelected = controller.focusedContent();
+                  var itemSelected = controller.focusedContent();
 
-                // TODO: need code for creating VideoDetailsController with view
-                if (itemSelected.contentType == "videos"){
-                    var newController = new VideoDetailsController();
-                    newController.init(itemSelected.content);
+                  // TODO: need code for creating VideoDetailsController with view
+                  if (itemSelected.contentType == "videos"){
+                      var newController = new VideoDetailsController();
+                      newController.init(itemSelected.content);
 
-                    this.controllers.push(newController);
-                } else if (itemSelected.contentType == "playlists") {
-                    this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
-                }
-                break;
+                      this.controllers.push(newController);
+                  } else if (itemSelected.contentType == "playlists") {
+                      this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
+                  }
+
+                  break;
+              case "VideoDetailsController":
+                  var buttonSelected = controller.currentButton();
+
+                  // TODO: create VideoPlayerController
+
+                  break;
               default:
-                break;
+                  break;
             }
         };
 

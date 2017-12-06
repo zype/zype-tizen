@@ -9,6 +9,14 @@
     overflow: hidden;
 }
 
+#app-container.dark-theme {
+  background-color: #000000;
+}
+
+#app-container.light-theme {
+  background-color: #ffffff;
+}
+
 .invisible {
     visibility: hidden;
 }

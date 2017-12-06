@@ -8,13 +8,13 @@
 
 .video-details-text-container {
     position: absolute;
-    width: 100%;
-    max-width: 100%;
+    width: 45%;
+    max-width: 45%;
     height: 50%;
     max-height: 50%;
-    top: 0;
+    top: 15%;
     left: 0;
-    padding-left: 5%;
+    padding-left: 10%;
     z-index: 15;
 }
 
@@ -23,11 +23,58 @@
 }
 
 .video-details-title.dark-theme,
-.video-details-description.dark-theme {
+.video-details-description.dark-theme,
+.video-details-buttons-container .button-text.dark-theme,
+.video-details-buttons-container .button.focused .button-text.light-theme {
     color: #ffffff;
 }
 
 .video-details-title.light-theme,
-.video-details-description.light-theme {
+.video-details-description.light-theme,
+.video-details-buttons-container .button-text.light-theme,
+.video-details-buttons-container .button.focused .button-text.dark-theme {
     color: #000000;
+}
+
+.video-details-buttons-container {
+    position: absolute;
+    width: 45%;
+    max-width: 45%;
+    height: 35%;
+    max-height: 35%;
+    top: 65%;
+    left: 0;
+    padding-left: 10%;
+    z-index: 15;
+}
+
+.video-details-buttons-container .button {
+    margin-bottom: 1em;
+    width: 50%;
+    margin-left: 10%;
+    margin-right: 40%;
+    border-radius: 1em;
+
+    text-align: center;
+}
+
+.video-details-buttons-container .button.focused.dark-theme {
+    background-color: #ffffff;
+}
+
+.video-details-buttons-container .button.focused.light-theme {
+    background-color: #000000;
+}
+
+.video-details-buttons-containers .button-text {
+    font-size: 1.5em;
+    font-style: bold;
+}
+
+.video-details-buttons-container .button.dark-theme {
+    border: solid 0.2em #ffffff;
+}
+
+.video-details-buttons-container .button.light-theme {
+    border: solid 0.2em #000000;
 }

@@ -23,5 +23,13 @@
             <p class="video-details-description {{css.classes.theme}}"></p>
         </div>
 
+        <div class="video-details-buttons-container">
+        {{#each buttons}}
+            <div class="button {{ ../css.classes.theme }}" id="{{id}}">
+                <p class="button-text {{ ../css.classes.theme }} ">{{title}}</p>
+            </div>
+        {{/each}}
+        </div>
+
     </div>
 </script>

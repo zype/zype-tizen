@@ -5,5 +5,8 @@ var appDefaults = {
     rootPlaylistId: "< root playlist id >",
     theme: "dark-theme",
     thumbnailUrl: "assets/images/placeholder.png",
-    appIconUrl: "assets/images/app-icon.png"
+    appIconUrl: "assets/images/app-icon.png",
+    labels: {
+        playButton: "Play"
+    }
 }

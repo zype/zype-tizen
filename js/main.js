@@ -19,6 +19,7 @@ $(document).ready(function() {
             $.getScript("js/views/MediaGridView.js"),
             $.getScript("js/views/VideoDetailsView.js")
         ).then(function() {
+            $('body').addClass(appDefaults.theme);
             var app = new AppController();
             app.init({});
         });

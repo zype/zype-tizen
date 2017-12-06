@@ -15,12 +15,17 @@
 
         this.init = function(args){
             this.data = args.data;
+            this.buttons = args.buttons;
+            for (var i = 0; i < this.buttons.length; i++) {
+              this.buttons[i].id = "#video-details-button-" + String(this.data.id) + "-" + String(i);
+            }
 
             // set id for manipulating DOM
             this.id = "#" + args.css.ids.id;
 
             var context = {
                 data: this.data,
+                buttons: this.buttons,
                 css: args.css,
                 images: {
                     appIcon: appDefaults.appIconUrl
@@ -32,6 +37,13 @@
             $(videoDetailsContainerId).append(renderedTemplate);
 
             this.trigger('loadComplete');
+        };
+
+        this.focusButtonAtIndex = function(index){
+            $(this.id + " .button.focused").removeClass("focused");
+
+            var button = $(this.id + " .button")[index];
+            $(button).addClass("focused");
         };
 
         this.setText = function(){
