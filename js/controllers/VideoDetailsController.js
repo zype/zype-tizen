@@ -2,7 +2,7 @@
     "use strict";
 
     var VideoDetailsController = function(){
-        EventsHandler.call(this, ['loadComplete', 'buttonPress']);
+        EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide', 'close']);
         var _this = this;
 
         this.content = null;
@@ -77,6 +77,14 @@
             return this.buttons[this.currentButtonIndex];
         };
 
+        this.show = function(){
+            this.view.show();
+        };
+
+        this.hide = function(){
+            this.view.hide();
+        };
+
         this.close = function(){
           if (this.view){
             this.view.close();
@@ -86,6 +94,8 @@
 
 
         this.registerHandler('buttonPress', this.handleButtonPress, this);
+        this.registerHandler('show', this.show, this);
+        this.registerHandler('hide', this.hide, this);
         this.registerHandler('close', this.close, this);
     };
 

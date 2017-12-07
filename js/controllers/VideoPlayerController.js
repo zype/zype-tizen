@@ -8,18 +8,14 @@
 
         this.playerInfo = null;
         this.videoInfo = null;
-        this.player = null;
         this.currentTime = null;
         this.duration = null;
-
-        this.closePlayerCallback = null;
 
         this.init = function(args){
             this.videoInfo = args.videoInfo;
             this.playerInfo = args.playerInfo;
-            this.closePlayerCallback = args.closePlayerCallback;
 
-            var videoUrl = this.playerInfo.body.outputs.url;
+            var videoUrl = this.playerInfo.body.outputs[0].url;
             var displayOptions = {
                 top: 0,
                 left: 0,
@@ -27,52 +23,52 @@
                 height: $(window).height()
             };
 
-            this.player = webapis.avplay.open(videoUrl);
-            this.player.setDisplayRect(displayOptions.left, displayOptions.top, displayOptions.width, displayOptions.height);
-            this.player.setListener(this.videoPlayerListeners());
+            webapis.avplay.open(videoUrl);
+            webapis.avplay.setDisplayRect(displayOptions.left, displayOptions.top, displayOptions.width, displayOptions.height);
+            // webapis.avplay.setListener(this.videoPlayerListeners());
 
             // current playback time in milliseconds
             this.currentTime = 0;
             try {
-              this.duration = this.player.getDuration();
+              this.duration = webapis.avplay.getDuration();
             } catch(e){}
 
-            this.player.play();
+            webapis.avplay.play();
         };
 
         this.handleButtonPress = function(buttonPress){
             switch (buttonPress) {
               case TvKeys.LEFT:
                   try {
-                    this.player.pause();
+                    webapis.avplay.pause();
 
-                    this.player.jumpBackward(jumpMilliseconds);
-                    this.currentTime = this.player.getCurrentTime();
-                    this.player.play();
+                    webapis.avplay.jumpBackward(jumpMilliseconds);
+                    this.currentTime = webapis.avplay.getCurrentTime();
+                    webapis.avplay.play();
                   } catch(e){ console.log(e); }
                   break;
 
               case TvKeys.RIGHT:
                   try {
-                    this.player.pause();
+                    webapis.avplay.pause();
 
-                    this.player.jumpForward(jumpMilliseconds);
-                    this.currentTime = this.player.getCurrentTime();
-                    this.player.play();
+                    webapis.avplay.jumpForward(jumpMilliseconds);
+                    this.currentTime = webapis.avplay.getCurrentTime();
+                    webapis.avplay.play();
                   } catch(e){ console.log(e); }
                   break;
 
               case TvKeys.ENTER:
               case TvKeys.PLAYPAUSE:
                   try {
-                      var state = this.player.getState();
+                      var state = webapis.avplay.getState();
 
                       if (state == "PAUSED"){
-                          this.currentTime = this.player.getCurrentTime();
-                          this.player.play();
+                          this.currentTime = webapis.avplay.getCurrentTime();
+                          webapis.avplay.play();
                       } else {
-                          this.player.pause();
-                          this.player.getCurrentTime();
+                          webapis.avplay.pause();
+                          webapis.avplay.getCurrentTime();
                       }
 
                   } catch(e) {}
@@ -80,21 +76,24 @@
 
               case TvKeys.PLAY:
                   try {
-                      this.currentTime = this.player.getCurrentTime();
-                      this.player.play();
+                      this.currentTime = webapis.avplay.getCurrentTime();
+                      webapis.avplay.play();
                   } catch (e) {}
                   break;
 
               case TvKeys.PAUSE:
                   try {
-                      this.player.pause();
-                      this.currentTime = this.player.getCurrentTime();
+                      webapis.avplay.pause();
+                      this.currentTime = webapis.avplay.getCurrentTime();
                   } catch (e) {}
               case TvKeys.BACK:
               case TvKeys.RETURN:
-                  this.player.pause();
-                  this.player.close();
-                  this.closePlayerCallback();
+
+                  try {                  
+                      webapis.avplay.close();
+                  } catch(e){
+                      alert("Got this error" + JSON.stringify(e));
+                  }
                   break;
 
               default:
@@ -104,8 +103,8 @@
 
         this.videoPlayerListeners = function(){
             return {
-                onerror: this.closePlayerCallback,
-                onstreamcompleted: this.closePlayerCallback
+                onerror: webapis.avplay.close(),
+                onstreamcompleted: webapis.avplay.close()
             };
         };
 
