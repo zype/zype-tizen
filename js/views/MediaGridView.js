@@ -105,16 +105,18 @@
         this.shiftRowAtIndex = function(rowIndex, dir){
             var row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[rowIndex];
             var focusedThumb = $(row).find(".media-grid-thumbnail")[0];
-            var thumbnailWidth = $(focusedThumb).width();
+            var thumbnailWidth = (2 * $(focusedThumb).width() / $(window).width()) * 100;
 
             if (dir == TvKeys.RIGHT){
                 var newLeftPosition = this.rowsLeftPositions[rowIndex] + thumbnailWidth;
+
                 this.rowsLeftPositions[rowIndex] = newLeftPosition;
-                $(row).css({ "margin-left": String(newLeftPosition) + 'px' });
+                $(row).css({ "margin-left": String(newLeftPosition) + '%' });
             } else if (dir == TvKeys.LEFT) {
                 var newLeftPosition = this.rowsLeftPositions[rowIndex] - thumbnailWidth;
+
                 this.rowsLeftPositions[rowIndex] = newLeftPosition;
-                $(row).css({ "margin-left": String(newLeftPosition) + 'px' });
+                $(row).css({ "margin-left": String(newLeftPosition) + '%' });
             }
         };
 

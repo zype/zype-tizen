@@ -44,12 +44,14 @@
 }
 
 .focused-content-info-title.dark-theme,
-.focused-content-info-description.dark-theme {
+.focused-content-info-description.dark-theme,
+.media-grid-row-title.dark-theme {
     color: #ffffff;
 }
 
 .focused-content-info-title.light-theme,
-.focused-content-info-description.light-theme {
+.focused-content-info-description.light-theme,
+.media-grid-row-title.light-theme {
     color: #000000;
 }
 

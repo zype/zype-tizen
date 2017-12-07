@@ -126,10 +126,10 @@
         // figures out if thumbnail is touching edge
         this.thumbnailOnEdge = function(focusedThumbnail){
             var windowWidth = $(window).width();
-            var thumbnailRightPosition = focusedThumbnail.left + focusedThumbnail.width;
+            var thumbnailRightPosition = focusedThumbnail.left + (1.25 * focusedThumbnail.width);
 
-            var touchesLeftEdge = (focusedThumbnail.left < 0 || thumbnailRightPosition < 0);
-            var touchesRightEdge = (focusedThumbnail.left > windowWidth || thumbnailRightPosition > windowWidth);
+            var touchesLeftEdge = (focusedThumbnail.left <= 0 || thumbnailRightPosition <= 0);
+            var touchesRightEdge = (focusedThumbnail.left >= windowWidth || thumbnailRightPosition >= windowWidth);
 
             return (touchesLeftEdge || touchesRightEdge) ? true : false;
         };
