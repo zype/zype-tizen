@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridController = function(){
-        EventsHandler.call(this, ['buttonPress', 'show', 'hide']);
+        EventsHandler.call(this, ['buttonPress', 'show', 'hide', 'close']);
         var _this = this;
 
         var mediaGridCss = function(id){
@@ -200,9 +200,18 @@
         this.hide = function(){ this.view.hide(); };
         this.show = function(){ this.view.show(); };
 
+        // remove view from DOM
+        this.close = function(){
+            if (this.view) {
+                this.view.close();
+                this.view = null;
+            }
+        };
+
         this.registerHandler('buttonPress', this.handleButtonPress, this);
         this.registerHandler('show', this.show, this);
         this.registerHandler('hide', this.hide, this);
+        this.registerHandler('close', this.close, this);
     };
 
     exports.MediaGridController = MediaGridController;

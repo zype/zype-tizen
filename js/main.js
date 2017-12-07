@@ -15,6 +15,7 @@ $(document).ready(function() {
             $.getScript("js/controllers/AppController.js"),
             $.getScript("js/controllers/MediaGridController.js"),
             $.getScript("js/controllers/VideoDetailsController.js"),
+            $.getScript("js/controllers/VideoPlayerController.js"),
 
             $.getScript("js/views/MediaGridView.js"),
             $.getScript("js/views/VideoDetailsView.js")

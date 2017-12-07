@@ -64,6 +64,10 @@
             $(this.id).addClass('invisible');
         };
 
+        this.close = function(){
+            $(this.id).remove();
+        };
+
         this.registerHandler('loadComplete', function(){
             this.setText();
             this.setThumbnail();

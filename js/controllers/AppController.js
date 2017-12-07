@@ -2,7 +2,7 @@
     "use strict";
 
     var AppController = function(){
-        EventsHandler.call(this, ['settingsLoaded', 'mediaLoaded', 'forceExitApp', 'exitApp', 'buttonPress']);
+        EventsHandler.call(this, ['settingsLoaded', 'mediaLoaded', 'forceExitApp', 'exitApp', 'buttonPress', 'receivedPlayerInfo']);
 
         var _this = this;
 
@@ -19,6 +19,7 @@
         this.controllers = [];
 
         this.init = function(args){
+            console.log("This is the zype api: ", this.zypeApi);
             this.zypeApi.getApp().then(function(resp){
                 if (resp){
                     _this.trigger('settingsLoaded', resp.response);
@@ -64,6 +65,8 @@
 
         this.handleBackButtonPress = function(){
             var lastController = this.controllers.pop();
+            lastController.close();
+
             if (this.controllers.length == 0){
                 this.exitApp();
             } else {
@@ -93,12 +96,45 @@
                   break;
               case "VideoDetailsController":
                   var buttonSelected = controller.currentButton();
+                  var videoId = buttonSelected.data.videoId;
 
-                  // TODO: create VideoPlayerController
+                  if (buttonSelected.role == "play") {
+                      this.zypeApi.getPlayer(videoId, { app_key: this.zypeApi.appKey })
+                      .then(function(resp){
+                          _this.trigger('receivedPlayerInfo', resp);
+                      });
+                  }
 
                   break;
               default:
                   break;
+            }
+        };
+
+        this.handlePlayerRequestResp = function(resp){
+            if (resp){
+                var videoDetailsController = this.controllers[this.controllers.length - 1];
+
+
+                var videoPlayerController = new VideoPlayerController();
+                videoPlayerController.init({
+                    videoInfo: videoDetailsController.content,
+                    playerInfo: resp.response,
+                    closePlayerCallback: this.closeLastController
+                });
+
+                this.controllers.push(videoPlayerController);
+            }
+        };
+
+        this.closeLastController = function(){
+            var lastController = this.controllers[this.controllers.length - 1];
+            lastController.close();
+
+            this.controllers.pop();
+            var currentController = this.controllers[this.controllers.length - 1];
+            if (currentController){
+                currentController.trigger('show');
             }
         };
 
@@ -125,6 +161,7 @@
         this.registerHandler('exitApp', this.exitApp, this);
 
         this.registerHandler('buttonPress', this.handleButtonPress, this);
+        this.registerHandler('receivedPlayerInfo', this.handlePlayerRequestResp, this);
 
         $(document).keydown(function(e){
             _this.trigger('buttonPress', e.keyCode);

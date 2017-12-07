@@ -38,6 +38,10 @@
             $(this.id).addClass('invisible');
         };
 
+        this.close = function() {
+            $(this.id).remove();
+        };
+
         this.focusSmallThumbnail = function(){
             $(this.id + " .media-grid-thumbnail").each(function(index, value){
                 var thumbnailFocused = $(this).hasClass("focused-thumbnail");

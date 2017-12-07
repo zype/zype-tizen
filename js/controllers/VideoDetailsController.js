@@ -77,8 +77,16 @@
             return this.buttons[this.currentButtonIndex];
         };
 
+        this.close = function(){
+          if (this.view){
+            this.view.close();
+            this.view = null;
+          }
+        };
+
 
         this.registerHandler('buttonPress', this.handleButtonPress, this);
+        this.registerHandler('close', this.close, this);
     };
 
     exports.VideoDetailsController = VideoDetailsController;
