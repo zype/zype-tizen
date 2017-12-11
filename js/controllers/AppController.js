@@ -61,7 +61,6 @@
 
                 switch (keyCode) {
                   case TvKeys.ENTER:
-                    this.showContentLoadingSpinner(true);
                     this.handleEnterButtonPress();
                     break;
                   case TvKeys.RETURN:
@@ -114,6 +113,7 @@
 
             switch (controllerName) {
               case "MediaGridController":
+                  this.showContentLoadingSpinner(true);
                   var itemSelected = controller.focusedContent();
 
                   // TODO: need code for creating VideoDetailsController with view
@@ -130,6 +130,7 @@
 
                   break;
               case "VideoDetailsController":
+                  this.showContentLoadingSpinner(true);
                   var buttonSelected = controller.currentButton();
                   var videoId = buttonSelected.data.videoId;
 
