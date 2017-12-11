@@ -47,6 +47,7 @@
                 $(_this.id).addClass("invisible");
                 this.dispose();
                 _this.closePlayerCallback();
+                _this.closePlayerCallback = null;
             });
         };
 
@@ -89,6 +90,7 @@
               case TvKeys.RETURN:
                   this.player.pause();
                   this.player.dispose();
+                  this.closePlayerCallback = null;
                   break;
 
               default:
