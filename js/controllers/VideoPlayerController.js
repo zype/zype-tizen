@@ -1,99 +1,94 @@
 (function(exports){
     var VideoPlayerController = function(){
-        EventsHandler.call(this, ['loadComplete', 'buttonPress']);
+        EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide']);
         var _this = this;
 
-        // default number of milliseconds for forward/backward
-        var jumpMilliseconds = 10000;
+        var templateId = "#video-player-view-template"
+        var videoPlayerContainerId = "#video-player-container";
 
         this.playerInfo = null;
-        this.videoInfo = null;
-        this.currentTime = null;
-        this.duration = null;
+        this.player = null;
+        this.id = null; // HTML id for DOM manipulation
+
+        this.closePlayerCallback = null;
 
         this.init = function(args){
-            this.videoInfo = args.videoInfo;
             this.playerInfo = args.playerInfo;
+            this.closePlayerCallback = args.callbackFunc;
 
+            var videoId = this.playerInfo.video._id;
+            var thumbnailUrl = this.playerInfo.video.thumbnails[0].url || appDefaults.thumbnailUrl;
             var videoUrl = this.playerInfo.body.outputs[0].url;
-            var displayOptions = {
-                top: 0,
-                left: 0,
+            var videoType = this.playerInfo.body.outputs[0].name;
+
+            this.id = "#video-player-" + videoId;
+
+            var context = {
+                css: { ids: { id: "video-player-" + videoId } },
                 width: $(window).width(),
-                height: $(window).height()
+                height: $(window).height(),
+                thumbnail: thumbnailUrl,
+                videoUrl: videoUrl,
+                videoType: videoType
             };
 
-            webapis.avplay.open(videoUrl);
-            webapis.avplay.setDisplayRect(displayOptions.left, displayOptions.top, displayOptions.width, displayOptions.height);
-            // webapis.avplay.setListener(this.videoPlayerListeners());
+            var template = $(templateId);
+            var renderedTemplate = Utils.buildTemplate(template, context);
+            $(videoPlayerContainerId).append(renderedTemplate);
 
-            // current playback time in milliseconds
-            this.currentTime = 0;
-            try {
-              this.duration = webapis.avplay.getDuration();
-            } catch(e){}
+            $(this.id).removeClass("invisible");
 
-            webapis.avplay.play();
+            this.player = videojs(this.id);
+
+            this.player.on("ready", function(){
+                this.play();
+            });
+            this.player.on("ended", function(){
+                $(_this.id).addClass("invisible");
+                this.dispose();
+                _this.closePlayerCallback();
+            });
+        };
+
+        this.close = function(){
+            $(this.id).remove();
         };
 
         this.handleButtonPress = function(buttonPress){
             switch (buttonPress) {
               case TvKeys.LEFT:
-                  try {
-                    webapis.avplay.pause();
-
-                    webapis.avplay.jumpBackward(jumpMilliseconds);
-                    this.currentTime = webapis.avplay.getCurrentTime();
-                    webapis.avplay.play();
-                  } catch(e){ console.log(e); }
+                  var currentTime = this.player.currentTime();
+                  this.player.pause();
+                  this.player.currentTime(currentTime - 10);
+                  this.player.play();
                   break;
 
               case TvKeys.RIGHT:
-                  try {
-                    webapis.avplay.pause();
-
-                    webapis.avplay.jumpForward(jumpMilliseconds);
-                    this.currentTime = webapis.avplay.getCurrentTime();
-                    webapis.avplay.play();
-                  } catch(e){ console.log(e); }
+                  var currentTime = this.player.currentTime();
+                  this.player.pause();
+                  this.player.currentTime(currentTime + 10);
+                  this.player.play();
                   break;
 
               case TvKeys.ENTER:
               case TvKeys.PLAYPAUSE:
-                  try {
-                      var state = webapis.avplay.getState();
-
-                      if (state == "PAUSED"){
-                          this.currentTime = webapis.avplay.getCurrentTime();
-                          webapis.avplay.play();
+                      if (!this.player.paused()){
+                        this.player.pause();
                       } else {
-                          webapis.avplay.pause();
-                          webapis.avplay.getCurrentTime();
+                        this.player.play();
                       }
-
-                  } catch(e) {}
                   break;
 
               case TvKeys.PLAY:
-                  try {
-                      this.currentTime = webapis.avplay.getCurrentTime();
-                      webapis.avplay.play();
-                  } catch (e) {}
+                  this.player.play();
                   break;
-
               case TvKeys.PAUSE:
-                  try {
-                      webapis.avplay.pause();
-                      this.currentTime = webapis.avplay.getCurrentTime();
-                  } catch (e) {}
+                  this.player.pause();
+                  break;
               case TvKeys.BACK:
               case TvKeys.RETURN:
-
-                  try {                  
-                      webapis.avplay.close();
-                  } catch(e){
-                      alert("Got this error" + JSON.stringify(e));
-                  }
+                  this.player.pause();
+                  this.player.dispose();
                   break;
 
               default:
@@ -101,15 +96,9 @@
             }
         };
 
-        this.videoPlayerListeners = function(){
-            return {
-                onerror: webapis.avplay.close(),
-                onstreamcompleted: webapis.avplay.close()
-            };
-        };
-
         this.registerHandler('buttonPress', this.handleButtonPress, this);
     };
 
-    if (!exports.VideoPlayerController){ exports.VideoPlayerController = VideoPlayerController; }
+
+    if (!exports.VideoPlayerController) { exports.VideoPlayerController = VideoPlayerController; }
 })(window);
