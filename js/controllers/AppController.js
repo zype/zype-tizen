@@ -19,6 +19,8 @@
         this.controllers = [];
 
         this.init = function(args){
+            this.showContentLoadingSpinner(true);
+
             this.zypeApi.getApp().then(function(resp){
                 if (resp){
                     _this.trigger('settingsLoaded', resp.response);
@@ -28,6 +30,30 @@
             });
         };
 
+        /**
+         * Hide content loading spinner
+         */
+        this.hideContentLoadingSpinner = function() {
+          $('#app-loading-spinner').hide();
+
+          if ($('#app-overlay').css('display') !== 'none') {
+            $('#app-overlay').fadeOut(250);
+          }
+        };
+
+        /**
+         * Show content loading spinner
+         * @param {Boolean} showOverlay if true show the app overlay
+         */
+        this.showContentLoadingSpinner = function(showOverlay) {
+
+          $('#app-loading-spinner').show();
+
+          if (showOverlay) {
+            $('#app-overlay').show();
+          }
+        };
+
         this.handleButtonPress = function(keyCode){
             if (this.controllers.length > 0){
                 var currentController = this.controllers[this.controllers.length - 1];
@@ -35,10 +61,12 @@
 
                 switch (keyCode) {
                   case TvKeys.ENTER:
+                    this.showContentLoadingSpinner(true);
                     this.handleEnterButtonPress();
                     break;
                   case TvKeys.RETURN:
                   case TvKeys.BACK:
+                    this.showContentLoadingSpinner(true);
                     this.handleBackButtonPress();
                     break;
                   default:
@@ -59,6 +87,8 @@
 
                 _this.controllers.push(mediaGridController);
                 _this.mediaGridControllersCount += 1;
+
+                _this.hideContentLoadingSpinner();
             });
         };
 
@@ -67,6 +97,8 @@
 
             // call .close if method exists
             if (lastController.close) {lastController.close()};
+
+            _this.hideContentLoadingSpinner();
 
             if (_this.controllers.length == 0){
                 _this.exitApp();
@@ -90,6 +122,8 @@
                       newController.init(itemSelected.content);
 
                       this.controllers.push(newController);
+
+                      this.hideContentLoadingSpinner();
                   } else if (itemSelected.contentType == "playlists") {
                       this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
                   }
@@ -140,6 +174,8 @@
                 videoDetailsController.trigger('show');
                 alert("Video playback error");
             }
+
+            this.hideContentLoadingSpinner();
         };
 
         this.closeLastController = function(){

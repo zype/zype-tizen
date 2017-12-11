@@ -20,6 +20,14 @@ $(document).ready(function() {
             $.getScript("js/views/MediaGridView.js"),
             $.getScript("js/views/VideoDetailsView.js")
         ).then(function() {
+            if (window.innerWidth < window.innerHeight) {
+            $('#overlay-message').html('please rotate your device back to landscpe');
+            $('#app-overlay').css('display', 'block');
+            } else {
+            $('#overlay-message').html('');
+            $('#app-overlay').css('display', 'none');
+            }
+
             $('body').addClass(appDefaults.theme);
             var app = new AppController();
             app.init({});
