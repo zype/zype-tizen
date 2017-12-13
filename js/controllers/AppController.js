@@ -75,7 +75,8 @@
         };
 
         this.addMediaContent = function(playlistId, playlistLevel){
-            ZypeApiHelpers.getPlaylistChildren(this.zypeApi, playlistId).then(function(data){
+            ZypeApiHelpers.getPlaylistChildren(this.zypeApi, playlistId).then(
+              function(data){
                 _this.mediaGridContent.push(data);
 
                 var mediaGridController = new MediaGridController();
@@ -88,7 +89,18 @@
                 _this.mediaGridControllersCount += 1;
 
                 _this.hideContentLoadingSpinner();
-            });
+              },
+
+              function(){
+                  var controllersCount = _this.controllers.length;
+                  if (controllersCount > 0){
+                      var lastController = _this.controllers[_this.controllers.length - 1];
+                      lastController.trigger('show');
+                  } else {
+                      _this.trigger('exitApp');
+                  }
+              }
+            );
         };
 
         this.handleBackButtonPress = function(){
@@ -113,11 +125,11 @@
 
             switch (controllerName) {
               case "MediaGridController":
-                  this.showContentLoadingSpinner(true);
                   var itemSelected = controller.focusedContent();
 
                   // TODO: need code for creating VideoDetailsController with view
                   if (itemSelected.contentType == "videos"){
+                      this.showContentLoadingSpinner(true);                    
                       var newController = new VideoDetailsController();
                       newController.init(itemSelected.content);
 
@@ -125,7 +137,12 @@
 
                       this.hideContentLoadingSpinner();
                   } else if (itemSelected.contentType == "playlists") {
-                      this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
+                      var focusedContent = controller.focusedContent();
+                      if (focusedContent && focusedContent.content) {
+                          this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
+                      } else {
+                          controller.trigger('show');
+                      }
                   }
 
                   break;
@@ -173,7 +190,8 @@
             } else {
                 var videoDetailsController = this.controllers[this.controllers.length - 1];
                 videoDetailsController.trigger('show');
-                alert("Video playback error");
+
+                debugger;
             }
 
             this.hideContentLoadingSpinner();

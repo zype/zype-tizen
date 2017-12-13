@@ -4,6 +4,7 @@ var appDefaults = {
     clientSecret: "< client secret >",
     rootPlaylistId: "< root playlist id >",
     theme: "dark-theme",
+    brandColor: "#ffffff",
     thumbnailUrl: "assets/images/placeholder.png",
     appIconUrl: "assets/images/app-icon.png",
     labels: {

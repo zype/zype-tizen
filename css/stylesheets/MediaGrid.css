@@ -87,21 +87,22 @@
     width: 100%;
 
     padding-left: 7.5%;
-    /*padding-bottom: 1em;*/
+    padding-bottom: 0.5em;
 }
 
 .media-grid-row.landscape {
-    height: 65%;
-    max-height: 65%;
+    height: 35vh;
+    max-height: 35vh;
 }
 
 .media-grid-row.poster {
-    height: 80%;
-    max-height: 80%;
+    height: 45vh;
+    max-height: 45vh;
 }
 
 .media-grid-row-title-container {
     max-width: 40%;
+    margin-bottom: 0.75em;
 }
 
 .media-grid-row-title {
@@ -115,6 +116,7 @@
     display: block;
     white-space: nowrap;
     width: 100%;
+    height: 80%;
 }
 
 .media-grid-thumbnail {

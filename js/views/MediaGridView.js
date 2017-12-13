@@ -56,14 +56,19 @@
         this.focusLargeThumbnail = function(){
             var focusedContent = this.focusedContent();
             var rowNum = this.currentPosition[0];
-            var thumbnailLayout = this.mediaContent[rowNum].thumbnailLayout;
 
-            if (thumbnailLayout == "poster") {
-                var largeThumb = $(this.id + " .large-thumbnail");
-                largeThumb.attr("src", focusedContent.posterThumbnailUrl);
+            var largeThumb = $(this.id + " .large-thumbnail");            
+
+            if (focusedContent){
+                var thumbnailLayout = this.mediaContent[rowNum].thumbnailLayout;
+
+                if (thumbnailLayout && thumbnailLayout == "poster"){
+                    largeThumb.attr("src", focusedContent.posterThumbnailUrl);
+                } else {
+                    largeThumb.attr("src", focusedContent.largeThumbnailUrl);
+                }
             } else {
-                var largeThumb = $(this.id + " .large-thumbnail");
-                largeThumb.attr("src", focusedContent.largeThumbnailUrl);
+                largeThumb.attr("src", appDefaults.thumbnailUrl);
             }
         };
 
@@ -92,8 +97,16 @@
 
         this.updateFocusedInfoDisplay = function(){
             var focusedContent = this.focusedContent();
-            $(this.id + " .focused-content-info-title").text(focusedContent.title);
-            $(this.id + " .focused-content-info-description").text(focusedContent.description);
+            var title = "";
+            var description = "";
+
+            if (focusedContent){
+                title = focusedContent.title;
+                description = focusedContent.description;
+            }
+
+            $(this.id + " .focused-content-info-title").text(title);
+            $(this.id + " .focused-content-info-description").text(description);
         };
 
         this.updateRowsTopPercentage = function(percent){
@@ -145,7 +158,9 @@
         this.registerHandler('hide', this.hide, this);
 
         this.registerHandler('loadComplete', function() {
-            this.focusCurrentThumbnail();
+            if (this.focusedContent()){
+              this.focusCurrentThumbnail();
+            }
             this.updateFocusedInfoDisplay();
             this.show();
         }, this);

@@ -16,6 +16,14 @@
   background: #aaaaaa;
 }
 
+.app-overlay-container.dark-theme {
+  background: #000000;
+}
+
+.app-overlay-container.light-theme {
+  background: #ffffff;
+}
+
 .app-overlay-message {
   color: #333;
   text-align: center;
