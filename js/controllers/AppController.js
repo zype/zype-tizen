@@ -128,22 +128,21 @@
                   var itemSelected = controller.focusedContent();
 
                   // TODO: need code for creating VideoDetailsController with view
-                  if (itemSelected.contentType == "videos"){
-                      this.showContentLoadingSpinner(true);                    
-                      var newController = new VideoDetailsController();
-                      newController.init(itemSelected.content);
+                  if (itemSelected.content){
+                        if (itemSelected.contentType == "videos"){
+                            this.showContentLoadingSpinner(true);
+                            var newController = new VideoDetailsController();
+                            newController.init(itemSelected.content);
 
-                      this.controllers.push(newController);
+                            this.controllers.push(newController);
 
-                      this.hideContentLoadingSpinner();
-                  } else if (itemSelected.contentType == "playlists") {
-                      var focusedContent = controller.focusedContent();
-                      if (focusedContent && focusedContent.content) {
-                          this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
-                      } else {
-                          controller.trigger('show');
-                      }
-                  }
+                            this.hideContentLoadingSpinner();
+                        } else if (itemSelected.contentType == "playlists") {
+                            this.addMediaContent(itemSelected.content._id, this.mediaGridControllersCount);
+                        }
+                    } else {
+                        controller.trigger('show');
+                    }
 
                   break;
               case "VideoDetailsController":
