@@ -161,6 +161,11 @@
                   }
 
                   break;
+                case "DialogController":
+                  this.controllers.pop();
+                  
+                  var lastController = this.controllers[this.controllers.length - 1];
+                  lastController.trigger('show');
               default:
                   break;
             }
@@ -181,7 +186,7 @@
                 });
 
             // Javascript body
-            } else if (resp){
+            // } else if (resp){
                 // var player = resp.response.body;
                 // alert("Got this player: " + JSON.stringify(player));
 
@@ -190,7 +195,12 @@
                 var videoDetailsController = this.controllers[this.controllers.length - 1];
                 videoDetailsController.trigger('show');
 
-                debugger;
+                var dialogController = new DialogController();
+                dialogController.init({
+                    title: "Issue",
+                    message: "Video playback error"
+                });
+                this.controllers.push(dialogController);
             }
 
             this.hideContentLoadingSpinner();

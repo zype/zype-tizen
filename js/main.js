@@ -16,9 +16,11 @@ $(document).ready(function() {
             $.getScript("js/controllers/MediaGridController.js"),
             $.getScript("js/controllers/VideoDetailsController.js"),
             $.getScript("js/controllers/VideoPlayerController.js"),
+            $.getScript("js/controllers/DialogController.js"),
 
             $.getScript("js/views/MediaGridView.js"),
-            $.getScript("js/views/VideoDetailsView.js")
+            $.getScript("js/views/VideoDetailsView.js"),
+            $.getScript("js/views/DialogView.js")
         ).then(function() {
             if (window.innerWidth < window.innerHeight) {
             $('#overlay-message').html('please rotate your device back to landscpe');
