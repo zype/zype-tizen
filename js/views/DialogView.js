@@ -2,7 +2,7 @@
     "use strict";
 
     var DialogView = function(){
-		EventsHandler.call(this, ['loadComplete', 'show', 'hide']);
+		EventsHandler.call(this, ['loadComplete', 'show', 'hide', 'close']);
 		var _this = this;
 
 		var templateId = "#dialog-view-template";
@@ -45,9 +45,14 @@
 			$(this.id).addClass('invisible');
 		};
 
+		this.close = function(){
+			$(this.id).remove();
+		};
+
 		this.registerHandler('loadComplete', this.show, this);
 		this.registerHandler('show', this.show, this);
 		this.registerHandler('hide', this.hide, this);
+		this.registerHandler('close', this.close, this);
 	};
 
 	if (!exports.DialogView) { exports.DialogView = DialogView };

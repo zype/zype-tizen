@@ -2,7 +2,7 @@
     "use strict";
 
     var DialogController = function(){
-		EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide']);
+		EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide', 'close']);
 
 		this.view = null;
 
@@ -46,10 +46,16 @@
 			this.view.trigger('hide');
 		};
 
+		this.close = function(){
+			this.view.trigger('close');
+			this.view = null;
+		};
+
 		this.registerHandler('loadComplete', this.show, this);
 		this.registerHandler('buttonPress', this.handleButtonPress, this);
 		this.registerHandler('show', this.show, this);
 		this.registerHandler('hide', this.hide, this);
+		this.registerHandler('close', this.close, this);
 	};
 
 	if (!exports.DialogController) { exports.DialogController = DialogController };
