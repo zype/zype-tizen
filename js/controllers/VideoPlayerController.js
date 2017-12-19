@@ -6,6 +6,7 @@
         var templateId = "#video-player-view-template"
         var videoPlayerContainerId = "#video-player-container";
 
+        this.name = null;
         this.playerInfo = null;
         this.player = null;
         this.id = null; // HTML id for DOM manipulation
@@ -13,6 +14,7 @@
         this.closePlayerCallback = null;
 
         this.init = function(args){
+            this.name = "VideoPlayerController";
             this.playerInfo = args.playerInfo;
             this.closePlayerCallback = args.callbackFunc;
 

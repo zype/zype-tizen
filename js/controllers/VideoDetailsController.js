@@ -5,6 +5,7 @@
         EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide', 'close']);
         var _this = this;
 
+        this.name = null;
         this.content = null;
         this.view = null;
         this.buttons = [];
@@ -18,6 +19,8 @@
         };
 
         this.init = function(data){
+            this.name = "VideoDetailsController";
+
             this.content = data;
 
             this.buttons = this.getButtons(this.content._id);

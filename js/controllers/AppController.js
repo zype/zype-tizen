@@ -121,7 +121,7 @@
 
         this.handleEnterButtonPress = function(){
             var controller = this.controllers[this.controllers.length - 1];
-            var controllerName = ObjectHelpers.getObjectName(controller);
+            var controllerName = controller.name;
 
             switch (controllerName) {
               case "MediaGridController":
@@ -163,7 +163,7 @@
                   break;
                 case "DialogController":
                   this.controllers.pop();
-                  
+
                   var lastController = this.controllers[this.controllers.length - 1];
                   lastController.trigger('show');
               default:

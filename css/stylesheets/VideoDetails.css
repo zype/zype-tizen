@@ -14,12 +14,35 @@
     max-height: 50%;
     top: 15%;
     left: 0;
-    padding-left: 10%;
+    padding-left: 7.5%;
     z-index: 15;
+}
+
+.video-details-title-container {
+    max-width: 100%;
+    max-height: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-details-description-container {
+    max-width: 100%;
+    max-height: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .video-details-title {
     z-index: 50;
+    font-size: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-details-description {
+    font-size: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .video-details-title.dark-theme,
@@ -44,7 +67,7 @@
     max-height: 35%;
     top: 65%;
     left: 0;
-    padding-left: 10%;
+    padding-left: 5%;
     z-index: 15;
 }
 
@@ -67,7 +90,7 @@
 }
 
 .video-details-buttons-containers .button-text {
-    font-size: 1.5em;
+    font-size: 3em;
     font-style: bold;
 }
 

@@ -12,12 +12,15 @@
             };
         };
 
+        this.name = null;
         this.playlistLevel = null;
         this.mediaContent = [];
 
         this.view = null;
 
         this.init = function(args){
+            this.name = "MediaGridController";
+
             this.playlistLevel = args.playlistLevel;
             this.mediaContent = args.mediaContent;
 

@@ -5,8 +5,11 @@
 		EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide', 'close']);
 
 		this.view = null;
+		this.name = null;
 
 		this.init = function(args){
+			this.name = "DialogController";
+
 			var viewArgs = {
 				title: args.title,
 				message: args.message

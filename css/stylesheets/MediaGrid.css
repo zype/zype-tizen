@@ -20,16 +20,16 @@
 
 .focused-content-info-title-container,
 .focused-content-info-description-container {
-    width: 45%;
-    padding-left: 5%;
+    width: 40%;
+    padding-left: 2.5%;
 }
 
 .focused-content-info-title-container {
-    height: 20%;
+    max-height: 30%;
 }
 
 .focused-content-info-description-container {
-    height: 70%;
+    max-height: 70%;
     overflow: hidden;
 }
 
@@ -40,7 +40,9 @@
 }
 
 .focused-content-info-description {
+    overflow: hidden;
     word-wrap: break-word;
+    text-overflow: ellipsis;
 }
 
 .focused-content-info-title.dark-theme,
@@ -56,11 +58,11 @@
 }
 
 .focused-content-info-container.focused-content-info-title {
-    font-size: 3em;
+    font-size: 7em;
 }
 
 .focused-content-info-container.focused-content-info-description {
-    font-size: 1.5em;
+    font-size: 4em;
 }
 
 
@@ -110,6 +112,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     margin: 0;
+    font-size: 2em;
 }
 
 .media-grid-row-thumbnails-container {
