@@ -1,6 +1,8 @@
 $(document).ready(function() {
     loadTemplates().then(function(){
         $.when(
+            $.getScript("js/deeplink.js"),
+            
             // Get dependencies
             $.getScript("lib/ZypeEndpoints.js"),
             $.getScript("lib/ZypeJSBase.js"),
@@ -22,6 +24,8 @@ $(document).ready(function() {
             $.getScript("js/views/VideoDetailsView.js"),
             $.getScript("js/views/DialogView.js")
         ).then(function() {
+            if (handleDeepLinkedData){ handleDeepLinkedData() };
+              
             if (window.innerWidth < window.innerHeight) {
             $('#overlay-message').html('please rotate your device back to landscpe');
             $('#app-overlay').css('display', 'block');

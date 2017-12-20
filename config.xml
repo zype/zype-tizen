@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://zype.com/ZypeTizen" version="1.0.0" viewmodes="fullscreen">
     <tizen:application id="qiVQ28GSXC.ZypeTizen" package="qiVQ28GSXC" required_version="3.0"/>
+    
+    <tizen:metadata key='http://samsung.com/tv/metadata/use.preview' value="endpoint_URL=https://developer.samsung.com/onlinedocs/tv/Preview/sampleJSON.json"></tizen:metadata>
+    
+    <tizen:app-control>
+        <tizen:src name='index.html' reload='disable'></tizen:src>
+        <tizen:operation name='http://samsung.com/appcontrol/operation/eden_resume'></tizen:operation>
+    </tizen:app-control>
+
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
     <icon src="icon.png"/>

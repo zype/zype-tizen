@@ -88,7 +88,17 @@
                 _this.controllers.push(mediaGridController);
                 _this.mediaGridControllersCount += 1;
 
-                _this.hideContentLoadingSpinner();
+                // if deep linked, get video data then create VideoDetailsController
+                if (window.deepLinkedData) {
+                    alert("Updating the message: " + JSON.stringify(window.deepLinkedData));
+
+                    // TODO: add logic for how to handle deep linked video
+
+                // open app like normal
+                } else {
+                    _this.hideContentLoadingSpinner();
+
+                }
               },
 
               function(){
