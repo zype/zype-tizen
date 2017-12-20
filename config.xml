@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://zype.com/ZypeTizen" version="1.0.0" viewmodes="fullscreen">
     <tizen:application id="qiVQ28GSXC.ZypeTizen" package="qiVQ28GSXC" required_version="3.0"/>
     
-    <tizen:metadata key='http://samsung.com/tv/metadata/use.preview' value="endpoint_URL=https://developer.samsung.com/onlinedocs/tv/Preview/sampleJSON.json"></tizen:metadata>
+    <tizen:metadata key='http://samsung.com/tv/metadata/use.preview' value="endpoint_URL=http://zype.mixicon.com/tizen/samsung.json"></tizen:metadata>
     
     <tizen:app-control>
         <tizen:src name='index.html' reload='disable'></tizen:src>

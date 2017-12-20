@@ -90,14 +90,31 @@
 
                 // if deep linked, get video data then create VideoDetailsController
                 if (window.deepLinkedData) {
-                    alert("Updating the message: " + JSON.stringify(window.deepLinkedData));
+                    var linkedData = JSON.parse(window.deepLinkedData);
+                    var videoId = linkedData.videoId;
 
-                    // TODO: add logic for how to handle deep linked video
+                    if (videoId) {
+                        _this.zypeApi.getVideo(videoId, {}).then(function(resp){
+                            if (resp) {
+                                var lastController = _this.controllers[_this.controllers.length - 1];
+                                lastController.trigger('hide');
 
+                                var newController = new VideoDetailsController();
+                                newController.init(resp.response);
+    
+                                _this.controllers.push(newController);
+    
+                                _this.hideContentLoadingSpinner();
+                            } else {
+                                _this.hideContentLoadingSpinner();
+                            }
+                        });
+                    } else {
+                        _this.hideContentLoadingSpinner();
+                    }
                 // open app like normal
                 } else {
                     _this.hideContentLoadingSpinner();
-
                 }
               },
 
