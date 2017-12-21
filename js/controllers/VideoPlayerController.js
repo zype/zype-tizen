@@ -40,16 +40,21 @@
 
             $(this.id).removeClass("invisible");
 
-            this.player = videojs(this.id);
+            var playerOptions = {
+                html5: {
+                    hls: { withCredentials: true, overrideNative: true }
+                }
+            };
 
-            this.player.on("ready", function(){
+            this.player = videojs(this.id, playerOptions, function(){
                 this.play();
-            });
-            this.player.on("ended", function(){
-                $(_this.id).addClass("invisible");
-                this.dispose();
-                _this.closePlayerCallback();
-                _this.closePlayerCallback = null;
+
+                this.on("ended", function(){
+                    $(_this.id).addClass("invisible");
+                    this.dispose();
+                    _this.closePlayerCallback();
+                    _this.closePlayerCallback = null;
+                });
             });
         };
 

@@ -17,7 +17,12 @@ $(document).ready(function() {
             $.getScript("js/controllers/AppController.js"),
             $.getScript("js/controllers/MediaGridController.js"),
             $.getScript("js/controllers/VideoDetailsController.js"),
-            $.getScript("js/controllers/VideoPlayerController.js"),
+
+            // don't use videojs player for now
+            // $.getScript("js/controllers/VideoPlayerController.js"),
+
+            // use controller for native AVPlayer
+            $.getScript("js/controllers/VideoPlayerControllerNative.js"),
             $.getScript("js/controllers/DialogController.js"),
 
             $.getScript("js/views/MediaGridView.js"),

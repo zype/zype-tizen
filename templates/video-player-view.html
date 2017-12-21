@@ -5,8 +5,7 @@
       width="{{ width }}"
       height="{{ height }}"
       poster="{{ thumbnail }}"
-      controls
-      data-setup="{'inactivityTimeout': 0}">
+      controls>
       {{#ifCond videoType "==" "hls" }}
           <source src="{{ videoUrl }}" type="application/x-mpegURL"/>
       {{/ifCond}}
