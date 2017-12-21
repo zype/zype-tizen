@@ -73,13 +73,12 @@
 
 .video-details-buttons-container .button {
     margin-bottom: 1em;
-    width: 50%;
+    width: 40%;
     margin-left: 10%;
     margin-right: 40%;
     border-radius: 1em;
 
     text-align: center;
-    font-size: 1em;
 }
 
 .video-details-buttons-container .button.focused.dark-theme {
@@ -90,8 +89,9 @@
     background-color: #000000;
 }
 
-.video-details-buttons-containers .button-text {
-    font-size: 3em;
+.video-details-buttons-container .button-text {
+    font-size: 2em;
+    margin: 0.5em 0em;
     font-style: bold;
 }
 

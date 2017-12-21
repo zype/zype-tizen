@@ -29,17 +29,19 @@
 }
 
 .focused-content-info-description-container {
-    max-height: 70%;
+    max-height: 60%;
     overflow: hidden;
 }
 
 .focused-content-info-title {
+    font-size: 3.5em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .focused-content-info-description {
+    font-size: 2em;
     overflow: hidden;
     word-wrap: break-word;
     text-overflow: ellipsis;
@@ -112,7 +114,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     margin: 0;
-    font-size: 2em;
+    font-size: 2.5em;
 }
 
 .media-grid-row-thumbnails-container {
