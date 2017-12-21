@@ -101,9 +101,9 @@
 
                                 var newController = new VideoDetailsController();
                                 newController.init(resp.response);
-    
+
                                 _this.controllers.push(newController);
-    
+
                                 _this.hideContentLoadingSpinner();
                             } else {
                                 _this.hideContentLoadingSpinner();
@@ -112,6 +112,7 @@
                     } else {
                         _this.hideContentLoadingSpinner();
                     }
+                    window.deepLinkedData = null;
                 // open app like normal
                 } else {
                     _this.hideContentLoadingSpinner();
