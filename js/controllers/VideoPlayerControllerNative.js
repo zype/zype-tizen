@@ -35,10 +35,12 @@
 					top: 0,
 					left: 0,
 					width: 1920 * ratio,
-					height: 1080 * ratio
+					height: 1080 * ratio,
+					"z-index": 1000
 				};
 
-				webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
+				// webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
+				$("#zype-video-player").css(displaySettings);
 
 				webapis.avplay.prepareAsync(
 					// success
