@@ -17,10 +17,6 @@
   background-color: #ffffff;
 }
 
-#zype-video-player {
-    z-index:10000;
-}
-
 .invisible {
     visibility: hidden;
 }

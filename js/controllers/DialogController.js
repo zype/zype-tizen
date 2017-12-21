@@ -30,7 +30,7 @@
 					break;
 			
 				case TvKeys.ENTER:
-					this.view.hide();
+					this.view.close();
 					break;
 				case TvKeys.RETURN:
 				case TvKeys.BACK:
@@ -50,7 +50,7 @@
 		};
 
 		this.close = function(){
-			this.view.trigger('close');
+			this.view.close();
 			this.view = null;
 		};
 

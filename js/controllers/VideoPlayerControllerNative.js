@@ -31,12 +31,14 @@
 				var avplayBaseWidth = 1920;
 				var ratio = avplayBaseWidth / window.document.documentElement.clientWidth;
 
-				$("#zype-video-player").css({
+				var displaySettings = {
 					top: 0,
 					left: 0,
 					width: 1920 * ratio,
 					height: 1080 * ratio
-				});
+				};
+
+				webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
 
 				webapis.avplay.prepareAsync(
 					// success

@@ -191,6 +191,7 @@
 
                   var lastController = this.controllers[this.controllers.length - 1];
                   lastController.trigger('show');
+                  break;
               default:
                   break;
             }
