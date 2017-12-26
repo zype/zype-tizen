@@ -134,14 +134,19 @@
         this.handleBackButtonPress = function(){
             var lastController = _this.controllers.pop();
 
-            // call .close if method exists
-            if (lastController.close) {lastController.close()};
-
             _this.hideContentLoadingSpinner();
 
             if (_this.controllers.length == 0){
-                _this.exitApp();
+                var leave = _this.confirmExitApp();
+                if (leave){
+                    if (lastController.close) {lastController.close()};
+                    _this.exitApp();
+                } else {
+                    _this.controllers.push(lastController);
+                    lastController.trigger('show');
+                }
             } else {
+                if (lastController.close) {lastController.close()};
                 var previousController = _this.controllers[_this.controllers.length - 1];
                 previousController.trigger('show');
             }
@@ -244,6 +249,10 @@
 
         this.exitApp = function(){
             tizen.application.getCurrentApplication().exit();
+        };
+
+        this.confirmExitApp = function(){
+            return confirm("Do you want to leave the app?");
         };
 
         this.registerHandler('settingsLoaded', function(appSettings){
