@@ -274,6 +274,19 @@
         $(document).keydown(function(e){
             _this.trigger('buttonPress', e.keyCode);
         });
+
+        try {
+          webapis.network.addNetworkStateChangeListener(function(value) {
+            if (value == webapis.network.NetworkState.GATEWAY_DISCONNECTED) {
+                _this.forceExitApp("Internet disconnected. Closing app.");
+            } else if (value == webapis.network.NetworkState.GATEWAY_CONNECTED) {
+                alert("Internet reconnected");
+            }
+          });
+
+          var connectedToNetwork = webapis.network.isConnectedToGateway();
+          if (!connectedToNetwork) { _this.forceExitApp("No network connection. Closing app."); }
+        } catch (e) { _this.exitApp(); }
     };
 
     exports.AppController = AppController;

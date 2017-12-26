@@ -10,8 +10,9 @@
     <icon src="icon.png"/>
 
     <tizen:metadata key="http://samsung.com/tv/metadata/use.preview" value="endpoint_URL=< preview pane json url >"/>
-    
+
     <name>< app name ></name>
+    <tizen:privilege name="http://developer.samsung.com/privilege/network.public"/>
     <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
     <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
     <tizen:profile name="tv"/>
