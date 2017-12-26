@@ -16,6 +16,10 @@
  *  449   - Mute
  *  427   - Channel Down
  *  428   - Channel Up
+ *  417   - Fast Foward
+ *  412   - Rewind
+ *  415   - Play
+ *  19    - Pause
  *
  */
 

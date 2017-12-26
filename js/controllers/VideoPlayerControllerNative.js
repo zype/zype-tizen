@@ -2,6 +2,7 @@
     var VideoPlayerController = function(){
         EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide']);
         var _this = this;
+		var remoteKeys = ["MediaPlayPause", "MediaPlay", "MediaStop", "MediaPause", "MediaRewind", "MediaFastForward"];
 
         this.name = null;
         this.playerInfo = null;
@@ -17,6 +18,8 @@
             var thumbnailUrl = this.playerInfo.video.thumbnails[0].url || appDefaults.thumbnailUrl;
             var videoUrl = this.playerInfo.body.outputs[0].url;
             var videoType = this.playerInfo.body.outputs[0].name;
+
+			this.prepareRemote();
 
 			try {
 				webapis.avplay.open(videoUrl);
@@ -62,12 +65,19 @@
 				this.closePlayerCallback();
 			}
 		};
+
+		this.prepareRemote = function(){
+			try {
+				tizen.tvinputdevice.registerKeyBatch(remoteKeys);
+			} catch (error) {}
+		};
 		
 		this.close = function(){ webapis.avplay.close(); };
 
         this.handleButtonPress = function(buttonPress){
             switch (buttonPress) {
 			  case TvKeys.LEFT:
+			  case TvKeys.RW:
 					try {
 						webapis.avplay.pause();
 						webapis.avplay.seekTo(webapis.avplay.getCurrentTime() - 10000);
@@ -75,9 +85,10 @@
 					} catch (error) {
 						webapis.avplay.play();
 					}
-                  break;
+                    break;
 
 			  case TvKeys.RIGHT:
+			  case TvKeys.FF:
 					try {
 						webapis.avplay.pause();
 						webapis.avplay.seekTo(webapis.avplay.getCurrentTime() + 10000);
@@ -85,7 +96,7 @@
 					} catch (error) {
 						webapis.avplay.play();
 					}					
-                  break;
+                    break;
 
               case TvKeys.ENTER:
 			  case TvKeys.PLAYPAUSE:
@@ -100,8 +111,7 @@
 					} catch (error) {
 						webapis.avplay.close();
 						_this.closePlayerCallback();
-					}					
-
+					}
                   break;
 
 			  case TvKeys.PLAY:
@@ -110,28 +120,35 @@
 					} catch (error) {
 						webapis.avplay.close();
 						_this.closePlayerCallback();
-					}						
-
-                  break;
+					}
+                    break;
 			  case TvKeys.PAUSE:
 					try {
 						webapis.avplay.pause();
 					} catch (error) {
 						webapis.avplay.close();
 						_this.closePlayerCallback();
-					}						
-                  break;
+					}
+					break;
+			  case TvKeys.STOP:
+					try {
+						tizen.tvinputdevice.unregisterKeyBatch(remoteKeys);
+						webapis.avplay.close();
+						_this.closePlayerCallback();
+					} catch(e){}
+			  		break;
               case TvKeys.BACK:
 			  case TvKeys.RETURN:
 					try {
+						tizen.tvinputdevice.unregisterKeyBatch(remoteKeys);
 						webapis.avplay.close();
 					} catch (error) {
 						_this.closePlayerCallback();
 					}
-                  break;
+                    break;
 
-              default:
-                  break;
+			  default:
+                    break;
             }
         };
 
