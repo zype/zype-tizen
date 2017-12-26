@@ -5,7 +5,9 @@
 		var remoteKeys = ["MediaPlayPause", "MediaPlay", "MediaStop", "MediaPause", "MediaRewind", "MediaFastForward"];
 
         this.name = null;
-        this.playerInfo = null;
+		this.playerInfo = null;
+		
+		this.view = null;
 
         this.closePlayerCallback = null;
 
@@ -17,7 +19,16 @@
             var videoId = this.playerInfo.video._id;
             var thumbnailUrl = this.playerInfo.video.thumbnails[0].url || appDefaults.thumbnailUrl;
             var videoUrl = this.playerInfo.body.outputs[0].url;
-            var videoType = this.playerInfo.body.outputs[0].name;
+			var videoType = this.playerInfo.body.outputs[0].name;
+			
+			
+			var view = new VideoPlayerView();
+			view.init({
+				title: this.playerInfo.video.title,
+				thumbnailUrl: thumbnailUrl,
+				duration: this.playerInfo.video.duration
+			});
+			this.view = view;
 
 			this.prepareRemote();
 

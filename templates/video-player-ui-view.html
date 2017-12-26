@@ -1,0 +1,32 @@
+<script id="video-player-ui-view-template" type="text/x-handlebars-template">
+    <div id="video-player-ui">
+		<div class="video-player-info">
+			<div class="video-player-thumbnail-container">
+				<img src="{{ thumbnailUrl }}" alt="Small thumbnail for video" class="video-player-thumbnail">
+			</div>
+
+			<div class="video-player-title-container">
+				<div class="video-player-title"></div>
+			</div>
+		</div>
+
+		<div class="video-player-controls">
+
+			<div class="progress-bar-container">
+				<div class="progress-bar"></div>
+			</div>
+
+			<div class="current-time-container">
+				<p class="current-time"></p>
+			</div>
+
+			<div class="duration-container">
+				<p class="duration"></p>
+			</div>
+
+			<div class="play-pause-container">
+				<img src="{{ playPauseImage }}" class="play-pause-image" />
+			</div>
+		</div>
+	</div>
+</script>
