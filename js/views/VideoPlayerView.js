@@ -2,16 +2,17 @@
     "use strict";
 
     var VideoPlayerView = function(){
-        EventsHandler.call(this, ['loadComplete', 'showPlay', 'showPause', 'updateTime', 'show', 'hide']);
+        EventsHandler.call(this, ['loadComplete', 'updateState', 'updateTime', 'show', 'hide']);
         var _this = this;
         var templateId = "#video-player-ui-view-template";
 
         this.id = null;
 
         this.title = null;
-        this.thumbnailUrl = null;
+        this.description = null;
         this.duration = null;
         this.currentTime = null;
+        this.state = null;
         
         function secondsToMinutesString(secs){
             if(!secs && secs <= 0){
@@ -36,18 +37,20 @@
 
         this.init = function(args){
             this.title = args.title;
-            this.thumbnailUrl = args.thumbnailUrl;
+            this.description = args.description;
             this.duration = args.duration;
             this.currentTime = 0;
+            this.state = args.state;
 
             var id = "video-player-ui";
             this.id = "#" + id;
             
             var context = {
                 title: this.title,
-                thumbnailUrl: this.thumbnailUrl,
+                description: this.description,
                 duration: secondsToMinutesString(this.duration),
                 currentTime: secondsToMinutesString(this.currentTime),
+                playPauseImage: appDefaults.pauseButtonUrl,
                 css: viewCss(id)
             };
 
@@ -58,9 +61,49 @@
             this.trigger('loadComplete');
         };
 
-        // TODO: add functions to update UI
+        this.updateProgressBar = function(){
+            var percent = (this.currentTime / this.duration) * 100;
+            $(this.id + " .progress-bar").css({ width: String(percent) + "%" });
+        };
 
-        // TODO: register event handlers
+        this.updateCurrentTime = function(){
+            var currentTimeString = secondsToMinutesString(this.currentTime);
+            $(this.id + ".current-time").text(currentTimeString);
+        };
+
+        this.updateTime = function(currentTime){
+            if (currentTime){ this.currentTime = currentTime; }
+
+            this.updateProgressBar();
+            this.updateCurrentTime();
+        };
+
+        this.setState = function(state){
+            if (state == "playing" || state == "paused"){ this.state = state; }
+
+            if (this.state == "playing"){
+                $(this.id + " .play-pause-image").attr("src", appDefaults.pauseButtonUrl);
+            } else {
+                $(this.id + " .play-pause-image").attr("src", appDefaults.playButtonUrl)
+            }
+        };
+
+        this.show = function(){
+            $(this.id).removeClass('invisible');
+        };
+
+        this.hide = function(){
+            $(this.id).addClass('invisible');
+        };
+
+        this.prepareView = function(){
+            this.updateProgressBar();
+            this.show();
+        };
+
+        this.registerHandler('loadComplete', this.prepareView, this);
+        this.registerHandler('updateTime', this.updateTime, this);
+        this.registerHandler('updateState', this.setState, this);
     };
 
   	if (!exports.VideoPlayerView) { exports.VideoPlayerView = VideoPlayerView; }

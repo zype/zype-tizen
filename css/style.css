@@ -55,3 +55,9 @@
     height: 100%;
     z-index: inherit;
 }
+
+.ellipsis-text {
+    white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

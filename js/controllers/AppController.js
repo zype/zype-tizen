@@ -286,7 +286,7 @@
 
           var connectedToNetwork = webapis.network.isConnectedToGateway();
           if (!connectedToNetwork) { _this.forceExitApp("No network connection. Closing app."); }
-        } catch (e) { _this.exitApp(); }
+        } catch (e) {}
     };
 
     exports.AppController = AppController;
