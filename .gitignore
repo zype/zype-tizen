@@ -2,3 +2,4 @@ configs/defaults.js
 *.wgt
 .sign
 .tproject
+config.xml
