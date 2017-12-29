@@ -53,7 +53,7 @@
 					"z-index": 1000
 				};
 
-				// webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
+				webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
 				$("#zype-video-player").css(displaySettings);
 
 				webapis.avplay.prepareAsync(
