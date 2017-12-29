@@ -25,8 +25,10 @@
 			var view = new VideoPlayerView();
 			view.init({
 				title: this.playerInfo.video.title,
-				thumbnailUrl: thumbnailUrl,
-				duration: this.playerInfo.video.duration
+				description: this.playerInfo.video.description,
+				currentTime: 0,
+				duration: this.playerInfo.video.duration,
+				state: "playing"
 			});
 			this.view = view;
 
@@ -35,6 +37,9 @@
 			try {
 				webapis.avplay.open(videoUrl);
 				webapis.avplay.setListener({
+					oncurrentplaytime: function(){
+						_this.updateViewCurrentTime();
+					},
 					onstreamcompleted: function(){
 						webapis.avplay.stop();
 						webapis.avplay.close();
@@ -60,6 +65,10 @@
 					// success
 					function(){ 
 						try{
+							_this.view.trigger('updateTime', [0]);
+							_this.view.trigger('updateState', ["playing"]);
+							_this.view.trigger('loadComplete');
+
 							webapis.avplay.play(); 
 						}catch(e){
 							webapis.avplay.close();
@@ -72,6 +81,7 @@
 					}
 				);
 			} catch(e){ 
+				_this.view.close();
 				webapis.avplay.close();
 				this.closePlayerCallback();
 			}
@@ -82,8 +92,24 @@
 				tizen.tvinputdevice.registerKeyBatch(remoteKeys);
 			} catch (error) {}
 		};
+
+		// called which the video player is running
+		this.updateViewCurrentTime = function(){
+			try {
+				var currentTimeInSecs = webapis.avplay.getCurrentTime() / 1000;
+				if (this.view && currentTimeInSecs){
+					this.view.trigger('updateTime', [currentTimeInSecs]);
+				}
+			} catch(e) {}
+		};
 		
-		this.close = function(){ webapis.avplay.close(); };
+		this.close = function(){ 
+			if (this.view){
+				this.view.close();
+				this.view = null;
+			}
+			webapis.avplay.close(); 
+		};
 
         this.handleButtonPress = function(buttonPress){
             switch (buttonPress) {
@@ -92,6 +118,8 @@
 					try {
 						webapis.avplay.pause();
 						webapis.avplay.seekTo(webapis.avplay.getCurrentTime() - 10000);
+						this.updateViewCurrentTime();
+						_this.view.trigger('updateState', ["playing"]);
 						webapis.avplay.play();						
 					} catch (error) {
 						webapis.avplay.play();
@@ -103,6 +131,8 @@
 					try {
 						webapis.avplay.pause();
 						webapis.avplay.seekTo(webapis.avplay.getCurrentTime() + 10000);
+						this.updateViewCurrentTime();
+						this.view.trigger('updateState', ["playing"]);
 						webapis.avplay.play();
 					} catch (error) {
 						webapis.avplay.play();
@@ -114,9 +144,13 @@
 					try {
 						var state = webapis.avplay.getState();
 
+						this.updateViewCurrentTime();
+
 						if (state == "PAUSED") {
+							this.view.trigger('updateState', ["playing"]);
 							webapis.avplay.play();
 						} else {
+							this.view.trigger('updateState', ["paused"]);
 							webapis.avplay.pause();
 						}
 					} catch (error) {
@@ -127,6 +161,8 @@
 
 			  case TvKeys.PLAY:
 					try {
+						this.updateViewCurrentTime();
+						this.view.trigger('updateState', ["playing"]);
 						webapis.avplay.play();
 					} catch (error) {
 						webapis.avplay.close();
@@ -135,6 +171,8 @@
                     break;
 			  case TvKeys.PAUSE:
 					try {
+						this.updateViewCurrentTime();
+						this.view.trigger('updateState', ["paused"]);
 						webapis.avplay.pause();
 					} catch (error) {
 						webapis.avplay.close();
@@ -144,7 +182,7 @@
 			  case TvKeys.STOP:
 					try {
 						tizen.tvinputdevice.unregisterKeyBatch(remoteKeys);
-						webapis.avplay.close();
+						this.closed();
 						_this.closePlayerCallback();
 					} catch(e){}
 			  		break;
@@ -152,7 +190,7 @@
 			  case TvKeys.RETURN:
 					try {
 						tizen.tvinputdevice.unregisterKeyBatch(remoteKeys);
-						webapis.avplay.close();
+						this.closed();
 					} catch (error) {
 						_this.closePlayerCallback();
 					}

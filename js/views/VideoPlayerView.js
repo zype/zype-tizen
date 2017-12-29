@@ -39,7 +39,7 @@
             this.title = args.title;
             this.description = args.description;
             this.duration = args.duration;
-            this.currentTime = 0;
+            this.currentTime = args.currentTime;
             this.state = args.state;
 
             var id = "video-player-ui";
@@ -57,8 +57,6 @@
             var template = $(templateId);
             var renderedTemplate = Utils.buildTemplate(template, context);
             $("#app-container").append(renderedTemplate);
-
-            this.trigger('loadComplete');
         };
 
         this.updateProgressBar = function(){
@@ -96,11 +94,17 @@
             $(this.id).addClass('invisible');
         };
 
+        this.close = function(){
+            $(this.id).remove();
+        };
+
         this.prepareView = function(){
             this.updateProgressBar();
+            this.setState();
             this.show();
         };
 
+        this.registerHandler('hide', this.hide, this);
         this.registerHandler('loadComplete', this.prepareView, this);
         this.registerHandler('updateTime', this.updateTime, this);
         this.registerHandler('updateState', this.setState, this);
