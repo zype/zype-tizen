@@ -13,16 +13,35 @@
         this.duration = null;
         this.currentTime = null;
         this.state = null;
+
+        this.lastFadeOutTime = null;
         
         function secondsToMinutesString(secs){
             if(!secs && secs <= 0){
-              return "0:00";
+              return "0:00:00";
             }
 
-            var mins = Math.floor( secs / 60 );
-            var remainder = secs % 60;
+            if ( secs / 3600 > 0 ){
+                var hours = Math.floor( secs / 3600 );
+                secs -= hours * 3600;
+            } else {
+                var hours = 0;
+            }
 
-            return mins + ":" + remainder;
+            if ( secs / 60 > 0 ){
+                var mins = Math.floor( secs / 60 );
+                secs -= mins * 60;
+            } else {
+                var mins = 0;
+            }
+
+            secs = Math.floor(secs);
+
+            var hoursString = (hours >= 10) ? String(hours) : "0" + String(hours);
+            var minsString = (mins >= 10) ? String(mins) : "0" + String(mins);
+            var remainderString = (secs >= 10) ? String(secs) : "0" + String(secs);
+
+            return hoursString + ":" + minsString + ":" + remainderString;
         }
 
         function viewCss(id){
@@ -66,7 +85,7 @@
 
         this.updateCurrentTime = function(){
             var currentTimeString = secondsToMinutesString(this.currentTime);
-            $(this.id + ".current-time").text(currentTimeString);
+            $(this.id + " .current-time").text(currentTimeString);
         };
 
         this.updateTime = function(currentTime){
@@ -96,6 +115,14 @@
 
         this.close = function(){
             $(this.id).remove();
+        };
+
+        this.fadeIn = function(secs = 0){
+            $(this.id).fadeIn(secs * 1000);
+        };
+
+        this.fadeOut = function(secs = 0){
+            $(this.id).fadeOut(secs * 1000);
         };
 
         this.prepareView = function(){
