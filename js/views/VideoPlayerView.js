@@ -117,11 +117,13 @@
             $(this.id).remove();
         };
 
-        this.fadeIn = function(secs = 0){
+        this.fadeIn = function(secs){
+            if (!secs){ secs = 0; }
             $(this.id).fadeIn(secs * 1000);
         };
 
-        this.fadeOut = function(secs = 0){
+        this.fadeOut = function(secs){
+            if (!secs){ secs = 0; }
             $(this.id).fadeOut(secs * 1000);
         };
 

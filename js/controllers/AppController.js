@@ -208,12 +208,12 @@
                 var callback = _this.handleBackButtonPress;
 
                 var videoPlayerController = new VideoPlayerController();
-                this.controllers.push(videoPlayerController);
-                this.controllers[this.controllers.length - 1].init({
+                videoPlayerController.init({
                     videoInfo: videoDetailsController.content,
                     playerInfo: resp.response,
                     callbackFunc: callback,
                 });
+                this.controllers.push(videoPlayerController);
 
             } else {
                 var videoDetailsController = this.controllers[this.controllers.length - 1];

@@ -126,6 +126,7 @@
 
 .media-grid-thumbnail {
     margin-right: 1em;
+    border: solid 0.5em transparent;
 }
 
 .media-grid-landscape-thumbnail {

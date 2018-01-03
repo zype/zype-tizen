@@ -69,7 +69,7 @@
 							_this.view.trigger('updateTime', [0]);
 							_this.view.trigger('updateState', ["playing"]);
 							_this.view.trigger('loadComplete');
-							setTimeout(function(){_this.view.fadeOut(fadeTime);}, fadeTime * 1000)
+							setTimeout(function(){_this.view.fadeOut(fadeTime);}, fadeTime * 1000);
 
 							webapis.avplay.play(); 
 						}catch(e){
@@ -88,7 +88,7 @@
 		this.prepareRemote = function(){
 			try {
 				for (var i = 0; i < remoteKeys.length; i++) {
-					tizen.tvinputdevice.registerKey(remoteKeys[i])
+					tizen.tvinputdevice.registerKey(remoteKeys[i]);
 				}
 			} catch (e) {}
 		};
@@ -96,7 +96,7 @@
 		this.resetRemote = function(){
 			try {
 				for (var i = 0; i < remoteKeys.length; i++) {
-					tizen.tvinputdevice.unregisterKey(remoteKeys[i])
+					tizen.tvinputdevice.unregisterKey(remoteKeys[i]);
 				}
 			} catch (e) {}
 		};
@@ -104,7 +104,7 @@
 		// called which the video player is running
 		this.updateViewCurrentTime = function(){
 			try {
-				var currentTime = webapis.avplay.getCurrentTime() || 0;
+				var currentTime = (webapis.avplay.getCurrentTime() / 1000) || 0;
 				
 				if (this.view && currentTime){
 					this.view.trigger('updateTime', [currentTime]);
@@ -162,10 +162,7 @@
 							this.view.trigger('updateState', ["paused"]);
 							webapis.avplay.pause();
 						}
-					} catch (error) {
-						webapis.avplay.close();
-						_this.closePlayerCallback();
-					}
+					} catch (error) {}
                   break;
 
 			  case TvKeys.PLAY:
@@ -179,10 +176,7 @@
 						
 						
 						webapis.avplay.play();
-					} catch (error) {
-						webapis.avplay.close();
-						_this.closePlayerCallback();
-					}
+					} catch (error) {}
                     break;
 			  case TvKeys.PAUSE:
 					try {
@@ -190,10 +184,7 @@
 						this.updateViewCurrentTime();
 						this.view.trigger('updateState', ["paused"]);
 						webapis.avplay.pause();
-					} catch (error) {
-						webapis.avplay.close();
-						_this.closePlayerCallback();
-					}
+					} catch (error) {}
 					break;
 			  case TvKeys.STOP:
 					try {
