@@ -13,10 +13,10 @@
 	position: absolute;
 	height: 30%;
 	max-height:	30%;
-	width: 70%;
-	max-width: 70%;
-	top: 80%;
-	left: 15%;
+	width: 80%;
+	max-width: 80%;
+	top: 85%;
+	left: 10%;
 }
 
 .video-player-info {
@@ -24,17 +24,17 @@
 	height: 10%;
 	max-height: 10%;
 	width: 100%;
-	top: 67.5%;
+	top: 72.5%;
 	float: left;
 }
 
 .video-player-title-container, 
 .video-player-description-container {
-	width: 70%;
-	max-width: 70%;
+	width: 80%;
+	max-width: 80%;
 	max-height: 25%;
 
-	margin-left: 15%;
+	margin-left: 10%;
 }
 
 .video-player-title {
@@ -79,6 +79,7 @@
 	font-style: bold;
 	color: white;
 	margin: 0 auto;
+	letter-spacing: 2px;
 }
 
 .progress-bar-container .duration-bar,
@@ -105,7 +106,7 @@
 	max-height: 80%;
 
 	position: relative;
-	top: -170%;
+	top: -200%;
 }
 
 .play-pause-image {
