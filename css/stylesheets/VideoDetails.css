@@ -21,28 +21,34 @@
 .video-details-title-container {
     max-width: 100%;
     max-height: 30%;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .video-details-description-container {
     max-width: 100%;
     max-height: 50%;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .video-details-title {
     z-index: 50;
     font-size: 3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .video-details-description {
     font-size: 2em;
-    overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.video-details-description.ellipsis-text {
+    /* overwrite white-space from .ellipsis-text */
+    white-space: inherit;
+    display: block;
+    display: -webkit-box;
+
+    /* cut off after 5 lines */
+    height: 7.5em;
+    line-height: 1.5em;
+    -webkit-line-clamp: 5;
+
+    -webkit-box-orient: vertical;
 }
 
 .video-details-title.dark-theme,
