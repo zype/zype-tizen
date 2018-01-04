@@ -52,6 +52,7 @@
 				var ratio = avplayBaseWidth / window.document.documentElement.clientWidth;
 
 				var displaySettings = {
+					position: "absolute",
 					top: 0,
 					left: 0,
 					width: 1920 * ratio,
@@ -61,6 +62,7 @@
 
 				webapis.avplay.setDisplayRect(displaySettings.top,displaySettings.left, displaySettings.width, displaySettings.height);
 				$("#zype-video-player").css(displaySettings);
+				$("#zype-video-player").removeClass("invisible");
 
 				webapis.avplay.prepareAsync(
 					// success
@@ -116,9 +118,10 @@
 			if (this.view){
 				this.view.close();
 			}
-      try {
-          webapis.avplay.close();
-      } catch(e){}
+			try {
+				$("#zype-video-player").addClass("invisible");
+				webapis.avplay.close();
+			} catch(e){}
 		};
 
         this.handleButtonPress = function(buttonPress){

@@ -25,13 +25,12 @@
 }
 
 .focused-content-info-title-container {
-    height: 30%;
     max-height: 30%;
 }
 
 .focused-content-info-description-container {
-    height: 55%;
-    max-height: 55%;
+    max-height: 50%;
+    max-width: 100%;
 }
 
 .focused-content-info-title {

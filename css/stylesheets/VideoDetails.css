@@ -30,7 +30,7 @@
 
 .video-details-title {
     z-index: 50;
-    font-size: 3em;
+    font-size: 3.5em;
 }
 
 .video-details-description {
@@ -73,17 +73,16 @@
     max-height: 35%;
     top: 65%;
     left: 0;
-    padding-left: 5%;
+    padding-left: 7.5%;
     z-index: 15;
 }
 
 .video-details-buttons-container .button {
     margin-bottom: 1em;
-    width: 40%;
-    margin-left: 10%;
-    margin-right: 40%;
-    border-radius: 1em;
+    width: 60%;
+    border-radius: 0.25em;
 
+    font-family: Roboto;
     text-align: center;
 }
 
