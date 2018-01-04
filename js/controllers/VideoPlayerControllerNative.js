@@ -7,11 +7,11 @@
 
         this.name = null;
 		this.playerInfo = null;
-		
+
 		this.view = null;
 
 		this.closePlayerCallback = null;
-		
+
         this.init = function(args){
             this.name = "VideoPlayerController";
             this.playerInfo = args.playerInfo;
@@ -21,8 +21,8 @@
             var thumbnailUrl = this.playerInfo.video.thumbnails[0].url || appDefaults.thumbnailUrl;
             var videoUrl = this.playerInfo.body.outputs[0].url;
 			var videoType = this.playerInfo.body.outputs[0].name;
-			
-			
+
+
 			var view = new VideoPlayerView();
 			view.init({
 				title: this.playerInfo.video.title,
@@ -64,14 +64,14 @@
 
 				webapis.avplay.prepareAsync(
 					// success
-					function(){ 
+					function(){
 						try{
 							_this.view.trigger('updateTime', [0]);
 							_this.view.trigger('updateState', ["playing"]);
 							_this.view.trigger('loadComplete');
 							setTimeout(function(){_this.view.fadeOut(fadeTime);}, fadeTime * 1000);
 
-							webapis.avplay.play(); 
+							webapis.avplay.play();
 						}catch(e){
 							webapis.avplay.close();
 							_this.closePlayerCallback();
@@ -79,7 +79,7 @@
 					},
 					// failure
 					function(){
-						_this.closePlayerCallback(); 
+						_this.closePlayerCallback();
 					}
 				);
 			} catch(e){}
@@ -105,17 +105,20 @@
 		this.updateViewCurrentTime = function(){
 			try {
 				var currentTime = (webapis.avplay.getCurrentTime() / 1000) || 0;
-				
+
 				if (this.view && currentTime){
 					this.view.trigger('updateTime', [currentTime]);
 				}
 			} catch(e) {}
 		};
-		
-		this.close = function(){ 
+
+		this.close = function(){
 			if (this.view){
 				this.view.close();
 			}
+      try {
+          webapis.avplay.close();
+      } catch(e){}
 		};
 
         this.handleButtonPress = function(buttonPress){
@@ -141,7 +144,7 @@
 						this.view.trigger('updateState', ["playing"]);
 
 						setTimeout(function(){ _this.view.fadeOut(fadeTime); }, fadeTime * 1000);
-					} catch (error) {}					
+					} catch (error) {}
                     break;
 
               case TvKeys.ENTER:
@@ -173,8 +176,8 @@
 
 
 						setTimeout(function(){ _this.view.fadeOut(fadeTime); }, fadeTime * 1000);
-						
-						
+
+
 						webapis.avplay.play();
 					} catch (error) {}
                     break;
