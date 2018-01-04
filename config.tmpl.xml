@@ -4,17 +4,19 @@
         <tizen:src name="index.html" reload="disable"/>
         <tizen:operation name="http://samsung.com/appcontrol/operation/eden_resume"/>
     </tizen:app-control>
+
     <tizen:application id="qiVQ28GSXC.< app name >" package="qiVQ28GSXC" required_version="3.0"/>
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
     <icon src="icon.png"/>
-
     <tizen:metadata key="http://samsung.com/tv/metadata/use.preview" value="endpoint_URL=< preview pane json url >"/>
-
     <name>< app name ></name>
+
+    <tizen:privilege name="http://developer.samsung.com/privilege/avplay"/>
     <tizen:privilege name="http://developer.samsung.com/privilege/network.public"/>
     <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
     <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    
     <tizen:profile name="tv"/>
     <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
 </widget>

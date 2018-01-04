@@ -208,12 +208,12 @@
                 var callback = _this.handleBackButtonPress;
 
                 var videoPlayerController = new VideoPlayerController();
-                this.controllers.push(videoPlayerController);
-                this.controllers[this.controllers.length - 1].init({
+                videoPlayerController.init({
                     videoInfo: videoDetailsController.content,
                     playerInfo: resp.response,
                     callbackFunc: callback,
                 });
+                this.controllers.push(videoPlayerController);
 
             } else {
                 var videoDetailsController = this.controllers[this.controllers.length - 1];
@@ -286,7 +286,7 @@
 
           var connectedToNetwork = webapis.network.isConnectedToGateway();
           if (!connectedToNetwork) { _this.forceExitApp("No network connection. Closing app."); }
-        } catch (e) { _this.exitApp(); }
+        } catch (e) {}
     };
 
     exports.AppController = AppController;

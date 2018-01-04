@@ -27,7 +27,8 @@ $(document).ready(function() {
 
             $.getScript("js/views/MediaGridView.js"),
             $.getScript("js/views/VideoDetailsView.js"),
-            $.getScript("js/views/DialogView.js")
+            $.getScript("js/views/DialogView.js"),
+            $.getScript("js/views/VideoPlayerView.js")
         ).then(function() {
             if (handleDeepLinkedData){ handleDeepLinkedData() };
               
