@@ -67,24 +67,19 @@
 				webapis.avplay.prepareAsync(
 					// success
 					function(){
-						try{
 							_this.view.trigger('updateTime', [0]);
 							_this.view.trigger('updateState', ["playing"]);
 							_this.view.trigger('loadComplete');
 							setTimeout(function(){_this.view.fadeOut(fadeTime);}, fadeTime * 1000);
 
 							webapis.avplay.play();
-						}catch(e){
-							webapis.avplay.close();
-							_this.closePlayerCallback();
-						}
 					},
 					// failure
-					function(){
-						_this.closePlayerCallback();
-					}
+					function(){}
 				);
-			} catch(e){}
+			} catch(e){
+				_this.closePlayerCallback();
+			}
 		};
 
 		this.prepareRemote = function(){
@@ -133,6 +128,7 @@
 						webapis.avplay.jumpBackward(10000);
 						_this.updateViewCurrentTime();
 						this.view.trigger('updateState', ["playing"]);
+						webapis.avplay.play();
 
 						setTimeout(function(){ _this.view.fadeOut(fadeTime); }, fadeTime * 1000);
 						} catch (error) {}
@@ -145,6 +141,7 @@
 						webapis.avplay.jumpForward(10000);
 						_this.updateViewCurrentTime();
 						this.view.trigger('updateState', ["playing"]);
+						webapis.avplay.play();
 
 						setTimeout(function(){ _this.view.fadeOut(fadeTime); }, fadeTime * 1000);
 					} catch (error) {}
