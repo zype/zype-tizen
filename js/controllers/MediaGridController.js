@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridController = function(){
-        EventsHandler.call(this, ['buttonPress', 'show', 'hide', 'close']);
+        EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
         var _this = this;
 
         var mediaGridCss = function(id){
@@ -12,18 +12,58 @@
             };
         };
 
-        this.name = null;
         this.playlistLevel = null;
         this.mediaContent = [];
 
+        this.createController = null;
+        this.removeSelf = null;
+
         this.view = null;
 
-        this.init = function(args){
-            this.name = "MediaGridController";
+        this.init = function(options){
+            var args = options.args;
+            var callbacks = options.callbacks;
+
+            this.createController = callbacks.createController;
+            this.removeSelf = callbacks.removeController;
 
             this.playlistLevel = args.playlistLevel;
-            this.mediaContent = args.mediaContent;
 
+            ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId).then(
+                function(resp){
+                    if (resp){
+                        _this.trigger("loadComplete", resp);
+                    }
+                },
+                function(){
+                    this.removeSelf();
+                }
+            );
+
+        };
+
+        this.handleData = function(data){
+            this.mediaContent = data;
+            this.createView();
+
+            // if deep linked, try to show video else, else show self
+            if(exports.deepLinkedData){
+                zypeApi.getVideo(exports.deepLinkedData, {}).then(function(resp){
+                    if (resp){
+                        this.view.trigger("hide");
+                        this.createController(VideoDetailsController, resp.response);
+                    } else {
+                        hideSpinner();
+                    }
+                });
+            } else {
+                hideSpinner();
+            }
+
+            exports.deepLinkedData = null;
+        };
+
+        this.createView = function(){
             var structuredData = this.structuredData(this.mediaContent);
 
             var viewArgs = {
@@ -183,16 +223,29 @@
                         }
                         break;
 
-                    // TODO: add handlers for selection
                     case TvKeys.ENTER:
+                        var itemSelected = this.focusedContent();
 
-                      this.view.hide();
+                        if (itemSelected.content){
+                            this.view.trigger("hide");
+
+                            if (itemSelected.contentType == "videos"){
+                                this.createController(VideoDetailsController, {
+                                    video: itemSelected.content
+                                });
+                            } else if (itemSelected.contentType == "playlists") {
+                                this.createController(MediaGridController, {
+                                    playlistLevel: this.playlistLevel + 1,
+                                    playlistId: itemSelected.content._id
+                                });
+                            }
+                        }
+                      
                       break;
 
-                    // TODO: add handlers for back button
                     case TvKeys.RETURN:
                     case TvKeys.BACK:
-                      this.view.hide();
+                      this.removeSelf();
                       break;
                     default:
                       break;
@@ -211,10 +264,11 @@
             }
         };
 
-        this.registerHandler('buttonPress', this.handleButtonPress, this);
-        this.registerHandler('show', this.show, this);
-        this.registerHandler('hide', this.hide, this);
-        this.registerHandler('close', this.close, this);
+        this.registerHandler("loadComplete", this.handleData, this);
+        this.registerHandler("buttonPress", this.handleButtonPress, this);
+        this.registerHandler("show", this.show, this);
+        this.registerHandler("hide", this.hide, this);
+        this.registerHandler("close", this.close, this);
     };
 
     exports.MediaGridController = MediaGridController;

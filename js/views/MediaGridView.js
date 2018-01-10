@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridView = function() {
-        EventsHandler.call(this, ["loadComplete", "show", "hide", "moveIndex"]);
+        EventsHandler.call(this, ["loadComplete", "show", "hide", "moveIndex", "close"]);
         var _this = this;
 
         // id of handlebars template
@@ -31,11 +31,11 @@
         };
 
         this.show = function(){
-            $(this.id).removeClass('invisible');
+            $(this.id).removeClass("invisible");
         };
 
         this.hide = function(){
-            $(this.id).addClass('invisible');
+            $(this.id).addClass("invisible");
         };
 
         this.close = function() {
@@ -85,12 +85,12 @@
         this.hideRowsAboveLimit = function(){
             $(this.id + " .media-grid-row").each(function(index, value){
                 var row = $(this);
-                if (row.hasClass('invisible')){
-                  $(this).removeClass('invisible');
+                if (row.hasClass("invisible")){
+                  $(this).removeClass("invisible");
                 }
 
                 if ($(this).position().top < 0){
-                    $(this).addClass('invisible');
+                    $(this).addClass("invisible");
                 }
             });
         };
@@ -111,7 +111,7 @@
 
         this.updateRowsTopPercentage = function(percent){
             this.currentRowsTopPosition = percent;
-            $(this.id + " .media-grid-rows-container").css({top: String(percent) + 'px'});
+            $(this.id + " .media-grid-rows-container").css({top: String(percent) + "px"});
             this.hideRowsAboveLimit();
         };
 
@@ -124,12 +124,12 @@
                 var newLeftPosition = this.rowsLeftPositions[rowIndex] + thumbnailWidth;
 
                 this.rowsLeftPositions[rowIndex] = newLeftPosition;
-                $(row).css({ "margin-left": String(newLeftPosition) + '%' });
+                $(row).css({ "margin-left": String(newLeftPosition) + "%" });
             } else if (dir == TvKeys.LEFT) {
                 var newLeftPosition = this.rowsLeftPositions[rowIndex] - thumbnailWidth;
 
                 this.rowsLeftPositions[rowIndex] = newLeftPosition;
-                $(row).css({ "margin-left": String(newLeftPosition) + '%' });
+                $(row).css({ "margin-left": String(newLeftPosition) + "%" });
             }
         };
 
@@ -151,13 +151,13 @@
 
         this.resetRowMarginAtIndex = function(index){
             var row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[index];
-            $(row).css({ "margin-left": '0px' });
+            $(row).css({ "margin-left": "0px" });
         };
 
-        this.registerHandler('show', this.show, this);
-        this.registerHandler('hide', this.hide, this);
+        this.registerHandler("show", this.show, this);
+        this.registerHandler("hide", this.hide, this);
 
-        this.registerHandler('loadComplete', function() {
+        this.registerHandler("loadComplete", function() {
             if (this.focusedContent()){
               this.focusCurrentThumbnail();
             }
@@ -196,8 +196,10 @@
             var renderedTemplate = Utils.buildTemplate(template, context);
             $(mediaGridContainerId).append(renderedTemplate);
 
-            this.trigger('loadComplete');
+            this.trigger("loadComplete");
         };
+
+        this.registerHandler("close", this.close, this);
 
     };
 
