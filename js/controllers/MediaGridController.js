@@ -67,10 +67,12 @@
 
             // if deep linked, try to show video else, else show self
             if(exports.deepLinkedData){
-                zypeApi.getVideo(exports.deepLinkedData, {}).then(function(resp){
+                var parsedData = JSON.parse(exports.deepLinkedData);
+
+                zypeApi.getVideo(parsedData.videoId, {}).then(function(resp){
                     if (resp){
-                        this.view.trigger("hide");
-                        this.createController(VideoDetailsController, resp.response);
+                        _this.view.trigger("hide");
+                        _this.createController(VideoDetailsController, { video: resp.response });
                     } else {
                         hideSpinner();
                     }
