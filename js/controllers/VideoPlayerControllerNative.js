@@ -16,6 +16,9 @@
 		this.createController = null; // create new controller
 		this.removeSelf = null; // remove self
 
+		/**
+		 * Initialization
+		 */ 
         this.init = function(options){
 			var args = options.args;
 			var callbacks = options.callbacks;
@@ -36,6 +39,9 @@
 			});
 		};
 
+		/**
+		 * Event handlers
+		 */ 
 		this.handlePlayerResp = function(resp){
 			this.playerInfo = resp;
 
@@ -55,10 +61,8 @@
 			this.createController(DialogController, args);
 		};
 
-		/**
-		 * create this.view
-		 *	- ONLY call when this.playerInfo is set
-		 */ 
+		// create this.view
+		// - ONLY call when this.playerInfo is set
 		this.createView = function(){
 			var video = this.playerInfo.video;
 
@@ -73,6 +77,9 @@
 			this.view = view;
 		};
 
+		/**
+		 * Helpers
+		 */ 
 		this.prepareAVPlayer = function(){
 			var source = this.playerInfo.body.outputs[0];
 
@@ -135,6 +142,9 @@
 			} catch(e) {}
 		};
 
+		/**
+		 * Update view
+		 */ 
 		this.close = function(){
 			if (this.view){ 
 				this.view.trigger("close"); 
@@ -146,6 +156,9 @@
 			webapis.avplay.close();
 		};
 
+		/**
+		 * Button Presses
+		 */ 
         this.handleButtonPress = function(buttonPress){
             switch (buttonPress) {
 			  case TvKeys.LEFT:

@@ -23,6 +23,9 @@
             };
         };
 
+        /**
+         * Initialization
+         */ 
         this.init = function(options){
             var args = options.args;
             var callbacks = options.callbacks;
@@ -30,12 +33,33 @@
             this.createController = callbacks.createController;
             this.removeSelf = callbacks.removeController;
 
-            this.createView(args.video);
+            this.content = args.video;
+
+            this.createView();
         };
 
-        this.createView = function(video){
-            this.content = video;
+        /**
+         * Update view
+         */ 
+        this.show = function(){
+            this.view.show();
+        };
 
+        this.hide = function(){
+            this.view.hide();
+        };
+
+        this.close = function(){
+          if (this.view){
+            this.view.trigger("close");
+            this.view = null;
+          }
+        };
+
+        /**
+         * Event Handlers
+         */ 
+        this.createView = function(){
             this.buttons = this.getButtons(this.content._id);
             this.currentButtonIndex = 0;
 
@@ -94,6 +118,9 @@
             }
         };
 
+        /**
+         * Helpers
+         */
         this.getButtons = function(videoId){
             var buttons = [];
 
@@ -108,21 +135,9 @@
             return this.buttons[this.currentButtonIndex];
         };
 
-        this.show = function(){
-            this.view.show();
-        };
-
-        this.hide = function(){
-            this.view.hide();
-        };
-
-        this.close = function(){
-          if (this.view){
-            this.view.trigger("close");
-            this.view = null;
-          }
-        };
-
+        /**
+         * Register event handlers
+         */ 
         this.registerHandler("buttonPress", this.handleButtonPress, this);
         this.registerHandler("show", this.show, this);
         this.registerHandler("hide", this.hide, this);

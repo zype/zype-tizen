@@ -15,11 +15,17 @@
         this.playlistLevel = null;
         this.mediaContent = [];
 
+        this.view = null;
+
+        /**
+		 * Callbacks
+		 */
         this.createController = null;
         this.removeSelf = null;
 
-        this.view = null;
-
+        /**
+         * Initialization
+         */ 
         this.init = function(options){
             var args = options.args;
             var callbacks = options.callbacks;
@@ -29,6 +35,7 @@
 
             this.playlistLevel = args.playlistLevel;
 
+            // fetch playlist and video content
             ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId).then(
                 function(resp){
                     if (resp){
@@ -40,6 +47,18 @@
                 }
             );
 
+        };
+        
+        /**
+         * Update view
+         */
+        this.hide = function(){ this.view.trigger("hide"); };
+        this.show = function(){ this.view.trigger("show"); };
+        this.close = function(){
+            if (this.view) {
+                this.view.trigger("close");
+                this.view = null;
+            }
         };
 
         this.handleData = function(data){
@@ -77,6 +96,80 @@
             this.view = view;
         };
 
+        /**
+         * Button Presses
+         */ 
+        this.handleButtonPress = function(buttonPress){
+            if (this.view){
+                switch (buttonPress) {
+                    case TvKeys.UP:
+                    case TvKeys.DOWN:
+                        var canMove = this.canMoveVertically(buttonPress);
+                        if (canMove) {
+                            var newTopPosition = _this.getNewTopPosition(buttonPress);
+                            this.view.updateRowsTopPercentage(newTopPosition);
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+                        }
+                        break;
+                    case TvKeys.LEFT:
+                    case TvKeys.RIGHT:
+                        var canMove = this.canMoveHorizontally(buttonPress);
+                        if (canMove) {
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+
+                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
+                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
+
+                            if (touchesEdge){
+                                var rowIndex = this.view.currentPosition[0];
+                                if (buttonPress == TvKeys.LEFT){
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
+                                } else {
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
+                                }
+                            }
+                        }
+                        break;
+
+                    case TvKeys.ENTER:
+                        var itemSelected = this.focusedContent();
+
+                        if (itemSelected.content){
+                            this.view.trigger("hide");
+
+                            if (itemSelected.contentType == "videos"){
+                                this.createController(VideoDetailsController, {
+                                    video: itemSelected.content
+                                });
+                            } else if (itemSelected.contentType == "playlists") {
+                                this.createController(MediaGridController, {
+                                    playlistLevel: this.playlistLevel + 1,
+                                    playlistId: itemSelected.content._id
+                                });
+                            }
+                        }
+                      
+                      break;
+
+                    case TvKeys.RETURN:
+                    case TvKeys.BACK:
+                      this.removeSelf();
+                      break;
+                    default:
+                      break;
+                }
+            }
+        };
+
+
+        /**
+         * Helpers
+         */
         this.structuredData = function(mediaContent){
             var structuredData = [];
 
@@ -185,85 +278,9 @@
             };
         };
 
-        // TODO: add logic for handling button presses
-        this.handleButtonPress = function(buttonPress){
-            if (this.view){
-                switch (buttonPress) {
-                    case TvKeys.UP:
-                    case TvKeys.DOWN:
-                        var canMove = this.canMoveVertically(buttonPress);
-                        if (canMove) {
-                            var newTopPosition = _this.getNewTopPosition(buttonPress);
-                            this.view.updateRowsTopPercentage(newTopPosition);
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
-                        }
-                        break;
-                    case TvKeys.LEFT:
-                    case TvKeys.RIGHT:
-                        var canMove = this.canMoveHorizontally(buttonPress);
-                        if (canMove) {
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
-
-                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
-                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
-
-                            if (touchesEdge){
-                                var rowIndex = this.view.currentPosition[0];
-                                if (buttonPress == TvKeys.LEFT){
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
-                                } else {
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
-                                }
-                            }
-                        }
-                        break;
-
-                    case TvKeys.ENTER:
-                        var itemSelected = this.focusedContent();
-
-                        if (itemSelected.content){
-                            this.view.trigger("hide");
-
-                            if (itemSelected.contentType == "videos"){
-                                this.createController(VideoDetailsController, {
-                                    video: itemSelected.content
-                                });
-                            } else if (itemSelected.contentType == "playlists") {
-                                this.createController(MediaGridController, {
-                                    playlistLevel: this.playlistLevel + 1,
-                                    playlistId: itemSelected.content._id
-                                });
-                            }
-                        }
-                      
-                      break;
-
-                    case TvKeys.RETURN:
-                    case TvKeys.BACK:
-                      this.removeSelf();
-                      break;
-                    default:
-                      break;
-                }
-            }
-        };
-
-        this.hide = function(){ this.view.hide(); };
-        this.show = function(){ this.view.show(); };
-
-        // remove view from DOM
-        this.close = function(){
-            if (this.view) {
-                this.view.close();
-                this.view = null;
-            }
-        };
-
+        /**
+         * Register event handlers
+         */ 
         this.registerHandler("loadComplete", this.handleData, this);
         this.registerHandler("buttonPress", this.handleButtonPress, this);
         this.registerHandler("show", this.show, this);
