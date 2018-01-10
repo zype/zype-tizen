@@ -21,7 +21,7 @@
 
         /**
          * Initilize by fetching app settings
-         */ 
+         */
         this.init = function(args){
             showSpinner();
 
@@ -36,7 +36,7 @@
 
         /**
          * Helpers
-         */ 
+         */
         this.currentController = function(){
             return (this.controllers.length > 0) ? this.controllers[this.controllers.length - 1] : null;
         };
@@ -65,7 +65,7 @@
 
         /**
          * Create / Remove controllers
-         */ 
+         */
         this.createNewController = function(controller, args){
             if (this.controllers.length > 0){
                 var currentController = this.currentController();
@@ -73,7 +73,7 @@
             }
 
             var newController = new controller();
-            
+
 
             newController.init({
                 args: args,
@@ -102,7 +102,7 @@
 
         /**
          * Show / Hide current controller
-         */ 
+         */
         this.showCurrentController = function(){
             var currentController = this.currentController();
             currentController.trigger("show");
@@ -124,7 +124,7 @@
 
         /**
          * Exiting
-         */        
+         */
         this.exitApp = function(){
             try { tizen.application.getCurrentApplication().exit(); } catch(e){}
         };
@@ -136,20 +136,20 @@
 
         this.confirmAppExit = function(){
             var leaveApp = confirm("Do you want to leave the app?");
-            
+
             if (leaveApp){ _this.exitApp(); }
         };
 
 
         /**
          * Register event handlers
-         */ 
+         */
         this.registerHandler("settingsLoaded", this.handleAppLoad, this);
         this.registerHandler("forceExitApp", this.forceAppExit, this);
         this.registerHandler("exitApp", this.confirmAppExit, this);
         this.registerHandler("buttonPress", this.handleButtonPress, this);
 
-  
+
         $(document).keydown(function(e){
             _this.trigger("buttonPress", e.keyCode);
         });
@@ -165,8 +165,6 @@
 
           var connectedToNetwork = webapis.network.isConnectedToGateway();
           if (!connectedToNetwork) { _this.forceExitApp("No network connection. Closing app."); }
-
-          tizen.tvinputdevice.registerKey("Exit");
         } catch (e) {}
     };
 
