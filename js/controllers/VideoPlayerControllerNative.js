@@ -87,7 +87,7 @@
 				webapis.avplay.open(source.url);
 				webapis.avplay.setListener({
 					oncurrentplaytime: function(){ _this.trigger("updateViewTime"); },
-					onstreamcompleted: function(){ _this.trigger("close"); }
+					onstreamcompleted: function(){ _this.removeSelf(); }
 				});
 
 				var avplayBaseWidth = 1920;
