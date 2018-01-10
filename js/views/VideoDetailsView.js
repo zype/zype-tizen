@@ -2,7 +2,7 @@
     "use strict";
 
     var VideoDetailsView = function(){
-        EventsHandler.call(this, ['loadComplete', 'show', 'hide']);
+        EventsHandler.call(this, ["loadComplete", "show", "hide", "close"]);
 
         // id of handlebars template
         var templateId = "#video-details-view-template";
@@ -36,7 +36,7 @@
             var renderedTemplate = Utils.buildTemplate(template, context);
             $(videoDetailsContainerId).append(renderedTemplate);
 
-            this.trigger('loadComplete');
+            this.trigger("loadComplete");
         };
 
         this.focusButtonAtIndex = function(index){
@@ -53,27 +53,29 @@
 
         this.setThumbnail = function(){
             var largeThumbnail = $(this.id + " .large-thumbnail");
-            largeThumbnail.attr('src', this.data.largeThumbnailUrl);
+            largeThumbnail.attr("src", this.data.largeThumbnailUrl);
+        };
+
+        this.prepareView = function(){
+            this.setText();
+            this.setThumbnail();
+            this.show();
         };
 
         this.show = function(){
-            $(this.id).removeClass('invisible');
+            $(this.id).removeClass("invisible");
         };
 
         this.hide = function(){
-            $(this.id).addClass('invisible');
+            $(this.id).addClass("invisible");
         };
 
         this.close = function(){
             $(this.id).remove();
         };
 
-        this.registerHandler('loadComplete', function(){
-            this.setText();
-            this.setThumbnail();
-            this.show();
-        }, this);
-
+        this.registerHandler("loadComplete", this.prepareView, this);
+        this.registerHandler("close", this.close, this);
     };
 
     if (!exports.VideoDetailsView) { exports.VideoDetailsView = VideoDetailsView; }

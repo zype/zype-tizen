@@ -2,7 +2,7 @@
     "use strict";
 
     var VideoPlayerView = function(){
-        EventsHandler.call(this, ['loadComplete', 'updateState', 'updateTime', 'show', 'hide']);
+        EventsHandler.call(this, ["loadComplete", "updateState", "updateTime", "show", "hide", "fadeOut", "close"]);
         var _this = this;
         var templateId = "#video-player-ui-view-template";
 
@@ -106,11 +106,11 @@
         };
 
         this.show = function(){
-            $(this.id).removeClass('invisible');
+            $(this.id).removeClass("invisible");
         };
 
         this.hide = function(){
-            $(this.id).addClass('invisible');
+            $(this.id).addClass("invisible");
         };
 
         this.close = function(){
@@ -133,10 +133,12 @@
             this.show();
         };
 
-        this.registerHandler('hide', this.hide, this);
-        this.registerHandler('loadComplete', this.prepareView, this);
-        this.registerHandler('updateTime', this.updateTime, this);
-        this.registerHandler('updateState', this.setState, this);
+        this.registerHandler("hide", this.hide, this);
+        this.registerHandler("loadComplete", this.prepareView, this);
+        this.registerHandler("updateTime", this.updateTime, this);
+        this.registerHandler("updateState", this.setState, this);
+        this.registerHandler("fadeOut", this.fadeOut, this);
+        this.registerHandler("close", this.close, this);
     };
 
   	if (!exports.VideoPlayerView) { exports.VideoPlayerView = VideoPlayerView; }

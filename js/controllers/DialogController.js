@@ -2,13 +2,24 @@
     "use strict";
 
     var DialogController = function(){
-		EventsHandler.call(this, ['loadComplete', 'buttonPress', 'show', 'hide', 'close']);
+		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
 
+		var _this = this;
+		
 		this.view = null;
-		this.name = null;
 
-		this.init = function(args){
-			this.name = "DialogController";
+		/**
+		 * Callbacks
+		 */
+		this.createController = null; // create new controller
+		this.removeSelf = null; // remove self
+
+		this.init = function(options){
+			var args = options.args;
+			var callbacks = options.callbacks;
+
+			this.createController = callbacks.createController;
+			this.removeSelf = callbacks.removeController;
 
 			var viewArgs = {
 				title: args.title,
@@ -18,7 +29,9 @@
 			var view = new DialogView();
 			view.init(viewArgs);
 			this.view = view;
-			this.trigger('loadComplete');
+			this.trigger("loadComplete");
+
+			hideSpinner();
 		};
 
 		this.handleButtonPress = function(buttonPress){
@@ -30,11 +43,11 @@
 					break;
 			
 				case TvKeys.ENTER:
-					this.view.close();
+					this.removeSelf();
 					break;
 				case TvKeys.RETURN:
 				case TvKeys.BACK:
-					this.view.hide();
+					this.removeSelf();
 					break;
 				default:
 					break;
@@ -42,11 +55,11 @@
 		};
 
 		this.show = function(){
-			this.view.trigger('show');
+			this.view.trigger("show");
 		};
 
 		this.hide = function(){
-			this.view.trigger('hide');
+			this.view.trigger("hide");
 		};
 
 		this.close = function(){
@@ -54,11 +67,11 @@
 			this.view = null;
 		};
 
-		this.registerHandler('loadComplete', this.show, this);
-		this.registerHandler('buttonPress', this.handleButtonPress, this);
-		this.registerHandler('show', this.show, this);
-		this.registerHandler('hide', this.hide, this);
-		this.registerHandler('close', this.close, this);
+		this.registerHandler("loadComplete", this.show, this);
+		this.registerHandler("buttonPress", this.handleButtonPress, this);
+		this.registerHandler("show", this.show, this);
+		this.registerHandler("hide", this.hide, this);
+		this.registerHandler("close", this.close, this);
 	};
 
 	if (!exports.DialogController) { exports.DialogController = DialogController };

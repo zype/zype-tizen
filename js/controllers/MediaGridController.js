@@ -2,7 +2,7 @@
     "use strict";
 
     var MediaGridController = function(){
-        EventsHandler.call(this, ['buttonPress', 'show', 'hide', 'close']);
+        EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
         var _this = this;
 
         var mediaGridCss = function(id){
@@ -12,18 +12,77 @@
             };
         };
 
-        this.name = null;
         this.playlistLevel = null;
         this.mediaContent = [];
 
         this.view = null;
 
-        this.init = function(args){
-            this.name = "MediaGridController";
+        /**
+		 * Callbacks
+		 */
+        this.createController = null;
+        this.removeSelf = null;
+
+        /**
+         * Initialization
+         */ 
+        this.init = function(options){
+            var args = options.args;
+            var callbacks = options.callbacks;
+
+            this.createController = callbacks.createController;
+            this.removeSelf = callbacks.removeController;
 
             this.playlistLevel = args.playlistLevel;
-            this.mediaContent = args.mediaContent;
 
+            // fetch playlist and video content
+            ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId).then(
+                function(resp){
+                    if (resp){
+                        _this.trigger("loadComplete", resp);
+                    }
+                },
+                function(){
+                    this.removeSelf();
+                }
+            );
+
+        };
+        
+        /**
+         * Update view
+         */
+        this.hide = function(){ this.view.trigger("hide"); };
+        this.show = function(){ this.view.trigger("show"); };
+        this.close = function(){
+            if (this.view) {
+                this.view.trigger("close");
+                this.view = null;
+            }
+        };
+
+        this.handleData = function(data){
+            this.mediaContent = data;
+            this.createView();
+
+            // if deep linked, try to show video else, else show self
+            if(exports.deepLinkedData){
+                zypeApi.getVideo(exports.deepLinkedData, {}).then(function(resp){
+                    if (resp){
+                        this.view.trigger("hide");
+                        this.createController(VideoDetailsController, resp.response);
+                    } else {
+                        hideSpinner();
+                    }
+                });
+            } else {
+                hideSpinner();
+            }
+
+            exports.deepLinkedData = null;
+        };
+
+        this.createView = function(){
             var structuredData = this.structuredData(this.mediaContent);
 
             var viewArgs = {
@@ -37,6 +96,80 @@
             this.view = view;
         };
 
+        /**
+         * Button Presses
+         */ 
+        this.handleButtonPress = function(buttonPress){
+            if (this.view){
+                switch (buttonPress) {
+                    case TvKeys.UP:
+                    case TvKeys.DOWN:
+                        var canMove = this.canMoveVertically(buttonPress);
+                        if (canMove) {
+                            var newTopPosition = _this.getNewTopPosition(buttonPress);
+                            this.view.updateRowsTopPercentage(newTopPosition);
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+                        }
+                        break;
+                    case TvKeys.LEFT:
+                    case TvKeys.RIGHT:
+                        var canMove = this.canMoveHorizontally(buttonPress);
+                        if (canMove) {
+                            this.view.currentPosition = this.getNewPosition(buttonPress);
+                            this.view.focusCurrentThumbnail();
+                            this.view.updateFocusedInfoDisplay();
+
+                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
+                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
+
+                            if (touchesEdge){
+                                var rowIndex = this.view.currentPosition[0];
+                                if (buttonPress == TvKeys.LEFT){
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
+                                } else {
+                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
+                                }
+                            }
+                        }
+                        break;
+
+                    case TvKeys.ENTER:
+                        var itemSelected = this.focusedContent();
+
+                        if (itemSelected.content){
+                            this.view.trigger("hide");
+
+                            if (itemSelected.contentType == "videos"){
+                                this.createController(VideoDetailsController, {
+                                    video: itemSelected.content
+                                });
+                            } else if (itemSelected.contentType == "playlists") {
+                                this.createController(MediaGridController, {
+                                    playlistLevel: this.playlistLevel + 1,
+                                    playlistId: itemSelected.content._id
+                                });
+                            }
+                        }
+                      
+                      break;
+
+                    case TvKeys.RETURN:
+                    case TvKeys.BACK:
+                      this.removeSelf();
+                      break;
+                    default:
+                      break;
+                }
+            }
+        };
+
+
+        /**
+         * Helpers
+         */
         this.structuredData = function(mediaContent){
             var structuredData = [];
 
@@ -145,76 +278,14 @@
             };
         };
 
-        // TODO: add logic for handling button presses
-        this.handleButtonPress = function(buttonPress){
-            if (this.view){
-                switch (buttonPress) {
-                    case TvKeys.UP:
-                    case TvKeys.DOWN:
-                        var canMove = this.canMoveVertically(buttonPress);
-                        if (canMove) {
-                            var newTopPosition = _this.getNewTopPosition(buttonPress);
-                            this.view.updateRowsTopPercentage(newTopPosition);
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
-                        }
-                        break;
-                    case TvKeys.LEFT:
-                    case TvKeys.RIGHT:
-                        var canMove = this.canMoveHorizontally(buttonPress);
-                        if (canMove) {
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
-
-                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
-                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
-
-                            if (touchesEdge){
-                                var rowIndex = this.view.currentPosition[0];
-                                if (buttonPress == TvKeys.LEFT){
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
-                                } else {
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
-                                }
-                            }
-                        }
-                        break;
-
-                    // TODO: add handlers for selection
-                    case TvKeys.ENTER:
-
-                      this.view.hide();
-                      break;
-
-                    // TODO: add handlers for back button
-                    case TvKeys.RETURN:
-                    case TvKeys.BACK:
-                      this.view.hide();
-                      break;
-                    default:
-                      break;
-                }
-            }
-        };
-
-        this.hide = function(){ this.view.hide(); };
-        this.show = function(){ this.view.show(); };
-
-        // remove view from DOM
-        this.close = function(){
-            if (this.view) {
-                this.view.close();
-                this.view = null;
-            }
-        };
-
-        this.registerHandler('buttonPress', this.handleButtonPress, this);
-        this.registerHandler('show', this.show, this);
-        this.registerHandler('hide', this.hide, this);
-        this.registerHandler('close', this.close, this);
+        /**
+         * Register event handlers
+         */ 
+        this.registerHandler("loadComplete", this.handleData, this);
+        this.registerHandler("buttonPress", this.handleButtonPress, this);
+        this.registerHandler("show", this.show, this);
+        this.registerHandler("hide", this.hide, this);
+        this.registerHandler("close", this.close, this);
     };
 
     exports.MediaGridController = MediaGridController;
