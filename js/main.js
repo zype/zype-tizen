@@ -1,7 +1,10 @@
 $(document).ready(function() {
     loadTemplates().then(function(){
+
+        var nativePlatformLibs = getNativePlatformLibs(appDefaults.platform);
+
         $.when(
-            $.getScript("js/deeplink.js"),
+            $.getScript(nativePlatformLibs.deepLink),
             $.getScript("js/helpers/spinner.js"),
             
             // Get dependencies
@@ -10,9 +13,10 @@ $(document).ready(function() {
             $.getScript("lib/EventsHandler.js"),
 
             $.getScript("js/helpers/zype-api-helpers.js"),
+            $.getScript(nativePlatformLibs.nativePlatform),
 
             // Models
-            $.getScript("js/models/TvKeys.js"),
+            $.getScript(nativePlatformLibs.keyCodes),
             $.getScript("js/models/VideoModel.js"),
             $.getScript("js/models/PlaylistModel.js"),
 
@@ -25,15 +29,12 @@ $(document).ready(function() {
 
             // Controllers
             $.getScript("js/controllers/DialogController.js"),
-            $.getScript("js/controllers/VideoPlayerControllerNative.js"),
+            $.getScript(nativePlatformLibs.nativePlayerController),
             $.getScript("js/controllers/VideoDetailsController.js"),
             $.getScript("js/controllers/MediaGridController.js"),
             $.getScript("js/controllers/AppController.js")
-
-            // don't use videojs player for now
-            // $.getScript("js/controllers/VideoPlayerController.js"),
-
         ).then(function() {
+            // only if deep linking required
             if (handleDeepLinkedData){ handleDeepLinkedData() };
               
             if (window.innerWidth < window.innerHeight) {

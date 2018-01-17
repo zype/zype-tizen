@@ -126,7 +126,7 @@
          * Exiting
          */
         this.exitApp = function(){
-            try { tizen.application.getCurrentApplication().exit(); } catch(e){}
+            NativePlatform.exit();
         };
 
         this.forceAppExit = function(message){

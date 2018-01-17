@@ -1,4 +1,5 @@
 var appDefaults = {
+    platform: "samsung",
     appKey: "< app key >",
     clientId: "< client id >",
     clientSecret: "< client secret >",
