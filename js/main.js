@@ -21,13 +21,15 @@ $(document).ready(function() {
             $.getScript("js/models/PlaylistModel.js"),
 
             // Views
-            $.getScript("js/views/MediaGridView.js"),
-            $.getScript("js/views/VideoDetailsView.js"),
+            $.getScript("js/views/CredentialsInputView.js"),
             $.getScript("js/views/DialogView.js"),
             $.getScript("js/views/VideoPlayerView.js"),
+            $.getScript("js/views/VideoDetailsView.js"),
+            $.getScript("js/views/MediaGridView.js"),
 
 
             // Controllers
+            $.getScript("js/controllers/SignInController.js"),
             $.getScript("js/controllers/DialogController.js"),
             $.getScript(nativePlatformLibs.nativePlayerController),
             $.getScript("js/controllers/VideoDetailsController.js"),

@@ -27,6 +27,8 @@
          * Initialization
          */ 
         this.init = function(options){
+            showSpinner();
+
             var args = options.args;
             var callbacks = options.callbacks;
 

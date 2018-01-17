@@ -6,7 +6,7 @@
 		var _this = this;
 
 		var templateId = "#dialog-view-template";
-		var dialogContainerId = "#dialogs-container"
+		var dialogContainerId = "#dialogs-container";
 
 		this.title = null;
 		this.message = null;
@@ -55,5 +55,5 @@
 		this.registerHandler("close", this.close, this);
 	};
 
-	if (!exports.DialogView) { exports.DialogView = DialogView };
+	if (!exports.DialogView) { exports.DialogView = DialogView; };
 })(window);

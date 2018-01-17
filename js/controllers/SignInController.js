@@ -1,7 +1,7 @@
 (function(exports){
     "use strict";
 
-    var DialogController = function(){
+    var SignInController = function(){
 		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
 
 		var _this = this;
@@ -23,32 +23,20 @@
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
 
-			var viewArgs = {
-				title: args.title,
-				message: args.message
-			};
-
-			var view = new DialogView();
-			view.init(viewArgs);
-			this.view = view;
-			this.trigger("loadComplete");
+			// TODO: create this.view
 
 			hideSpinner();
 		};
 
 		this.handleButtonPress = function(buttonPress){
 			switch (buttonPress) {
-				case TvKeys.LEFT:
-				case TvKeys.RIGHT:
-				case TvKeys.UP:
-				case TvKeys.DOWN:
-					break;
-			
 				case TvKeys.ENTER:
-					this.removeSelf();
+
+					// TODO: logic for focusing view and keyboard
+
 					break;
-				case TvKeys.RETURN:
 				case TvKeys.BACK:
+				case TvKeys.RETURN:
 					this.removeSelf();
 					break;
 				default:
@@ -76,5 +64,5 @@
 		this.registerHandler("close", this.close, this);
 	};
 
-	if (!exports.DialogController) { exports.DialogController = DialogController; };
+	if (!exports.SignInController) { exports.SignInController = SignInController; };
 })(window);
