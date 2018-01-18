@@ -25,13 +25,10 @@
         this.init = function(args){
             showSpinner();
 
-            zypeApi.getApp().then(function(resp){
-                if (resp){
-                    _this.trigger("settingsLoaded", resp.response);
-                } else {
-                    _this.trigger("forceExitApp", "App misconfigured. Exitting...");
-                }
-            });
+            zypeApi.getApp().then(
+                resp  => { _this.trigger("settingsLoaded", resp.response); },
+                err   => {  _this.trigger("forceExitApp", "App misconfigured. Exitting..."); }
+            );
         };
 
         /**
@@ -131,7 +128,7 @@
 
         this.forceAppExit = function(message){
             alert(message);
-            setTimeout(_this.exitApp, 1000);
+            _this.exitApp();
         };
 
         this.confirmAppExit = function(){

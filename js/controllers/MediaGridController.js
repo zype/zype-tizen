@@ -36,15 +36,10 @@
             this.playlistLevel = args.playlistLevel;
 
             // fetch playlist and video content
-            ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId).then(
-                function(resp){
-                    if (resp){
-                        _this.trigger("loadComplete", resp);
-                    }
-                },
-                function(){
-                    this.removeSelf();
-                }
+            ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId)
+            .then(
+                (resp)  => { if (resp){ _this.trigger("loadComplete", resp); } },
+                (err)   => {  this.removeSelf(); }
             );
 
         };
@@ -69,14 +64,14 @@
             if(exports.deepLinkedData){
                 var parsedData = JSON.parse(exports.deepLinkedData);
 
-                zypeApi.getVideo(parsedData.videoId, {}).then(function(resp){
-                    if (resp){
+                zypeApi.getVideo(parsedData.videoId, {})
+                .then(
+                    resp => {
                         _this.view.trigger("hide");
                         _this.createController(VideoDetailsController, { video: resp.response });
-                    } else {
-                        hideSpinner();
-                    }
-                });
+                    },
+                    err => { hideSpinner(); }
+                );
             } else {
                 hideSpinner();
             }
