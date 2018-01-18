@@ -2,7 +2,7 @@
     "use strict";
 
     var VideoDetailsController = function(){
-        EventsHandler.call(this, ["buttonPress", "show", "hide", "close"]);
+        EventsHandler.call(this, ["buttonPress", "action", "show", "hide", "close"]);
         var _this = this;
 
         this.content = null;
@@ -97,23 +97,36 @@
                     break;
                 case TvKeys.ENTER:
                     var buttonSelected = this.currentButton();
-
-                    if (buttonSelected.role == "play"){
-                        this.view.trigger("hide");
-
-                        var videoId = buttonSelected.data.videoId;
-                        var auth = { app_key: zypeApi.appKey };
-
-                        this.createController(VideoPlayerController, {
-                            videoId: videoId,
-                            auth: auth
-                        });
-                    }
+                    this.trigger("action", buttonSelected.role, buttonSelected.data);
                         
                     break;
                 case TvKeys.BACK:
                 case TvKeys.RETURN:
                     this.removeSelf();
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        this.handleAction = function(action, data){
+            switch (action) {
+                case "play":
+                    this.view.trigger("hide");
+
+                    var videoId = data.videoId;
+                    var auth = { app_key: zypeApi.appKey };
+
+                    this.createController(VideoPlayerController, {
+                        videoId: videoId,
+                        auth: auth
+                    });
+                    break;
+
+                case "signin":
+                    this.view.trigger("hide");
+                    this.createController(SignInController, {});
+                    debugger;
                     break;
                 default:
                     break;
@@ -126,9 +139,14 @@
         this.getButtons = function(videoId){
             var buttons = [];
 
-            buttons.push({ title: appDefaults.labels.playButton, role: "play", data: { videoId: videoId }  });
+            var requiresEntitlement = this.videoRequiresEntitlement();
+            var signedIn = this.isSignedIn();
 
-            // TODO: add logic to determine which buttons to display
+            if (!requiresEntitlement || signedIn){
+                buttons.push({ title: appDefaults.labels.playButton, role: "play", data: { videoId: videoId }  });
+            } else {
+                buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
+            }
 
             return buttons;
         };
@@ -137,10 +155,21 @@
             return this.buttons[this.currentButtonIndex];
         };
 
+        this.videoRequiresEntitlement = function(){
+            var video = this.content;
+            return (video.pass_required || video.purchase_required || video.rental_required || video.subscription_required);
+        };
+
+        this.isSignedIn = function(){
+            var accessToken = localStorage.getItem("accessToken");
+            return (accessToken) ? true : false;
+        };
+
         /**
          * Register event handlers
          */ 
         this.registerHandler("buttonPress", this.handleButtonPress, this);
+        this.registerHandler("action", this.handleAction, this);
         this.registerHandler("show", this.show, this);
         this.registerHandler("hide", this.hide, this);
         this.registerHandler("close", this.close, this);

@@ -6,6 +6,14 @@
 
 		var _this = this;
 		
+		/**
+		 * Set as 0, 1, or 2
+		 * 		0: Email input
+		 * 		1: Password input
+		 * 		2: Confirmation button
+		 */
+		this.currentIndex = null;
+
 		this.view = null;
 
 		/**
@@ -23,21 +31,78 @@
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
 
-			// TODO: create this.view
+			var viewArgs = {
+				title: "Sign in to your Account",
+				confirmationText: "Sign In",
+				id: "#sign-in-view"
+			};
+
+			var view = new CredentialsInputView();
+			view.init(viewArgs);
+			this.view = view;
+
+			this.currentIndex = 0;
 
 			hideSpinner();
 		};
 
 		this.handleButtonPress = function(buttonPress){
 			switch (buttonPress) {
+				case TvKeys.DOWN:
+					// if user not updating input, handle down
+					if (!this.view.isInputFocused){ this.handleDown(); }
+					break;
+				case TvKeys.UP:
+					// if user not updating input, handle up
+					if (!this.view.isInputFocused){ this.handleUp(); }
+					break;
 				case TvKeys.ENTER:
-
-					// TODO: logic for focusing view and keyboard
-
+					// if not inputting
+					if (!this.view.isInputFocused){ this.handleEnter(); }
 					break;
 				case TvKeys.BACK:
 				case TvKeys.RETURN:
 					this.removeSelf();
+					break;
+				default:
+					break;
+			}
+		};
+
+		this.handleDown = function(){
+			switch(this.currentIndex) {
+				case 0:
+					this.view.trigger("highlightInput", "password");
+					break;
+				case 1:
+					this.view.trigger("focusConfirm");
+				default:
+					break;
+			}
+		};
+
+		this.handleUp = function(){
+			switch(this.currentIndex) {
+				case 1:
+					this.view.trigger("highlightInput", "email");
+					break;
+				case 2:
+					this.view.trigger("highlightInput", "password");
+				default:
+					break;
+			}
+		};
+
+		this.handleEnter = function(){
+			switch (this.currentIndex) {
+				case 0:
+					this.view.trigger("focusInput", "email");
+					break;
+				case 1:
+					this.view.trigger("focusInput", "password");
+					break;
+				case 2:
+					// TODO: logic for authenticating user
 					break;
 				default:
 					break;

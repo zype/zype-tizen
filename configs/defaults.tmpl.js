@@ -11,6 +11,7 @@ var appDefaults = {
     playButtonUrl: "assets/images/play-button.png",
     pauseButtonUrl: "assets/images/pause-button.png",
     labels: {
-        playButton: "Play"
+        playButton: "Play",
+        signInButton: "Sign In"
     }
 }

@@ -17,6 +17,8 @@
             clientSecret: appDefaults.clientSecret
         });
 
+        exports.appState = {};
+
         this.controllers = [];
 
         /**
