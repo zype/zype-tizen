@@ -33,7 +33,8 @@
 				confirmButton: 	this.confirmButton,
 				css: {
 					classes: 	{ theme: appDefaults.theme },
-					ids: 		{ id: args.id }
+					ids: 		{ id: args.id },
+					positions: this.getPositionPixels()
 				}
 			};
 
@@ -43,6 +44,66 @@
 			
             this.trigger("loadComplete");
 		};
+
+
+		/**
+		 * Helpers
+		 */
+
+		// Figure out height/top pixels to set
+		this.getPositionPixels = function(){
+			let windowHeight = window.innerHeight;
+			
+			let titleContainerHeight = 0.10;
+			let inputContainerHeight = 0.15;
+			let confirmContainerHeight = 0.10;
+
+			let titleContainerTop = 0.05;
+			let emailContainerTop = 0.20;
+			let passwordContainerTop = 0.35;
+			let confirmContainerTop = 0.60;
+			
+			return {
+				title: {
+					height: String(windowHeight * titleContainerHeight) + "px",
+					top: String(windowHeight * titleContainerTop) + "px"
+				},
+				email: {
+					height: String(windowHeight * inputContainerHeight) + "px",
+					top: String(windowHeight * emailContainerTop) + "px"
+				},
+				password: {
+					height: String(windowHeight * inputContainerHeight) + "px",
+					top: String(windowHeight * passwordContainerTop) + "px"
+				},
+				confirm: {
+					height: String(windowHeight * confirmContainerHeight) + "px",
+					top: String(windowHeight * confirmContainerTop) + "px"
+				}
+			}
+		};
+
+
+
+		// window height 1080 => 604 when keyboard shown
+
+		// 1080 - 604 = 476
+
+		// title.top = 5%
+		// email.top = 20%
+		// password.top = 35%;
+		// confirm button.top = 50%
+		
+		// title.height = 15%
+		// email.height = 10%
+		// password.height = 10%;
+		// confirm button.height = 10%
+		
+		
+
+
+
+
 
 		/**
 		 * Getters
