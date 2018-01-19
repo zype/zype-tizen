@@ -2,9 +2,9 @@
     "use strict";
 
     var SignInController = function(){
-		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
+		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close", "signIn"]);
 
-		var _this = this;
+		let _this = this;
 		
 		/**
 		 * Set as 0, 1, or 2
@@ -22,22 +22,25 @@
 		this.createController = null; // create new controller
 		this.removeSelf = null; // remove self
 
-		this.init = function(options){
+		/**
+		 * Initialization
+		 */
+		this.init = options => {
 			showSpinner();
 
-			var args = options.args;
-			var callbacks = options.callbacks;
+			let args = options.args;
+			let callbacks = options.callbacks;
 
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
 
-			var viewArgs = {
+			let viewArgs = {
 				title: "Sign in to your Account",
-				confirmationText: "Sign In",
-				id: "#sign-in-view"
+				confirmButton: "Sign In",
+				id: "sign-in-view"
 			};
 
-			var view = new CredentialsInputView();
+			let view = new CredentialsInputView();
 			view.init(viewArgs);
 			this.view = view;
 
@@ -46,54 +49,73 @@
 			hideSpinner();
 		};
 
-		this.handleButtonPress = function(buttonPress){
+		/**
+		 * Handle user input 
+		 */
+		this.handleButtonPress = buttonPress => {
 			switch (buttonPress) {
 				case TvKeys.DOWN:
 					// if user not updating input, handle down
-					if (!this.view.isInputFocused){ this.handleDown(); }
+					if (this.view.isInputFocused() == false){ this.handleDown(); }
 					break;
 				case TvKeys.UP:
 					// if user not updating input, handle up
-					if (!this.view.isInputFocused){ this.handleUp(); }
+					if (this.view.isInputFocused() == false){ this.handleUp(); }
 					break;
 				case TvKeys.ENTER:
 					// if not inputting
-					if (!this.view.isInputFocused){ this.handleEnter(); }
+					this.handleEnter();
 					break;
-				case TvKeys.BACK:
+				// case TvKeys.BACK:
 				case TvKeys.RETURN:
-					this.removeSelf();
+					if (this.view.isInputFocused()) {
+						this.view.trigger("blurInputs");
+					} else {
+						this.removeSelf();
+					}
+					break;
+
+				// Keyboard
+				case TvKeys.DONE:
+				case TvKeys.CANCEL:
+					this.view.trigger("blurInputs");
 					break;
 				default:
 					break;
 			}
 		};
 
-		this.handleDown = function(){
+		this.handleDown = () => {
 			switch(this.currentIndex) {
 				case 0:
+					this.currentIndex += 1;
 					this.view.trigger("highlightInput", "password");
 					break;
 				case 1:
+					this.currentIndex += 1;
+					this.view.trigger("removeHighlights");
 					this.view.trigger("focusConfirm");
 				default:
 					break;
 			}
 		};
 
-		this.handleUp = function(){
+		this.handleUp = () => {
 			switch(this.currentIndex) {
 				case 1:
+					this.currentIndex -= 1;
 					this.view.trigger("highlightInput", "email");
 					break;
 				case 2:
+					this.currentIndex -= 1;
+					this.view.trigger("unfocusConfirm");
 					this.view.trigger("highlightInput", "password");
 				default:
 					break;
 			}
 		};
 
-		this.handleEnter = function(){
+		this.handleEnter = () =>{
 			switch (this.currentIndex) {
 				case 0:
 					this.view.trigger("focusInput", "email");
@@ -102,22 +124,42 @@
 					this.view.trigger("focusInput", "password");
 					break;
 				case 2:
-					// TODO: logic for authenticating user
+					var credentials = this.view.getCurrentValues();
+					this.trigger("signIn", credentials);
 					break;
 				default:
 					break;
 			}
 		};
 
-		this.show = function(){
-			this.view.trigger("show");
+		/**
+		 * Handle Sign In
+		 */
+		this.signIn = credentials => {
+			let email = credentials.email, password = credentials.password;
+			if (email.length == 0){
+				alert("Email is empty");
+			} else if (password.length == 0){
+				alert("Password is empty");
+			} else {
+				zypeApi.createLoginAccessToken(credentials.email, credentials.password)
+				.then(
+					resp => { _this.saveUser(resp, credentials) },
+					err => { alert("Cannot find user") }
+				);
+			}
+		};
+		this.saveUser = (tokenResp, credentials) => {
+			alert("You got this back: " + JSON.stringify(tokenResp) + "\n\nusing these credentials: " + JSON.stringify(credentials) );
+			// TODO: save access token and credentials
 		};
 
-		this.hide = function(){
-			this.view.trigger("hide");
-		};
-
-		this.close = function(){
+		/**
+		 * show / hide / close self
+		 */
+		this.show = () => this.view.trigger("show");
+		this.hide = () => this.view.trigger("hide");
+		this.close = () => {
 			this.view.close();
 			this.view = null;
 		};
@@ -127,6 +169,7 @@
 		this.registerHandler("show", this.show, this);
 		this.registerHandler("hide", this.hide, this);
 		this.registerHandler("close", this.close, this);
+		this.registerHandler("signIn", this.signIn, this);
 	};
 
 	if (!exports.SignInController) { exports.SignInController = SignInController; };

@@ -35,11 +35,13 @@
 }
 
 .dialog-title-container {
-	max-height: 30%
+	max-height: 30%;
 }
 
 .dialog-message-container {
-	max-height: 70%
+	max-height: 70%;
+	padding-left: 5%;
+	padding-right: 5%;
 }
 
 .dialog-view-title,
@@ -55,4 +57,18 @@
 
 .dialog-view-message {
 	font-size: 2em;
+}
+
+.dialog-view-message.ellipsis-text {
+    /* overwrite white-space from .ellipsis-text */
+    white-space: inherit;
+    display: block;
+    display: -webkit-box;
+
+    /* cut off after 5 lines */
+    height: 7.5em;
+    line-height: 1.5em;
+    -webkit-line-clamp: 5;
+
+    -webkit-box-orient: vertical;
 }

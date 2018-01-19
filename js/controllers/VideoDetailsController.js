@@ -126,7 +126,6 @@
                 case "signin":
                     this.view.trigger("hide");
                     this.createController(SignInController, {});
-                    debugger;
                     break;
                 default:
                     break;

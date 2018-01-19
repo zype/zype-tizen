@@ -5,7 +5,7 @@
 	 * Used for user credential input (signin or signup)
 	 */ 
     var CredentialsInputView = function(){
-		EventsHandler.call(this, ["loadComplete" , "show", "hide", "close", "blurInputs", "focusInput", "setInput", "focusConfirm", "unfocusConfirm", "highlightInput", "removeHightlights"]);
+		EventsHandler.call(this, ["loadComplete" , "show", "hide", "close", "blurInputs", "focusInput", "setInput", "focusConfirm", "unfocusConfirm", "highlightInput", "removeHighlights"]);
 		var _this = this;
 
 		var templateId = "#credentials-input-view-template";
@@ -26,14 +26,14 @@
 			this.title 			= args.title;
 			this.confirmButton 	= args.confirmButton;
 
-			this.id = args.id;
+			this.id = "#" + args.id;
 
 			var context = {
 				title: 			this.title,
 				confirmButton: 	this.confirmButton,
 				css: {
 					classes: 	{ theme: appDefaults.theme },
-					ids: 		{ id: this.id }
+					ids: 		{ id: args.id }
 				}
 			};
 
@@ -58,12 +58,8 @@
 		};
 
 		this.isInputFocused = function(){
-			$(this.id + " input").each(function(){
-				var isFocused = $(this).is(":focus");
-				if (isFocused){ return isFocused; }
-			});
-
-			return false;
+			let inputsFocused = $(this.id).find("input:focus");
+			return (inputsFocused.length > 0) ? true : false;
 		};
 
 		/**
@@ -89,13 +85,12 @@
 
 		this.focusInput = function(inputType){
 			this.blurInputs();
-			this.removeHightlights();
 			this.unfocusConfirmButton();
 
 			if (inputType == "email"){
-				$(this.id + " input.email-input").focus();
+				$(this.id + " .email-input").focus();
 			} else if (inputType == "password") {
-				$(this.id + " input.password-input").focus();
+				$(this.id + " .password-input").focus();
 			}
 		};
 
@@ -112,13 +107,10 @@
 		 */
 		this.focusConfirmButton = function(){
 			this.blurInputs();
-			this.removeHightlights();
 			$(this.id + " .confirm-button").addClass("focused");
 		};
 
 		this.unfocusConfirmButton = function(){
-			this.blurInputs();
-			this.removeHightlights();
 			$(this.id + " .confirm-button").removeClass("focused");
 		};
 
@@ -128,6 +120,7 @@
 		this.show = function(){
 			this.blurInputs();
 			this.removeHighlights();
+			this.unfocusConfirmButton();
 			this.highlightInput("email");
 
 			$(this.id).removeClass("invisible");
@@ -154,7 +147,7 @@
 		this.registerHandler("focusConfirm", this.focusConfirmButton, this);
 		this.registerHandler("unfocusConfirm", this.unfocusConfirmButton, this);
 		this.registerHandler("highlightInput", this.highlightInput, this);
-		this.registerHandler("removeHightlights", this.removeHighlights, this);
+		this.registerHandler("removeHighlights", this.removeHighlights, this);
 	};
 
 	if (!exports.CredentialsInputView) { exports.CredentialsInputView = CredentialsInputView; };
