@@ -13,3 +13,11 @@ window.hideSpinner = function() {
 		$('#app-overlay').fadeOut(250);
 	}
 };
+
+window.showNetworkText = function(){
+	$(".network-status-text-container").show();
+};
+
+window.hideNetworkText = function(){
+	$(".network-status-text-container").hide();
+};

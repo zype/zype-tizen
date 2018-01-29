@@ -47,6 +47,9 @@
       <div class="rect4"></div>
       <div class="rect5"></div>
     </div>
+    <div class="network-status-text-container">
+      <p class="network-status-text">Disconnected from network. Waiting for reconnection...</p>
+    </div>
 
     <!-- attach templates to template loader -->
     <div id="template-loader"></div>
@@ -56,6 +59,7 @@
 
     <script type="text/javascript">
       $(".app-overlay-container").addClass(appDefaults.theme);
+      $(".network-status-text").addClass(appDefaults.theme);
       $("#app-loading-spinner.content-load-spinner").css('border-top-color', appDefaults.brandColor);
     </script>
 

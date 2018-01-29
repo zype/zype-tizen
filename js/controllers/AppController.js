@@ -6,7 +6,9 @@
             "settingsLoaded",
             "forceExitApp",
             "exitApp",
-            "buttonPress"
+            "buttonPress",
+            "networkDisconnect",
+            "networkReconnect"
         ]);
 
         var _this = this;
@@ -139,6 +141,18 @@
             if (leaveApp){ _this.exitApp(); }
         };
 
+        /**
+         * Handle network disconnect/reconnect
+         */
+        this.handleNetworkDisconnect = () => {
+            let currentController = this.controllers[ this.controllers.length - 1 ];
+            currentController.trigger("networkDisconnect");
+        };
+
+        this.handleNetworkReconnect = () => {
+            let currentController = this.controllers[ this.controllers.length - 1 ];
+            currentController.trigger("networkReconnect");
+        };
 
         /**
          * Register event handlers
@@ -147,18 +161,26 @@
         this.registerHandler("forceExitApp", this.forceAppExit, this);
         this.registerHandler("exitApp", this.confirmAppExit, this);
         this.registerHandler("buttonPress", this.handleButtonPress, this);
+        this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+        this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
 
 
         $(document).keydown(function(e){
-            _this.trigger("buttonPress", e.keyCode);
+            let networkConnected = webapis.network.isConnectedToGateway();
+            if (networkConnected) { _this.trigger("buttonPress", e.keyCode); }
         });
 
         try {
           webapis.network.addNetworkStateChangeListener(function(value) {
+            let currentController = _this.controllers[ _this.controllers.length - 1 ];
             if (value == webapis.network.NetworkState.GATEWAY_DISCONNECTED) {
-                _this.forceExitApp("Internet disconnected. Closing app.");
+                showSpinner();
+                showNetworkText();
+                currentController.trigger("networkDisconnect");
             } else if (value == webapis.network.NetworkState.GATEWAY_CONNECTED) {
-                alert("Internet reconnected");
+                hideSpinner();
+                hideNetworkText();
+                currentController.trigger("networkReconnect");
             }
           });
 

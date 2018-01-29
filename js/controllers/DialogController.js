@@ -2,7 +2,15 @@
     "use strict";
 
     var DialogController = function(){
-		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
+		EventsHandler.call(this, [
+			"loadComplete",
+			"buttonPress",
+			"show",
+			"hide",
+			"close",
+			"networkDisconnect",
+			"networkReconnect"
+		]);
 
 		var _this = this;
 		
@@ -69,11 +77,19 @@
 			this.view = null;
 		};
 
+		/**
+		 * Handle network disconnect/reconnect
+		 */
+		this.handleNetworkDisconnect = () => {};
+		this.handleNetworkReconnect = () => {};
+
 		this.registerHandler("loadComplete", this.show, this);
 		this.registerHandler("buttonPress", this.handleButtonPress, this);
 		this.registerHandler("show", this.show, this);
 		this.registerHandler("hide", this.hide, this);
 		this.registerHandler("close", this.close, this);
+		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
 	};
 
 	if (!exports.DialogController) { exports.DialogController = DialogController; };

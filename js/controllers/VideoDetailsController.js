@@ -2,7 +2,16 @@
     "use strict";
 
     var VideoDetailsController = function(){
-        EventsHandler.call(this, ["buttonPress", "action", "show", "hide", "close"]);
+        EventsHandler.call(this, [
+            "buttonPress",
+            "action",
+            "show",
+            "hide",
+            "close",
+            "networkDisconnect",
+            "networkReconnect"
+        ]);
+
         var _this = this;
 
         this.content = null;
@@ -57,6 +66,12 @@
             this.view = null;
           }
         };
+
+        /**
+         * Handle network disconnect/reconnect
+         */
+        this.handleNetworkDisconnect = () => {};
+        this.handleNetworkReconnect = () => {};
 
         /**
          * Event Handlers
@@ -172,6 +187,8 @@
         this.registerHandler("show", this.show, this);
         this.registerHandler("hide", this.hide, this);
         this.registerHandler("close", this.close, this);
+        this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+        this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
     };
 
     exports.VideoDetailsController = VideoDetailsController;

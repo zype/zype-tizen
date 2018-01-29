@@ -2,7 +2,16 @@
     "use strict";
 
     var SignInController = function(){
-		EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close", "signIn"]);
+		EventsHandler.call(this, [
+			"loadComplete",
+			"buttonPress",
+			"show",
+			"hide",
+			"close",
+			"signIn",
+			"networkDisconnect",
+			"networkReconnect"
+		]);
 
 		let _this = this;
 		
@@ -164,12 +173,20 @@
 			this.view = null;
 		};
 
+		/**
+		 * Handle network disconnect/reconnect
+		 */
+		this.handleNetworkDisconnect = () => {};
+		this.handleNetworkReconnect = () => {};
+
 		this.registerHandler("loadComplete", this.show, this);
 		this.registerHandler("buttonPress", this.handleButtonPress, this);
 		this.registerHandler("show", this.show, this);
 		this.registerHandler("hide", this.hide, this);
 		this.registerHandler("close", this.close, this);
 		this.registerHandler("signIn", this.signIn, this);
+		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
 	};
 
 	if (!exports.SignInController) { exports.SignInController = SignInController; };
