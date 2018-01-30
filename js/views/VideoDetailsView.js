@@ -1,82 +1,97 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var VideoDetailsView = function(){
-        EventsHandler.call(this, ["loadComplete", "show", "hide", "close"]);
+	var VideoDetailsView = function(){
+		EventsHandler.call(this, [
+			"loadComplete",
+			"show",
+			"hide",
+			"close",
+			"updateButtons"
+		]);
 
-        // id of handlebars template
-        var templateId = "#video-details-view-template";
-        // id of div to attach view to
-        var videoDetailsContainerId = "#video-details-container";
+		let templateId = "#video-details-view-template";
+		let buttonsTemplateId = "#buttons-view-template";
+		let videoDetailsContainerId = "#video-details-container";
 
-        this.id = null;   // id of view once attached to DOM
-        this.buttons = [];
-        this.data = null;
+		this.id = null;	// id of view once attached to DOM
+		this.buttons = [];
+		this.data = null;
 
-        this.init = function(args){
-            this.data = args.data;
-            this.buttons = args.buttons;
-            for (var i = 0; i < this.buttons.length; i++) {
-              this.buttons[i].id = "#video-details-button-" + String(this.data.id) + "-" + String(i);
-            }
+		this.init = (args) => {
+			this.data = args.data;
+			this.buttons = args.buttons;
+			for (let i = 0; i < this.buttons.length; i++) {
+				this.buttons[i].id = "video-details-button-" + String(this.data.id) + "-" + String(i);
+			}
 
-            // set id for manipulating DOM
-            this.id = "#" + args.css.ids.id;
+			// set id for manipulating DOM
+			this.id = "#" + args.css.ids.id;
 
-            var context = {
-                data: this.data,
-                buttons: this.buttons,
-                css: args.css,
-                images: {
-                    appIcon: appDefaults.appIconUrl
-                }
-            };
+			let context = {
+				data: this.data,
+				buttons: this.buttons,
+				css: args.css,
+				images: {
+					appIcon: appDefaults.appIconUrl
+				}
+			};
 
-            var template = $(templateId);
-            var renderedTemplate = Utils.buildTemplate(template, context);
-            $(videoDetailsContainerId).append(renderedTemplate);
+			let template = $(templateId);
+			let renderedTemplate = Utils.buildTemplate(template, context);
+			$(videoDetailsContainerId).append(renderedTemplate);
 
-            this.trigger("loadComplete");
-        };
+			this.trigger("loadComplete");
+		};
 
-        this.focusButtonAtIndex = function(index){
-            $(this.id + " .button.focused").removeClass("focused");
+		this.focusButtonAtIndex = (index) => {
+			$(this.id + " .button.focused").removeClass("focused");
 
-            var button = $(this.id + " .button")[index];
-            $(button).addClass("focused");
-        };
+			let button = $(this.id + " .button")[index];
+			$(button).addClass("focused");
+		};
 
-        this.setText = function(){
-            $(this.id + " .video-details-title").text(this.data.title);
-            $(this.id + " .video-details-description").text(this.data.description);
-        };
+		this.setText = () => {
+			$(this.id + " .video-details-title").text(this.data.title);
+			$(this.id + " .video-details-description").text(this.data.description);
+		};
 
-        this.setThumbnail = function(){
-            var largeThumbnail = $(this.id + " .large-thumbnail");
-            largeThumbnail.attr("src", this.data.largeThumbnailUrl);
-        };
+		this.setThumbnail = () => {
+			let largeThumbnail = $(this.id + " .large-thumbnail");
+			largeThumbnail.attr("src", this.data.largeThumbnailUrl);
+		};
 
-        this.prepareView = function(){
-            this.setText();
-            this.setThumbnail();
-            this.show();
-        };
+		this.prepareView = () => {
+			this.setText();
+			this.setThumbnail();
+			this.show();
+		};
 
-        this.show = function(){
-            $(this.id).removeClass("invisible");
-        };
+		this.show = () =>	$(this.id).removeClass("invisible");
 
-        this.hide = function(){
-            $(this.id).addClass("invisible");
-        };
+		this.hide = () => $(this.id).addClass("invisible");
 
-        this.close = function(){
-            $(this.id).remove();
-        };
+		this.close = () => $(this.id).remove();
 
-        this.registerHandler("loadComplete", this.prepareView, this);
-        this.registerHandler("close", this.close, this);
-    };
+		this.updateButtons = args => {
+			this.buttons = args.buttons;
+			for (let i = 0; i < this.buttons.length; i++) {
+				this.buttons[i].id = "video-details-button-" + String(this.data.id) + "-" + String(i);
+			}
 
-    if (!exports.VideoDetailsView) { exports.VideoDetailsView = VideoDetailsView; }
+			let context = { buttons: this.buttons, css: args.css };
+			let template = $(buttonsTemplateId);
+			let renderedTemplate = Utils.buildTemplate(template, context);
+
+			$(this.id + " .video-details-buttons-container").html(renderedTemplate);
+		};
+
+		this.registerHandler("loadComplete", this.prepareView, this);
+		this.registerHandler("show", this.show, this);
+		this.registerHandler("hide", this.hide, this);
+		this.registerHandler("close", this.close, this);
+		this.registerHandler("updateButtons", this.updateButtons, this);
+	};
+
+	if (!exports.VideoDetailsView) { exports.VideoDetailsView = VideoDetailsView; }
 })(window);

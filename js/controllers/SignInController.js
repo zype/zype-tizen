@@ -1,7 +1,7 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var SignInController = function(){
+	var SignInController = function(){
 		EventsHandler.call(this, [
 			"loadComplete",
 			"buttonPress",
@@ -153,14 +153,19 @@
 			} else {
 				zypeApi.createLoginAccessToken(credentials.email, credentials.password)
 				.then(
-					resp => { _this.saveUser(resp, credentials) },
+					resp => {
+						_this.saveUser(resp, credentials);
+						_this.removeSelf();
+					},
 					err => { alert("Cannot find user") }
 				);
 			}
 		};
+
 		this.saveUser = (tokenResp, credentials) => {
-			alert("You got this back: " + JSON.stringify(tokenResp) + "\n\nusing these credentials: " + JSON.stringify(credentials) );
-			// TODO: save access token and credentials
+			localStorage.setItem("accessToken", tokenResp.access_token);
+			localStorage.setItem("email", credentials.email);
+			localStorage.setItem("password", credentials.password);
 		};
 
 		/**
