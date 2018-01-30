@@ -1,145 +1,155 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var VideoPlayerView = function(){
-        EventsHandler.call(this, ["loadComplete", "updateState", "updateTime", "show", "hide", "fadeOut", "close"]);
-        var _this = this;
-        var templateId = "#video-player-ui-view-template";
+	var VideoPlayerView = function(){
+		EventsHandler.call(this, ["loadComplete", "updateState", "updateTime", "show", "hide", "fadeOut", "close"]);
 
-        this.id = null;
+		let _this = this;
+		let templateId = "#video-player-ui-view-template";
 
-        this.title = null;
-        this.description = null;
-        this.duration = null;
-        this.currentTime = null;
-        this.state = null;
+		this.id = null;
 
-        this.lastFadeOutTime = null;
-        
-        function secondsToMinutesString(secs){
-            if(!secs && secs <= 0){
-              return "0:00:00";
-            }
+		this.title = null;
+		this.description = null;
+		this.duration = null;
+		this.currentTime = null;
+		this.state = null;
 
-            if ( secs / 3600 > 0 ){
-                var hours = Math.floor( secs / 3600 );
-                secs -= hours * 3600;
-            } else {
-                var hours = 0;
-            }
+		this.lastFadeOutTime = null;
 
-            if ( secs / 60 > 0 ){
-                var mins = Math.floor( secs / 60 );
-                secs -= mins * 60;
-            } else {
-                var mins = 0;
-            }
+		let secondsToMinutesString = secs => {
+			if(!secs && secs <= 0){
+				return "0:00:00";
+			}
 
-            secs = Math.floor(secs);
+			let hours = null;
+			if ( secs / 3600 > 0 ){
+				hours = Math.floor( secs / 3600 );
+				secs -= hours * 3600;
+			} else {
+				hours = 0;
+			}
 
-            var hoursString = (hours >= 10) ? String(hours) : "0" + String(hours);
-            var minsString = (mins >= 10) ? String(mins) : "0" + String(mins);
-            var remainderString = (secs >= 10) ? String(secs) : "0" + String(secs);
+			let mins = null;
+			if ( secs / 60 > 0 ){
+				mins = Math.floor( secs / 60 );
+				secs -= mins * 60;
+			} else {
+				mins = 0;
+			}
 
-            return hoursString + ":" + minsString + ":" + remainderString;
-        }
+			secs = Math.floor(secs);
 
-        function viewCss(id){
-          return {
-            classes: {
-              theme: appDefaults.theme,
-              brandColor: appDefaults.brandColor
-            },
-            ids: { id: id }
-          }
-        }
+			let hoursString = (hours >= 10) ? String(hours) : "0" + String(hours);
+			let minsString = (mins >= 10) ? String(mins) : "0" + String(mins);
+			let remainderString = (secs >= 10) ? String(secs) : "0" + String(secs);
 
-        this.init = function(args){
-            this.title = args.title;
-            this.description = args.description;
-            this.duration = args.duration;
-            this.currentTime = args.currentTime;
-            this.state = args.state;
+			return hoursString + ":" + minsString + ":" + remainderString;
+		};
 
-            var id = "video-player-ui";
-            this.id = "#" + id;
-            
-            var context = {
-                title: this.title,
-                description: this.description,
-                duration: secondsToMinutesString(this.duration),
-                currentTime: secondsToMinutesString(this.currentTime),
-                playPauseImage: appDefaults.pauseButtonUrl,
-                css: viewCss(id)
-            };
+		let viewCss = id => {
+			return {
+				classes: {
+					theme: appDefaults.theme,
+					brandColor: appDefaults.brandColor
+				},
+				ids: { id: id }
+			}
+		};
 
-            var template = $(templateId);
-            var renderedTemplate = Utils.buildTemplate(template, context);
-            $("#app-container").append(renderedTemplate);
-        };
+		this.init = function(args){
+			this.title = args.title;
+			this.description = args.description;
+			this.duration = args.duration;
+			this.currentTime = args.currentTime;
+			this.state = args.state;
 
-        this.updateProgressBar = function(){
-            var percent = (this.currentTime / this.duration) * 100;
-            $(this.id + " .progress-bar").css({ width: String(percent) + "%" });
-        };
+			this.lastFadeOutTime = new Date().getTime() / 1000;
 
-        this.updateCurrentTime = function(){
-            var currentTimeString = secondsToMinutesString(this.currentTime);
-            $(this.id + " .current-time").text(currentTimeString);
-        };
+			let id = "video-player-ui";
+			this.id = "#" + id;
 
-        this.updateTime = function(currentTime){
-            if (currentTime){ this.currentTime = currentTime; }
+			let context = {
+				title: this.title,
+				description: this.description,
+				duration: secondsToMinutesString(this.duration),
+				currentTime: secondsToMinutesString(this.currentTime),
+				playPauseImage: appDefaults.pauseButtonUrl,
+				css: viewCss(id)
+			};
 
-            this.updateProgressBar();
-            this.updateCurrentTime();
-        };
+			let template = $(templateId);
+			let renderedTemplate = Utils.buildTemplate(template, context);
+			$("#app-container").append(renderedTemplate);
+		};
 
-        this.setState = function(state){
-            if (state == "playing" || state == "paused"){ this.state = state; }
+		this.updateProgressBar = () => {
+			let percent = (this.currentTime / this.duration) * 100;
+			$(this.id + " .progress-bar").css({ width: String(percent) + "%" });
+		};
 
-            if (this.state == "playing"){
-                $(this.id + " .play-pause-image").attr("src", appDefaults.pauseButtonUrl);
-            } else {
-                $(this.id + " .play-pause-image").attr("src", appDefaults.playButtonUrl)
-            }
-        };
+		this.updateCurrentTime = () => {
+			let currentTimeString = secondsToMinutesString(this.currentTime);
+			$(this.id + " .current-time").text(currentTimeString);
+		};
 
-        this.show = function(){
-            $(this.id).removeClass("invisible");
-        };
+		this.updateTime = currentTime => {
+			if (currentTime){ this.currentTime = currentTime; }
 
-        this.hide = function(){
-            $(this.id).addClass("invisible");
-        };
+			this.updateProgressBar();
+			this.updateCurrentTime();
+		};
 
-        this.close = function(){
-            $(this.id).remove();
-        };
+		this.setState = state => {
+			if (state == "playing" || state == "paused"){ this.state = state; }
 
-        this.fadeIn = function(secs){
-            if (!secs){ secs = 0; }
-            $(this.id).fadeIn(secs * 1000);
-        };
+			if (this.state == "playing"){
+				$(this.id + " .play-pause-image").attr("src", appDefaults.pauseButtonUrl);
+			} else {
+				$(this.id + " .play-pause-image").attr("src", appDefaults.playButtonUrl)
+			}
+		};
 
-        this.fadeOut = function(secs){
-            if (!secs){ secs = 0; }
-            $(this.id).fadeOut(secs * 1000);
-        };
+		this.show = () => $(this.id).removeClass("invisible");
 
-        this.prepareView = function(){
-            this.updateProgressBar();
-            this.setState();
-            this.show();
-        };
+		this.hide = () => $(this.id).addClass("invisible");
 
-        this.registerHandler("hide", this.hide, this);
-        this.registerHandler("loadComplete", this.prepareView, this);
-        this.registerHandler("updateTime", this.updateTime, this);
-        this.registerHandler("updateState", this.setState, this);
-        this.registerHandler("fadeOut", this.fadeOut, this);
-        this.registerHandler("close", this.close, this);
-    };
+		this.close = () => $(this.id).remove();
 
-  	if (!exports.VideoPlayerView) { exports.VideoPlayerView = VideoPlayerView; }
+		this.fadeIn = secs => {
+			if (!secs){ secs = 0; }
+			$(this.id).stop(true, true).fadeIn(secs * 1000);
+		};
+
+		this.fadeOut = secs => {
+			if (!secs){ secs = 0; }
+
+			let currentTimeInSecs = new Date().getTime() / 1000;
+
+			if (this.lastFadeOutTime && (currentTimeInSecs - this.lastFadeOutTime) > secs ) {
+				$(this.id).delay(secs * 1000).fadeOut();
+			} else {
+				// Wait and stop all animations before triggering slow fadeOut
+				let callback = () => 	$(this.id).stop(true, true).delay(secs * 1000).fadeOut();
+				setTimeout(callback, secs * 1000);
+			}
+
+			this.lastFadeOutTime = new Date().getTime() / 1000;
+		};
+
+		this.prepareView = () => {
+			this.updateProgressBar();
+			this.setState();
+			this.show();
+		};
+
+		this.registerHandler("hide", this.hide, this);
+		this.registerHandler("loadComplete", this.prepareView, this);
+		this.registerHandler("updateTime", this.updateTime, this);
+		this.registerHandler("updateState", this.setState, this);
+		this.registerHandler("fadeOut", this.fadeOut, this);
+		this.registerHandler("close", this.close, this);
+	};
+
+	if (!exports.VideoPlayerView) { exports.VideoPlayerView = VideoPlayerView; }
 })(window);
