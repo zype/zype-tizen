@@ -24,28 +24,41 @@ IT or developer support strongly recommended. Creating the final app package req
 
 2. Rename the `configs/defaults.tmpl.js` file to `configs/defaults.js`. Then update the `appKey`, `clientId`, `clientSecret` and `rootPlaylistId`. 
 
-3. Update the following in `config.xml`:
+- More info on where to find your `appKey`, `clientId` and `clientSecret` [can be found](https://support.zype.com/hc/en-us/articles/115008501628-API-App-Keys).
+- The `rootPlaylistId` is the id of the primary playlist which houses all your content. For more background on how to set this up, [you go here](https://support.zype.com/hc/en-us/articles/115009159068-Managing-Playlist-Relationships).
 
-- The widget `id` should be your website.
-- The name should be the display name of your app.
-- The `< app name >` under the `tizen:application` id should be your app's name with no spaces.
-- The `endpoint_URL` under `tizen:metadata` with the key `http://samsung.com/tv/metadata/use.preview` should be a link to your public JSON for the Preview Pane. For more information on the Preview Pane and it's the requirements, see: [http://developer.samsung.com/tv/develop/guides/smart-hub-preview](http://developer.samsung.com/tv/develop/guides/smart-hub-preview). The `action_data` sent is a `videoId` with the video id for the video on Zype.
+3. Rename the `config.tmpl.xml` file to `config.xml`. Then update the following in `config.xml`:
+
+- Within the `widget`, set the `< COMPANY WEBSITE >` in the `id` with your company or app's website.
+- Inside `tizen:display-name` set `< COMPANY NAME >` to your company's name.
+- Inside `tizen:application` set `< APP NAME >` in the `id` with the name of your app. Be sure to remove the whitespace. _Example:_ If your app name is `Intergalactic Sports Network`, the app name in the id should be `randomId.IntergalacticSportsNetwork`.
+- Under `tizen:metadata`, set the `endpoint_URL` with the URL of your Preview JSON. For more information on the Samsung Preview and it's the requirements, see: [http://developer.samsung.com/tv/develop/guides/smart-hub-preview](http://developer.samsung.com/tv/develop/guides/smart-hub-preview). The `action_data` sent is a `videoId` with the video id for the video on Zype. For an example of the preview JSON file, see [http://zype.mixicon.com/tizen/samsung.json](http://zype.mixicon.com/tizen/samsung.json).
+
+4. Replace image assets. __**Note:**__ You will need addition assets when submitting to the Samsung TV marketplace. These are only the images required within the app itself.
+
+- The _icon.png_ should be a 512x423 PNG. This is your app icon on the Samsung Home screen.
+- The _company-logo-45x45.png_ should be a 45x45 PNG. This is a small company icon.
+- The _company-logo-72x72.png_ should be a 72x72 PNG. This is a large company icon.
+- The _assets/images/app-icon.png_ should be a transparent PNG of your app icon. This is the icon displayed in the app.
 
 #### Configuring Tizen Studio
 
-4. In order to open your app, you will need to download a few packages using the _Package Manager_ in Tizen Studio. You will need to download the following packages:
+5. In order to open your app, you will need to download a few packages using the _Package Manager_ in Tizen Studio. You will need to download the following packages:
 
-- `Tizen SDK Tools` under the `Main SDK` tab
 - `4.0 TV` under the `Main SDK` tab
 - `TV Extensions Tools` under the `Extension SDK` tab
 - `Samsung Certificate Extension` under the `Extension SDK` tab
 
-Also you need to download _TV Extensions 3.0_ by adding another repo under _Configuration -> Extension SDK_:[http://sdf.samsungcloudcdn.com/Public/smart_tv_sdk/releases/samsung_tizen_studio_tv_sdk/stv_ext_public/3.0](http://sdf.samsungcloudcdn.com/Public/smart_tv_sdk/releases/samsung_tizen_studio_tv_sdk/stv_ext_public/3.0).
+6. After you have downloaded the necessary packages in Tizen Studio, you can add the app to Tizen Studio by importing the app folder into your Tizen workspace. 
 
-5. After you have downloaded the necessary packages in Tizen Studio, you can add the app to Tizen Studio by importing the app folder into your Tizen workspace. 
-
-6. In order to package your app, [create your certificate in Tizen Studio using the Certificate Manager](https://developer.tizen.org/ko/development/tizen-studio/web-tools/managing-projects/certificate-registration). 
+7. In order to package your app, [create your certificate in Tizen Studio using the Certificate Manager](https://developer.tizen.org/ko/development/tizen-studio/web-tools/managing-projects/certificate-registration). 
 
 #### Building Signed Package
 
-7. After you have your app loaded in Tizen Studio with your certificate create, you can right click the app folder in your _Project Explorer_ and click `Build Signed Package` to create your `.wgt` file. This `.wgt` file is your packaged app which you will upload when submitting to Samsung.
+8. Before you build your app package, you should generate a unique id for application. Open up the `config.xml` under your project folder in the _Project Explorer_, navigate to the _Tizen_ tab and click _Generate_ to generate a unique app id for your application.
+
+<a href="https://drive.google.com/uc?export=view&id=15M3elCvrpT4nLV4lzUAuBZX84Qadda5L"><img src="https://drive.google.com/uc?export=view&id=15M3elCvrpT4nLV4lzUAuBZX84Qadda5L" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version."/></a>
+
+9. After you have your app loaded in Tizen Studio with your certificate create, you can right click the app folder in your _Project Explorer_ and click `Build Signed Package` to create your `.wgt` file. This `.wgt` file is your packaged app which you will upload when submitting to Samsung.
+
+- Before you submit, you can also test your app by [testing it in the simulator](http://developer.samsung.com/tv/develop/getting-started/using-sdk/tv-simulator) or by [loading it on your Samsung TV](http://developer.samsung.com/tv/develop/getting-started/using-sdk/tv-device).

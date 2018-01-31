@@ -1,6 +1,6 @@
 # Zype Tizen SDK
 
-This SDK allows you to set up an video streaming app for Samsung TV using their TizenOS. The app uses Tizen 3.0 and is integrated with the Zype API.
+This SDK allows you to set up an video streaming app for Samsung TV using the TizenOS. The app uses Tizen 3.0 and is integrated with the Zype API.
 
 ## Supported Features
 
