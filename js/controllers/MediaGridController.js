@@ -75,12 +75,23 @@
 		/**
 		 * Update view
 		 */
-		this.hide = () => this.gridView.trigger("hide");
-		this.show = () => this.gridView.trigger("show");
+		this.hide = () => {
+			this.navView.trigger("hide");
+			this.gridView.trigger("hide");
+		};
+		this.show = () => {
+			this.navView.trigger("show");
+			this.gridView.trigger("show");
+		};
 		this.close = () => {
 			if (this.gridView) {
 				this.gridView.trigger("close");
 				this.gridView = null;
+			}
+
+			if (this.navView) {
+				this.navView.trigger("close");
+				this.navView = null;
 			}
 		};
 
@@ -284,38 +295,6 @@
 			return structuredData;
 		};
 
-		this.canMoveVertically = dir => {
-			let currentPos = this.gridView.currentPosition;
-			if (dir == TvKeys.UP){
-				return (currentPos && currentPos[0] - 1 > -1) ? true : false;
-			} else if (dir == TvKeys.DOWN) {
-				return (currentPos && currentPos[0] + 1 < this.mediaContent.length) ? true : false;
-			} else {
-				return false;
-			}
-		};
-
-		this.canMoveHorizontally = dir => {
-			let currentPos = this.gridView.currentPosition;
-			let currentRowContent = this.mediaContent[currentPos[0]].content;
-
-			if (dir == TvKeys.LEFT){
-				return (currentPos[1] - 1 >= 0) ? true : false;
-			} else if (dir == TvKeys.RIGHT) {
-				return (currentPos[1] + 1 < currentRowContent.length ) ? true : false;
-			}
-		};
-
-		this.getNewTopPosition = dir => {
-			let currentTopPos = this.gridView.currentRowsTopPosition;
-			if (dir == TvKeys.UP) {
-				return currentTopPos + this.gridView.getRowHeightAtIndex(this.gridView.currentPosition[0]);
-			} else if (dir == TvKeys.DOWN) {
-				let newRowIndex = this.gridView.currentPosition[0] + 1;
-				return currentTopPos - this.gridView.getRowHeightAtIndex(newRowIndex);
-			}
-		};
-
 		this.getNewPosition = dir => {
 			if(this.gridView){
 				let currPos = null;
@@ -343,18 +322,6 @@
 				}
 			}
 		};
-
-		// gets info on current focused thumbnail
-		// figures out if thumbnail is touching edge
-		// this.thumbnailOnEdge = focusedThumbnail => {
-		// 	let windowWidth = $(window).width();
-		// 	let thumbnailRightPosition = focusedThumbnail.left + (1.25 * focusedThumbnail.width);
-
-		// 	let touchesLeftEdge = (focusedThumbnail.left <= 0 || thumbnailRightPosition <= 0);
-		// 	let touchesRightEdge = (focusedThumbnail.left >= windowWidth || thumbnailRightPosition >= windowWidth);
-
-		// 	return (touchesLeftEdge || touchesRightEdge) ? true : false;
-		// };
 
 		this.focusedContent = () => {
 			let currentPosition = this.gridView.currentPosition;
