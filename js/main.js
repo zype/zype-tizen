@@ -15,14 +15,16 @@ $(document).ready(function() {
             $.getScript("lib/EventsHandler.js"),
 
             $.getScript("js/helpers/zype-api-helpers.js"),
-            $.getScript(nativePlatformLibs.nativePlatform),
+						$.getScript(nativePlatformLibs.nativePlatform),
+						$.getScript("js/helpers/css-helpers.js"),
 
             // Models
             $.getScript(nativePlatformLibs.keyCodes),
             $.getScript("js/models/VideoModel.js"),
             $.getScript("js/models/PlaylistModel.js"),
 
-            // Views
+						// Views
+						$.getScript("js/views/NavigationView.js"),
             $.getScript("js/views/CredentialsInputView.js"),
             $.getScript("js/views/DialogView.js"),
             $.getScript("js/views/VideoPlayerView.js"),
@@ -30,7 +32,7 @@ $(document).ready(function() {
             $.getScript("js/views/MediaGridView.js"),
 
 
-            // Controllers
+						// Controllers
             $.getScript("js/controllers/SignInController.js"),
             $.getScript("js/controllers/DialogController.js"),
             $.getScript(nativePlatformLibs.nativePlayerController),

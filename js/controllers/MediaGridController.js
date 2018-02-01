@@ -21,10 +21,18 @@
 			};
 		};
 
+		let navigationCss = id => {
+			return {
+				classes: { theme: appDefaults.theme },
+				ids: { id: "navigation-view-" + id}
+			};
+		};
+
 		this.playlistLevel = null;
 		this.mediaContent = [];
 
-		this.view = null;
+		this.gridView = null;
+		this.navigationView = null;
 
 		/**
 		 * Callbacks
@@ -60,12 +68,12 @@
 		/**
 		 * Update view
 		 */
-		this.hide = () => this.view.trigger("hide");
-		this.show = () => this.view.trigger("show");
+		this.hide = () => this.gridView.trigger("hide");
+		this.show = () => this.gridView.trigger("show");
 		this.close = () => {
-			if (this.view) {
-				this.view.trigger("close");
-				this.view = null;
+			if (this.gridView) {
+				this.gridView.trigger("close");
+				this.gridView = null;
 			}
 		};
 
@@ -86,7 +94,7 @@
 				zypeApi.getVideo(parsedData.videoId, {})
 				.then(
 					resp => {
-						_this.view.trigger("hide");
+						_this.gridView.trigger("hide");
 						_this.createController(VideoDetailsController, { video: resp.response });
 					},
 					err => { hideSpinner(); }
@@ -101,22 +109,28 @@
 		this.createView = () => {
 			let structuredData = this.structuredData(this.mediaContent);
 
-			let viewArgs = {
+			let gridViewArgs = {
 				mediaContent: structuredData,
 				playlistLevel: this.playlistLevel,
 				css: mediaGridCss(this.playlistLevel)
 			};
 
-			let view = new MediaGridView();
-			view.init(viewArgs);
-			this.view = view;
+			let gridView = new MediaGridView();
+			gridView.init(gridViewArgs);
+			this.gridView = gridView;
+
+			let navViewArgs = { css: navigationCss(this.playlistLevel) };
+			
+			let navView = new NavigationView();
+			navView.init(navViewArgs);
+			this.navigationView = navView;
 		};
 
 		/**
 		 * Button Presses
 		 */ 
 		this.handleButtonPress = buttonPress => {
-			if (this.view){
+			if (this.gridView){
 				let canMove = null;
 				switch (buttonPress) {
 					case TvKeys.UP:
@@ -124,30 +138,30 @@
 						canMove = this.canMoveVertically(buttonPress);
 						if (canMove) {
 							let newTopPosition = _this.getNewTopPosition(buttonPress);
-							this.view.updateRowsTopPercentage(newTopPosition);
-							this.view.currentPosition = this.getNewPosition(buttonPress);
-							this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
-							this.view.focusCurrentThumbnail();
-							this.view.updateFocusedInfoDisplay();
+							this.gridView.updateRowsTopPercentage(newTopPosition);
+							this.gridView.currentPosition = this.getNewPosition(buttonPress);
+							this.gridView.resetRowMarginAtIndex(this.gridView.currentPosition[0]);
+							this.gridView.focusCurrentThumbnail();
+							this.gridView.updateFocusedInfoDisplay();
 						}
 						break;
 					case TvKeys.LEFT:
 					case TvKeys.RIGHT:
 						canMove = this.canMoveHorizontally(buttonPress);
 						if (canMove) {
-							this.view.currentPosition = this.getNewPosition(buttonPress);
-							this.view.focusCurrentThumbnail();
-							this.view.updateFocusedInfoDisplay();
+							this.gridView.currentPosition = this.getNewPosition(buttonPress);
+							this.gridView.focusCurrentThumbnail();
+							this.gridView.updateFocusedInfoDisplay();
 
-							let focusedThumbnail =  this.view.getFocusedThumbnailInfo();
+							let focusedThumbnail =  this.gridView.getFocusedThumbnailInfo();
 							let touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
 
 							if (touchesEdge){
-								let rowIndex = this.view.currentPosition[0];
+								let rowIndex = this.gridView.currentPosition[0];
 								if (buttonPress == TvKeys.LEFT){
-									this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
+									this.gridView.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
 								} else {
-									this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
+									this.gridView.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
 								}
 							}
 						}
@@ -157,7 +171,7 @@
 						let itemSelected = this.focusedContent();
 
 						if (itemSelected.content){
-							this.view.trigger("hide");
+							this.gridView.trigger("hide");
 
 							if (itemSelected.contentType == "videos"){
 								this.createController(VideoDetailsController, {
@@ -217,7 +231,7 @@
 		};
 
 		this.canMoveVertically = dir => {
-			let currentPos = this.view.currentPosition;
+			let currentPos = this.gridView.currentPosition;
 			if (dir == TvKeys.UP){
 				return (currentPos && currentPos[0] - 1 > -1) ? true : false;
 			} else if (dir == TvKeys.DOWN) {
@@ -228,7 +242,7 @@
 		};
 
 		this.canMoveHorizontally = dir => {
-			let currentPos = this.view.currentPosition;
+			let currentPos = this.gridView.currentPosition;
 			let currentRowContent = this.mediaContent[currentPos[0]].content;
 
 			if (dir == TvKeys.LEFT){
@@ -239,39 +253,39 @@
 		};
 
 		this.getNewTopPosition = dir => {
-			let currentTopPos = this.view.currentRowsTopPosition;
+			let currentTopPos = this.gridView.currentRowsTopPosition;
 			if (dir == TvKeys.UP) {
-				return currentTopPos + this.view.getRowHeightAtIndex(this.view.currentPosition[0]);
+				return currentTopPos + this.gridView.getRowHeightAtIndex(this.gridView.currentPosition[0]);
 			} else if (dir == TvKeys.DOWN) {
-				let newRowIndex = this.view.currentPosition[0] + 1;
-				return currentTopPos - this.view.getRowHeightAtIndex(newRowIndex);
+				let newRowIndex = this.gridView.currentPosition[0] + 1;
+				return currentTopPos - this.gridView.getRowHeightAtIndex(newRowIndex);
 			}
 		};
 
 		this.getNewPosition = dir => {
-			if(this.view){
+			if(this.gridView){
 				let currPos = null;
 				switch (dir) {
 					case TvKeys.UP:
-						currPos = this.view.currentPosition;
+						currPos = this.gridView.currentPosition;
 						currPos[0] = currPos[0] - 1;
 						currPos[1] = 0;
 						return currPos;
 					case TvKeys.DOWN:
-						currPos = this.view.currentPosition;
+						currPos = this.gridView.currentPosition;
 						currPos[0] = currPos[0] + 1;
 						currPos[1] = 0;
 						return currPos;
 					case TvKeys.LEFT:
-						currPos = this.view.currentPosition;
+						currPos = this.gridView.currentPosition;
 						currPos[1] = currPos[1] - 1;
 						return currPos;
 					case TvKeys.RIGHT:
-						currPos = this.view.currentPosition;
+						currPos = this.gridView.currentPosition;
 						currPos[1] = currPos[1] + 1;
 						return currPos;
 					default:
-						return this.view.currentPosition;
+						return this.gridView.currentPosition;
 				}
 			}
 		};
@@ -289,7 +303,7 @@
 		};
 
 		this.focusedContent = () => {
-			let currentPosition = this.view.currentPosition;
+			let currentPosition = this.gridView.currentPosition;
 			return {
 				content: this.mediaContent[currentPosition[0]].content[currentPosition[1]],
 				contentType: this.mediaContent[currentPosition[0]].type
