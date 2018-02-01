@@ -32,7 +32,14 @@
 		this.mediaContent = [];
 
 		this.gridView = null;
-		this.navigationView = null;
+		this.navView = null;
+
+		const ViewIndexes = {
+			NAVIGATION: 0,
+			MEDIAGRID: 1
+		};
+
+		this.viewIndex = null;
 
 		/**
 		 * Callbacks
@@ -87,6 +94,9 @@
 			this.mediaContent = data;
 			this.createView();
 
+			this.viewIndex = ViewIndexes.NAVIGATION;
+			this.navView.focusTab();
+
 			// if deep linked, try to show video else, else show self
 			if(exports.deepLinkedData) {
 				let parsedData = JSON.parse(exports.deepLinkedData);
@@ -123,51 +133,95 @@
 			
 			let navView = new NavigationView();
 			navView.init(navViewArgs);
-			this.navigationView = navView;
+			this.navView = navView;
 		};
 
 		/**
 		 * Button Presses
 		 */ 
 		this.handleButtonPress = buttonPress => {
-			if (this.gridView){
-				let canMove = null;
-				switch (buttonPress) {
-					case TvKeys.UP:
-					case TvKeys.DOWN:
-						canMove = this.canMoveVertically(buttonPress);
-						if (canMove) {
-							let newTopPosition = _this.getNewTopPosition(buttonPress);
-							this.gridView.updateRowsTopPercentage(newTopPosition);
-							this.gridView.currentPosition = this.getNewPosition(buttonPress);
-							this.gridView.resetRowMarginAtIndex(this.gridView.currentPosition[0]);
-							this.gridView.focusCurrentThumbnail();
-							this.gridView.updateFocusedInfoDisplay();
+			let currentPos = this.gridView.currentPosition;
+			let currentRowContent = this.mediaContent[currentPos[0]].content;
+
+			switch (buttonPress) {
+				case TvKeys.UP:					
+					let gridCanMoveUp = (currentPos && currentPos[0] - 1 > -1);
+
+					// not at top row of grid view
+					if (gridCanMoveUp) {
+						
+						this.gridView.shiftRowsDown();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
+						this.gridView.setFocus();
+					
+					// cannot go up in grid view. focus the nav bar
+					} else {
+						this.gridView.unfocusThumbnails();
+						
+						this.viewIndex = ViewIndexes.NAVIGATION;
+						this.navView.focusTab();
+					}
+					break;
+
+				case TvKeys.DOWN:
+					let gridCanMoveDown = (currentPos && currentPos[0] + 1 < this.mediaContent.length);
+
+					if (this.viewIndex == ViewIndexes.NAVIGATION) {
+						this.navView.unfocusTabs();
+
+						this.viewIndex = ViewIndexes.MEDIAGRID;
+						this.gridView.setFocus();
+
+					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
+						this.gridView.shiftRowsUp();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
+						this.gridView.setFocus();
+					}
+					break;
+
+				case TvKeys.LEFT:
+					let gridCanMoveLeft = (currentPos[1] - 1 >= 0);
+
+					if (this.viewIndex == ViewIndexes.NAVIGATION) {
+						this.navView.decrementTab();
+					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveLeft) {
+						this.gridView.unfocusThumbnails();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.setFocus();
+
+						if (this.gridView.focusedThumbTouchesEdge()) {
+							this.gridView.shiftRowRightAt(this.gridView.currentPosition[0]);
 						}
-						break;
-					case TvKeys.LEFT:
-					case TvKeys.RIGHT:
-						canMove = this.canMoveHorizontally(buttonPress);
-						if (canMove) {
-							this.gridView.currentPosition = this.getNewPosition(buttonPress);
-							this.gridView.focusCurrentThumbnail();
-							this.gridView.updateFocusedInfoDisplay();
+					}
 
-							let focusedThumbnail =  this.gridView.getFocusedThumbnailInfo();
-							let touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
+					break;
 
-							if (touchesEdge){
-								let rowIndex = this.gridView.currentPosition[0];
-								if (buttonPress == TvKeys.LEFT){
-									this.gridView.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
-								} else {
-									this.gridView.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
-								}
-							}
+				case TvKeys.RIGHT:
+					let gridCanMoveRight = (currentPos[1] + 1 < currentRowContent.length );
+
+					if (this.viewIndex == ViewIndexes.NAVIGATION) {
+						this.navView.incrementTab();
+					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveRight) {
+						this.gridView.unfocusThumbnails();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.setFocus();
+
+						if (this.gridView.focusedThumbTouchesEdge()) {
+							this.gridView.shiftRowLeftAt(this.gridView.currentPosition[0]);
 						}
-						break;
+					}
+					break;
 
-					case TvKeys.ENTER:
+				case TvKeys.ENTER:
+					
+					// Nav View
+					if (this.viewIndex == ViewIndexes.NAVIGATION) {
+						alert("current tab: " + JSON.stringify(this.navView.currentTab()));
+
+					// Grid View
+					} else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
 						let itemSelected = this.focusedContent();
 
 						if (itemSelected.content){
@@ -184,16 +238,16 @@
 								});
 							}
 						}
+					}
+					break;
 
-						break;
+				case TvKeys.RETURN:
+				case TvKeys.BACK:
+					this.removeSelf();
+					break;
 
-					case TvKeys.RETURN:
-					case TvKeys.BACK:
-						this.removeSelf();
-						break;
-					default:
-						break;
-				}
+				default:
+					break;
 			}
 		};
 
@@ -292,15 +346,15 @@
 
 		// gets info on current focused thumbnail
 		// figures out if thumbnail is touching edge
-		this.thumbnailOnEdge = focusedThumbnail => {
-			let windowWidth = $(window).width();
-			let thumbnailRightPosition = focusedThumbnail.left + (1.25 * focusedThumbnail.width);
+		// this.thumbnailOnEdge = focusedThumbnail => {
+		// 	let windowWidth = $(window).width();
+		// 	let thumbnailRightPosition = focusedThumbnail.left + (1.25 * focusedThumbnail.width);
 
-			let touchesLeftEdge = (focusedThumbnail.left <= 0 || thumbnailRightPosition <= 0);
-			let touchesRightEdge = (focusedThumbnail.left >= windowWidth || thumbnailRightPosition >= windowWidth);
+		// 	let touchesLeftEdge = (focusedThumbnail.left <= 0 || thumbnailRightPosition <= 0);
+		// 	let touchesRightEdge = (focusedThumbnail.left >= windowWidth || thumbnailRightPosition >= windowWidth);
 
-			return (touchesLeftEdge || touchesRightEdge) ? true : false;
-		};
+		// 	return (touchesLeftEdge || touchesRightEdge) ? true : false;
+		// };
 
 		this.focusedContent = () => {
 			let currentPosition = this.gridView.currentPosition;

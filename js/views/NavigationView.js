@@ -65,18 +65,18 @@
 
 		// incrementIndex() increases this.currentIndex if possible
 		this.incrementIndex = () => {
-			if (this.tabs.length - 1 > this.currentIndex) this.currentIndex++;
+			if (this.tabs.length - 1 > this.currentIndex) this.currentIndex += 1;
 		};
 		// decrementIndex() decreases this.currentIndex if possible
 		this.decrementIndex = () => {
-			if (this.currentIndex > 0) this.currentIndex--;
+			if (this.currentIndex > 0) this.currentIndex -= 1;
 		};
 
 		// MARK: - Update DOM methods
 
 		// unfocusTabs() removes "focused" class from tabs
 		this.unfocusTabs = () => {
-			$(this.id + " .naviation-tab").removeClass("focused");
+			$(this.id + " .navigation-tab").removeClass("focused");
 		};
 
 		// focusTab() adds "focused" class to current index
@@ -98,6 +98,8 @@
 			this.trigger("unfocusTabs");
 			this.trigger("focusTab");
 		};
+
+		this.currentTab = () => this.tabs[this.currentIndex];
 
 		// MARK: - Key callback methods
 		this.show = () => $(this.id).removeClass("invisible");
