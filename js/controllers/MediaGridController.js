@@ -115,6 +115,7 @@
 				zypeApi.getVideo(parsedData.videoId, {})
 				.then(
 					resp => {
+						_this.navView.trigger("hide");
 						_this.gridView.trigger("hide");
 						_this.createController(VideoDetailsController, { video: resp.response });
 					},

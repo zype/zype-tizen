@@ -189,8 +189,11 @@
 
 		// Pass in callbacks to handle network changes
 		NativePlatform.attachNetworkChangeCallbacks(disconnectedCallback, reconnectedCallback);
-
 		if (NativePlatform.isNetworkConnected() == false) this.forceAppExit("No network connection. Closing app.");
+
+		// In case user deep links within app
+		NativePlatform.setReLinkCallback(this.createControllerCallback);
+		window.addEventListener('appcontrol', NativePlatform.handleReLink);
 	};
 
 	exports.AppController = AppController;
