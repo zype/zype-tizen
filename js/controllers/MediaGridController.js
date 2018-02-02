@@ -230,7 +230,16 @@
 					
 					// Nav View
 					if (this.viewIndex == ViewIndexes.NAVIGATION) {
-						alert("current tab: " + JSON.stringify(this.navView.currentTab()));
+						let currentTab = this.navView.currentTab();
+
+						if (currentTab.role == "home") {
+							this.navView.unfocusTabs();
+							this.viewIndex = ViewIndexes.MEDIAGRID;
+							this.gridView.setFocus();
+						} else if (currentTab.role == "account") {
+							let controllerArgs = {};
+							this.createController(AccountController, controllerArgs);
+						}
 
 					// Grid View
 					} else if (this.viewIndex == ViewIndexes.MEDIAGRID) {

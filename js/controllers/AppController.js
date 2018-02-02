@@ -60,8 +60,56 @@
 				playlistId: playlistId
 			};
 
-			// create first controller
+			let accessToken = localStorage.getItem("accessToken");
+			let refreshToken = localStorage.getItem("refreshToken");
+			if (accessToken && refreshToken) {
+				zypeApi.refreshAccessToken(refreshToken)
+				.then(
+					resp => { _this.handleRefreshToken(resp); },
+					err => { _this.handleRefreshTokenErr(); }
+				);
+			}	else {
+				// create first controller
+				this.createNewController(MediaGridController, controllerArgs);
+			}
+		};
+
+		/**
+		 * handleRefreshTokenResp() stores new access and refresh tokens then loads first controller
+		 * @param {Object} tokenResp - resp object returned from refresh token call
+		 */
+		this.handleRefreshTokenResp = tokenResp => {
+			localStorage.setItem("accessToken", tokenResp.access_token);
+			localStorage.setItem("refreshToken", tokenResp.refresh_token);
+
 			this.createNewController(MediaGridController, controllerArgs);
+		};
+
+		/**
+		 * handleRefreshTokenErr() tries to create new token then load first controller
+		 * if fail to create, clear out account related data
+		 */
+		this.handleRefreshTokenErr = () => {
+			let email = localStorage.getItem("email");
+			let password = localStorage.getItem("password");
+
+			zypeApi.createLoginAccessToken(email, password)
+			.then(
+				resp => {
+					localStorage.setItem("accessToken", resp.access_token);
+					localStorage.setItem("refreshToken", resp.refreshToken);
+
+					_this.createNewController(MediaGridController, controllerArgs);
+				},
+				err => {
+					localStorage.removeItem("accessToken");
+					localStorage.removeItem("refreshToken");
+					localStorage.removeItem("email");
+					localStorage.removeItem("password");
+
+					_this.createNewController(MediaGridController, controllerArgs);
+				}
+			);
 		};
 
 		/**

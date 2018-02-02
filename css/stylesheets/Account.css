@@ -1,0 +1,13 @@
+.account-view.dark-theme {
+	background-color: #000000;
+}
+.account-view.light-theme {
+	background-color: #ffffff;
+}
+
+.account-view .account-header.dark-theme {
+	color: #ffffff;
+}
+.account-view .account-header.light-theme {
+	color: #000000;
+}

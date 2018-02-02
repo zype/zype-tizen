@@ -25,6 +25,7 @@ $(document).ready(() => {
 			$.getScript("js/models/PlaylistModel.js"),
 
 			// Views
+			$.getScript("js/views/AccountView.js"),
 			$.getScript("js/views/NavigationView.js"),
 			$.getScript("js/views/CredentialsInputView.js"),
 			$.getScript("js/views/DialogView.js"),
@@ -34,6 +35,7 @@ $(document).ready(() => {
 
 			// Controllers
 			$.getScript("js/controllers/SignInController.js"),
+			$.getScript("js/controllers/AccountController.js"),
 			$.getScript("js/controllers/DialogController.js"),
 			$.getScript(nativePlatformLibs.nativePlayerController),
 			$.getScript("js/controllers/VideoDetailsController.js"),

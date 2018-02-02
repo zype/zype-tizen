@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Tizen TV basic template powered by Zype" />
 
     <title>Powered by Zype</title>
@@ -11,16 +11,6 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
     <link rel="stylesheet" type="text/css" href="css/video-js.css" />
-
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/Spinner.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/AppIcon.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/MediaGrid.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/VideoDetails.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/Dialog.css" />
-    <link rel="stylesheet" type="text/css" href="css/stylesheets/VideoPlayer.css" />
-		<link rel="stylesheet" type="text/css" href="css/stylesheets/CredentialsInput.css" />
-		<link rel="stylesheet" type="text/css" href="css/stylesheets/Navigation.css" />
 
     <script type="text/javascript" src="$WEBAPIS/webapis/webapis.js"></script>
 </head>
@@ -34,6 +24,7 @@
 
 				<div id="dialogs-container"></div>
 				<div id="navs-container"></div>
+				<div id="account-container"></div>
     </div>
 
     <object type="application/avplayer" id="zype-video-player"></object>
@@ -57,7 +48,10 @@
     <div id="template-loader"></div>
 
     <script src="configs/defaults.js"></script>
-    <script src="lib/jquery.js"></script>
+		<script src="lib/jquery.js"></script>
+		
+		<!-- attach css files -->
+		<script src="lib/css-loader.js"></script>
 
     <script type="text/javascript">
       $(".app-overlay-container").addClass(appDefaults.theme);

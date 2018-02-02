@@ -164,6 +164,7 @@
 
 		this.saveUser = (tokenResp, credentials) => {
 			localStorage.setItem("accessToken", tokenResp.access_token);
+			localStorage.setItem("refreshToken", tokenResp.refresh_token);
 			localStorage.setItem("email", credentials.email);
 			localStorage.setItem("password", credentials.password);
 		};
