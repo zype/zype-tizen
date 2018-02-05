@@ -61,10 +61,10 @@
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
-			if (universalSvodEnabled) {
-				let accountTab = { index: "1", title: "Account", role: "account" };
-				tabs.push(accountTab);
-			}
+			// if (universalSvodEnabled) {
+			// 	let accountTab = { index: "1", title: "Account", role: "account" };
+			// 	tabs.push(accountTab);
+			// }
 
 			return tabs;
 		};
