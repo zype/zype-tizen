@@ -1,52 +1,66 @@
-$(document).ready(function() {
-    loadTemplates().then(function(){
-        $.when(
-            $.getScript("js/deeplink.js"),
-            $.getScript("js/helpers/spinner.js"),
-            
-            // Get dependencies
-            $.getScript("lib/ZypeEndpoints.js"),
-            $.getScript("lib/ZypeJSBase.js"),
-            $.getScript("lib/EventsHandler.js"),
+"use strict";
 
-            $.getScript("js/helpers/zype-api-helpers.js"),
+$(document).ready(() => {
+	loadTemplates()
+	.then(() => {
 
-            // Models
-            $.getScript("js/models/TvKeys.js"),
-            $.getScript("js/models/VideoModel.js"),
-            $.getScript("js/models/PlaylistModel.js"),
+		let nativePlatformLibs = getNativePlatformLibs(appDefaults.platform);
 
-            // Views
-            $.getScript("js/views/MediaGridView.js"),
-            $.getScript("js/views/VideoDetailsView.js"),
-            $.getScript("js/views/DialogView.js"),
-            $.getScript("js/views/VideoPlayerView.js"),
+		// load files
+		$.when(
+			$.getScript(nativePlatformLibs.deepLink),
+			$.getScript("js/helpers/spinner.js"),
+
+			// Get dependencies
+			$.getScript("lib/ZypeEndpoints.js"),
+			$.getScript("lib/ZypeJSBase.js"),
+			$.getScript("lib/EventsHandler.js"),
+
+			$.getScript("js/helpers/zype-api-helpers.js"),
+			$.getScript("js/helpers/css-helpers.js"),
+
+			// Models
+			$.getScript(nativePlatformLibs.keyCodes),
+			$.getScript("js/models/VideoModel.js"),
+			$.getScript("js/models/PlaylistModel.js"),
+
+			// Views
+			$.getScript("js/views/AccountView.js"),
+			$.getScript("js/views/NavigationView.js"),
+			$.getScript("js/views/CredentialsInputView.js"),
+			$.getScript("js/views/DialogView.js"),
+			$.getScript("js/views/VideoPlayerView.js"),
+			$.getScript("js/views/VideoDetailsView.js"),
+			$.getScript("js/views/MediaGridView.js"),
+
+			// Controllers
+			$.getScript("js/controllers/SignInController.js"),
+			$.getScript("js/controllers/AccountController.js"),
+			$.getScript("js/controllers/DialogController.js"),
+			$.getScript(nativePlatformLibs.nativePlayerController),
+			$.getScript("js/controllers/VideoDetailsController.js"),
+			$.getScript("js/controllers/MediaGridController.js"),
 
 
-            // Controllers
-            $.getScript("js/controllers/DialogController.js"),
-            $.getScript("js/controllers/VideoPlayerControllerNative.js"),
-            $.getScript("js/controllers/VideoDetailsController.js"),
-            $.getScript("js/controllers/MediaGridController.js"),
-            $.getScript("js/controllers/AppController.js")
+			$.getScript(nativePlatformLibs.nativePlatform),
+			$.getScript("js/controllers/AppController.js")
 
-            // don't use videojs player for now
-            // $.getScript("js/controllers/VideoPlayerController.js"),
+		// handle app load
+		).then(() => {
+			// only if deep linking required
+			if (handleDeepLinkedData){ handleDeepLinkedData() };
 
-        ).then(function() {
-            if (handleDeepLinkedData){ handleDeepLinkedData() };
-              
-            if (window.innerWidth < window.innerHeight) {
-            $("#overlay-message").html("please rotate your device back to landscpe");
-            $("#app-overlay").css("display", "block");
-            } else {
-            $("#overlay-message").html("");
-            $("#app-overlay").css("display", "none");
-            }
+			if (window.innerWidth < window.innerHeight) {
+				$("#overlay-message").html("please rotate your device back to landscpe");
+				$("#app-overlay").css("display", "block");
+			} else {
+				$("#overlay-message").html("");
+				$("#app-overlay").css("display", "none");
+			}
 
-            $("body").addClass(appDefaults.theme);
-            var app = new AppController();
-            app.init({});
-        });
-    });
+			$("body").addClass(appDefaults.theme);
+			let app = new AppController();
+			app.init({});
+		});
+	});
 });

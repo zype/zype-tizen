@@ -1,289 +1,368 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var MediaGridController = function(){
-        EventsHandler.call(this, ["loadComplete", "buttonPress", "show", "hide", "close"]);
-        var _this = this;
+	let MediaGridController = function(){
+		EventsHandler.call(this, [
+			"loadComplete",
+			"buttonPress",
+			"show",
+			"hide",
+			"close",
+			"networkDisconnect",
+			"networkReconnect"
+		]);
 
-        var mediaGridCss = function(id){
-            return {
-                classes: { theme: appDefaults.theme },
-                ids: { id: "media-grid-container-" + id}
-            };
-        };
+		let _this = this;
 
-        this.playlistLevel = null;
-        this.mediaContent = [];
+		let mediaGridCss = id => {
+			return {
+				classes: { theme: appDefaults.theme },
+				ids: { id: "media-grid-container-" + id}
+			};
+		};
 
-        this.view = null;
+		let navigationCss = id => {
+			return {
+				classes: { theme: appDefaults.theme },
+				ids: { id: "navigation-view-" + id}
+			};
+		};
 
-        /**
+		this.playlistLevel = null;
+		this.mediaContent = [];
+
+		this.gridView = null;
+		this.navView = null;
+
+		const ViewIndexes = {
+			NAVIGATION: 0,
+			MEDIAGRID: 1
+		};
+
+		this.viewIndex = null;
+
+		/**
 		 * Callbacks
 		 */
-        this.createController = null;
-        this.removeSelf = null;
+		this.createController = null;
+		this.removeSelf = null;
 
-        /**
-         * Initialization
-         */ 
-        this.init = function(options){
-            var args = options.args;
-            var callbacks = options.callbacks;
+		/**
+		 * Initialization
+		 */ 
+		this.init = options => {
+			showSpinner();
 
-            this.createController = callbacks.createController;
-            this.removeSelf = callbacks.removeController;
+			let args = options.args;
+			let callbacks = options.callbacks;
 
-            this.playlistLevel = args.playlistLevel;
+			this.createController = callbacks.createController;
+			this.removeSelf = callbacks.removeController;
 
-            // fetch playlist and video content
-            ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId)
-            .then(
-                (resp)  => { if (resp){ _this.trigger("loadComplete", resp); } },
-                (err)   => {  this.removeSelf(); }
-            );
+			this.playlistLevel = args.playlistLevel;
 
-        };
-        
-        /**
-         * Update view
-         */
-        this.hide = function(){ this.view.trigger("hide"); };
-        this.show = function(){ this.view.trigger("show"); };
-        this.close = function(){
-            if (this.view) {
-                this.view.trigger("close");
-                this.view = null;
-            }
-        };
+			// fetch playlist and video content
+			ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId)
+			.then(
+				resp  => { 
+					if (resp) _this.trigger("loadComplete", resp);
+				},
+				err   => {  this.removeSelf(); }
+			);
 
-        this.handleData = function(data){
-            this.mediaContent = data;
-            this.createView();
+		};
 
-            // if deep linked, try to show video else, else show self
-            if(exports.deepLinkedData){
-                var parsedData = JSON.parse(exports.deepLinkedData);
+		/**
+		 * Update view
+		 */
+		this.hide = () => {
+			// this.navView.trigger("hide");
+			this.gridView.trigger("hide");
+		};
+		this.show = () => {
+			// this.navView.trigger("show");
+			this.gridView.trigger("show");
+		};
+		this.close = () => {
+			if (this.gridView) {
+				this.gridView.trigger("close");
+				this.gridView = null;
+			}
 
-                zypeApi.getVideo(parsedData.videoId, {})
-                .then(
-                    resp => {
-                        _this.view.trigger("hide");
-                        _this.createController(VideoDetailsController, { video: resp.response });
-                    },
-                    err => { hideSpinner(); }
-                );
-            } else {
-                hideSpinner();
-            }
+			// if (this.navView) {
+			// 	this.navView.trigger("close");
+			// 	this.navView = null;
+			// }
+		};
 
-            exports.deepLinkedData = null;
-        };
+		/**
+		 * Handle network disconnect/reconnect
+		 */
+		this.handleNetworkDisconnect = () => {};
+		this.handleNetworkReconnect = () => {};
 
-        this.createView = function(){
-            var structuredData = this.structuredData(this.mediaContent);
+		this.handleData = data => {
+			this.mediaContent = data;
+			this.createView();
 
-            var viewArgs = {
-                mediaContent: structuredData,
-                playlistLevel: this.playlistLevel,
-                css: mediaGridCss(this.playlistLevel)
-            };
+			// TODO: remove in future when adding nav bar back
+			this.gridView.setFocus();
 
-            var view = new MediaGridView();
-            view.init(viewArgs);
-            this.view = view;
-        };
+			// this.viewIndex = ViewIndexes.NAVIGATION;
+			// this.navView.focusTab();
 
-        /**
-         * Button Presses
-         */ 
-        this.handleButtonPress = function(buttonPress){
-            if (this.view){
-                switch (buttonPress) {
-                    case TvKeys.UP:
-                    case TvKeys.DOWN:
-                        var canMove = this.canMoveVertically(buttonPress);
-                        if (canMove) {
-                            var newTopPosition = _this.getNewTopPosition(buttonPress);
-                            this.view.updateRowsTopPercentage(newTopPosition);
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.resetRowMarginAtIndex(this.view.currentPosition[0]);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
-                        }
-                        break;
-                    case TvKeys.LEFT:
-                    case TvKeys.RIGHT:
-                        var canMove = this.canMoveHorizontally(buttonPress);
-                        if (canMove) {
-                            this.view.currentPosition = this.getNewPosition(buttonPress);
-                            this.view.focusCurrentThumbnail();
-                            this.view.updateFocusedInfoDisplay();
+			// if deep linked, try to show video else, else show self
+			if(exports.deepLinkedData) {
+				let parsedData = JSON.parse(exports.deepLinkedData);
 
-                            var focusedThumbnail =  this.view.getFocusedThumbnailInfo();
-                            var touchesEdge = this.thumbnailOnEdge(focusedThumbnail);
+				zypeApi.getVideo(parsedData.videoId, {})
+				.then(
+					resp => {
+						// _this.navView.trigger("hide");
+						_this.gridView.trigger("hide");
+						_this.createController(VideoDetailsController, { video: resp.response });
+					},
+					err => { hideSpinner(); }
+				);
+			} else {
+				hideSpinner();
+			}
 
-                            if (touchesEdge){
-                                var rowIndex = this.view.currentPosition[0];
-                                if (buttonPress == TvKeys.LEFT){
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.RIGHT);
-                                } else {
-                                    this.view.shiftRowAtIndex(rowIndex, TvKeys.LEFT);
-                                }
-                            }
-                        }
-                        break;
+			exports.deepLinkedData = null;
+		};
 
-                    case TvKeys.ENTER:
-                        var itemSelected = this.focusedContent();
+		this.createView = () => {
+			let structuredData = this.structuredData(this.mediaContent);
 
-                        if (itemSelected.content){
-                            this.view.trigger("hide");
+			let gridViewArgs = {
+				mediaContent: structuredData,
+				playlistLevel: this.playlistLevel,
+				css: mediaGridCss(this.playlistLevel)
+			};
 
-                            if (itemSelected.contentType == "videos"){
-                                this.createController(VideoDetailsController, {
-                                    video: itemSelected.content
-                                });
-                            } else if (itemSelected.contentType == "playlists") {
-                                this.createController(MediaGridController, {
-                                    playlistLevel: this.playlistLevel + 1,
-                                    playlistId: itemSelected.content._id
-                                });
-                            }
-                        }
-                      
-                      break;
+			let gridView = new MediaGridView();
+			gridView.init(gridViewArgs);
+			this.gridView = gridView;
 
-                    case TvKeys.RETURN:
-                    case TvKeys.BACK:
-                      this.removeSelf();
-                      break;
-                    default:
-                      break;
-                }
-            }
-        };
+			// let navViewArgs = { css: navigationCss(this.playlistLevel) };
+			
+			// let navView = new NavigationView();
+			// navView.init(navViewArgs);
+			// this.navView = navView;
+		};
+
+		/**
+		 * Button Presses
+		 */ 
+		this.handleButtonPress = buttonPress => {
+			let currentPos = this.gridView.currentPosition;
+			let currentRowContent = this.mediaContent[currentPos[0]].content;
+
+			switch (buttonPress) {
+				case TvKeys.UP:					
+					let gridCanMoveUp = (currentPos && currentPos[0] - 1 > -1);
+
+					// not at top row of grid view
+					if (gridCanMoveUp) {
+						
+						this.gridView.shiftRowsDown();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
+						this.gridView.setFocus();
+					
+					// cannot go up in grid view. focus the nav bar
+					} 
+					// else {
+					// 	this.gridView.unfocusThumbnails();
+						
+					// 	this.viewIndex = ViewIndexes.NAVIGATION;
+					// 	this.navView.focusTab();
+					// }
+					break;
+
+				case TvKeys.DOWN:
+					let gridCanMoveDown = (currentPos && currentPos[0] + 1 < this.mediaContent.length);
+
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.unfocusTabs();
+
+					// 	this.viewIndex = ViewIndexes.MEDIAGRID;
+					// 	this.gridView.setFocus();
+
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
+
+					if (gridCanMoveDown) {
+
+						this.gridView.shiftRowsUp();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
+						this.gridView.setFocus();
+					}
+					break;
+
+				case TvKeys.LEFT:
+					let gridCanMoveLeft = (currentPos[1] - 1 >= 0);
+
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.decrementTab();
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveLeft) {
+					if (gridCanMoveLeft) {
+						this.gridView.unfocusThumbnails();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.setFocus();
+
+						if (this.gridView.focusedThumbTouchesEdge()) {
+							this.gridView.shiftRowRightAt(this.gridView.currentPosition[0]);
+						}
+					}
+
+					break;
+
+				case TvKeys.RIGHT:
+					let gridCanMoveRight = (currentPos[1] + 1 < currentRowContent.length );
+
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.incrementTab();
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveRight) {
+					if (gridCanMoveRight) {
+						this.gridView.unfocusThumbnails();
+						this.gridView.currentPosition = this.getNewPosition(buttonPress);
+						this.gridView.setFocus();
+
+						if (this.gridView.focusedThumbTouchesEdge()) {
+							this.gridView.shiftRowLeftAt(this.gridView.currentPosition[0]);
+						}
+					}
+					break;
+
+				case TvKeys.ENTER:
+					
+					// // Nav View
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	let currentTab = this.navView.currentTab();
+
+					// 	if (currentTab.role == "home") {
+					// 		this.navView.unfocusTabs();
+					// 		this.viewIndex = ViewIndexes.MEDIAGRID;
+					// 		this.gridView.setFocus();
+					// 	} else if (currentTab.role == "account") {
+					// 		let controllerArgs = {};
+					// 		this.createController(AccountController, controllerArgs);
+					// 	}
+
+					// // Grid View
+					// } else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
+
+						let itemSelected = this.focusedContent();
+
+						if (itemSelected.content){
+							this.gridView.trigger("hide");
+
+							if (itemSelected.contentType == "videos"){
+								this.createController(VideoDetailsController, {
+									video: itemSelected.content
+								});
+							} else if (itemSelected.contentType == "playlists") {
+								this.createController(MediaGridController, {
+									playlistLevel: this.playlistLevel + 1,
+									playlistId: itemSelected.content._id
+								});
+							}
+						}
+
+					// }
+					break;
+
+				case TvKeys.RETURN:
+				case TvKeys.BACK:
+					this.removeSelf();
+					break;
+
+				default:
+					break;
+			}
+		};
 
 
-        /**
-         * Helpers
-         */
-        this.structuredData = function(mediaContent){
-            var structuredData = [];
+		/**
+		 * Helpers
+		 */
+		this.structuredData = mediaContent => {
+			let structuredData = [];
 
-            for (var i = 0; i < mediaContent.length; i++) {
-                var row = {
-                    title: mediaContent[i].title,
-                    type: mediaContent[i].type,
-                    thumbnailLayout: mediaContent[i].thumbnailLayout,
-                    content: []
-                };
+			for (let i = 0; i < mediaContent.length; i++) {
+				let row = {
+					title: mediaContent[i].title,
+					type: mediaContent[i].type,
+					thumbnailLayout: mediaContent[i].thumbnailLayout,
+					content: []
+				};
 
-                if (mediaContent[i].type == "videos"){
-                    for (var x = 0; x < mediaContent[i].content.length; x++) {
-                        var video = new VideoModel(mediaContent[i].content[x]);
-                        row.content.push(video);
-                    }
-                } else if (mediaContent[i].type = "playlists") {
-                    for (var x = 0; x < mediaContent[i].content.length; x++) {
-                        var playlist = new PlaylistModel(mediaContent[i].content[x]);
-                        row.content.push(playlist)
-                    }
-                }
+				if (mediaContent[i].type == "videos"){
+					for (let x = 0; x < mediaContent[i].content.length; x++) {
+						let video = new VideoModel(mediaContent[i].content[x]);
+						row.content.push(video);
+					}
+				} else if (mediaContent[i].type = "playlists") {
+					for (let x = 0; x < mediaContent[i].content.length; x++) {
+						let playlist = new PlaylistModel(mediaContent[i].content[x]);
+						row.content.push(playlist)
+					}
+				}
 
-                structuredData.push(row);
-            }
+				structuredData.push(row);
+			}
 
-            return structuredData;
-        };
+			return structuredData;
+		};
 
-        this.canMoveVertically = function(dir){
-            var currentPos = this.view.currentPosition;
-            if (dir == TvKeys.UP){
-                return (currentPos && currentPos[0] - 1 > -1) ? true : false;
-            } else if (dir == TvKeys.DOWN) {
-                return (currentPos && currentPos[0] + 1 < this.mediaContent.length) ? true : false;
-            } else {
-                return false;
-            }
-        };
+		this.getNewPosition = dir => {
+			if(this.gridView){
+				let currPos = null;
+				switch (dir) {
+					case TvKeys.UP:
+						currPos = this.gridView.currentPosition;
+						currPos[0] = currPos[0] - 1;
+						currPos[1] = 0;
+						return currPos;
+					case TvKeys.DOWN:
+						currPos = this.gridView.currentPosition;
+						currPos[0] = currPos[0] + 1;
+						currPos[1] = 0;
+						return currPos;
+					case TvKeys.LEFT:
+						currPos = this.gridView.currentPosition;
+						currPos[1] = currPos[1] - 1;
+						return currPos;
+					case TvKeys.RIGHT:
+						currPos = this.gridView.currentPosition;
+						currPos[1] = currPos[1] + 1;
+						return currPos;
+					default:
+						return this.gridView.currentPosition;
+				}
+			}
+		};
 
-        this.canMoveHorizontally = function(dir){
-            var currentPos = this.view.currentPosition;
-            var currentRowContent = this.mediaContent[currentPos[0]].content;
+		this.focusedContent = () => {
+			let currentPosition = this.gridView.currentPosition;
+			return {
+				content: this.mediaContent[currentPosition[0]].content[currentPosition[1]],
+				contentType: this.mediaContent[currentPosition[0]].type
+			};
+		};
 
-            if (dir == TvKeys.LEFT){
-                return (currentPos[1] - 1 >= 0) ? true : false;
-            } else if (dir == TvKeys.RIGHT) {
-                return (currentPos[1] + 1 < currentRowContent.length ) ? true : false;
-            }
-        }
+		/**
+		 * Register event handlers
+		 */ 
+		this.registerHandler("loadComplete", this.handleData, this);
+		this.registerHandler("buttonPress", this.handleButtonPress, this);
+		this.registerHandler("show", this.show, this);
+		this.registerHandler("hide", this.hide, this);
+		this.registerHandler("close", this.close, this);
+		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
+	};
 
-        this.getNewTopPosition = function(dir){
-            var currentTopPos = this.view.currentRowsTopPosition;
-            if (dir == TvKeys.UP) {
-                return currentTopPos + this.view.getRowHeightAtIndex(this.view.currentPosition[0]);
-            } else if (dir == TvKeys.DOWN) {
-                var newRowIndex = this.view.currentPosition[0] + 1;
-                return currentTopPos - this.view.getRowHeightAtIndex(newRowIndex);
-            }
-        };
-
-        this.getNewPosition = function(dir){
-            if(this.view){
-                switch (dir) {
-                  case TvKeys.UP:
-                      var currPos = this.view.currentPosition;
-                      currPos[0] = currPos[0] - 1;
-                      currPos[1] = 0;
-                      return currPos;
-                  case TvKeys.DOWN:
-                      var currPos = this.view.currentPosition;
-                      currPos[0] = currPos[0] + 1;
-                      currPos[1] = 0;
-                      return currPos;
-                  case TvKeys.LEFT:
-                      var currPos = this.view.currentPosition;
-                      currPos[1] = currPos[1] - 1;
-                      return currPos;
-                  case TvKeys.RIGHT:
-                      var currPos = this.view.currentPosition;
-                      currPos[1] = currPos[1] + 1;
-                      return currPos;
-                  default:
-                      return this.view.currentPosition;
-                }
-            }
-        };
-
-        // gets info on current focused thumbnail
-        // figures out if thumbnail is touching edge
-        this.thumbnailOnEdge = function(focusedThumbnail){
-            var windowWidth = $(window).width();
-            var thumbnailRightPosition = focusedThumbnail.left + (1.25 * focusedThumbnail.width);
-
-            var touchesLeftEdge = (focusedThumbnail.left <= 0 || thumbnailRightPosition <= 0);
-            var touchesRightEdge = (focusedThumbnail.left >= windowWidth || thumbnailRightPosition >= windowWidth);
-
-            return (touchesLeftEdge || touchesRightEdge) ? true : false;
-        };
-
-        this.focusedContent = function(){
-            var currentPosition = this.view.currentPosition;
-            return {
-                content: this.mediaContent[currentPosition[0]].content[currentPosition[1]],
-                contentType: this.mediaContent[currentPosition[0]].type
-            };
-        };
-
-        /**
-         * Register event handlers
-         */ 
-        this.registerHandler("loadComplete", this.handleData, this);
-        this.registerHandler("buttonPress", this.handleButtonPress, this);
-        this.registerHandler("show", this.show, this);
-        this.registerHandler("hide", this.hide, this);
-        this.registerHandler("close", this.close, this);
-    };
-
-    exports.MediaGridController = MediaGridController;
+	exports.MediaGridController = MediaGridController;
 })(window);

@@ -1,169 +1,248 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var AppController = function(){
-        EventsHandler.call(this, [
-            "settingsLoaded",
-            "forceExitApp",
-            "exitApp",
-            "buttonPress"
-        ]);
+	let AppController = function(){
+		EventsHandler.call(this, [
+			"settingsLoaded",
+			"forceExitApp",
+			"exitApp",
+			"buttonPress",
+			"networkDisconnect",
+			"networkReconnect"
+		]);
 
-        var _this = this;
+		let _this = this;
 
-        exports.zypeApi = ZypeJSBase({
-            appKey: appDefaults.appKey,
-            clientId: appDefaults.clientId,
-            clientSecret: appDefaults.clientSecret
-        });
+		exports.zypeApi = ZypeJSBase({
+			appKey: appDefaults.appKey,
+			clientId: appDefaults.clientId,
+			clientSecret: appDefaults.clientSecret
+		});
 
-        this.controllers = [];
+		exports.appState = {};
 
-        /**
-         * Initilize by fetching app settings
-         */
-        this.init = function(args){
-            showSpinner();
+		this.controllers = [];
 
-            zypeApi.getApp().then(
-                resp  => { _this.trigger("settingsLoaded", resp.response); },
-                err   => {  _this.trigger("forceExitApp", "App misconfigured. Exitting..."); }
-            );
-        };
+		/**
+		 * Initilize by fetching app settings
+		 */
+		this.init = args => {
+			showSpinner();
 
-        /**
-         * Helpers
-         */
-        this.currentController = function(){
-            return (this.controllers.length > 0) ? this.controllers[this.controllers.length - 1] : null;
-        };
+			zypeApi.getApp().then(
+				resp  => { _this.trigger("settingsLoaded", resp.response); },
+				err   => {  _this.trigger("forceExitApp", "App misconfigured. Exitting..."); }
+			);
+		};
 
-        this.createControllerCallback = function(controller, args){
-            _this.createNewController(controller, args);
-        };
+		/**
+		 * Helpers
+		 */
+		this.currentController = () => {
+			return (this.controllers.length > 0) ? this.controllers[this.controllers.length - 1] : null;
+		};
 
-        this.removeControllerCallback = function(){
-            _this.removeCurrentController();
-        };
+		this.createControllerCallback = (controller, args) => {
+			_this.createNewController(controller, args);
+		};
 
-        this.handleAppLoad = function(settings){
-            // accessible from all controllers
-            exports.zypeAppSettings = settings;
+		this.removeControllerCallback = () => {
+			_this.removeCurrentController();
+		};
 
-            var playlistId = zypeAppSettings.featured_playlist_id || appDefaults.rootPlaylistId;
-            var controllerArgs = {
-                playlistLevel: 0,
-                playlistId: playlistId
-            };
+		this.handleAppLoad = settings => {
+			// accessible from all controllers
+			exports.zypeAppSettings = settings;
 
-            // create first controller
-            this.createNewController(MediaGridController, controllerArgs);
-        };
+			let playlistId = zypeAppSettings.featured_playlist_id || appDefaults.rootPlaylistId;
+			let controllerArgs = {
+				playlistLevel: 0,
+				playlistId: playlistId
+			};
 
-        /**
-         * Create / Remove controllers
-         */
-        this.createNewController = function(controller, args){
-            if (this.controllers.length > 0){
-                var currentController = this.currentController();
-                currentController.trigger("hide");
-            }
+			let accessToken = localStorage.getItem("accessToken");
+			let refreshToken = localStorage.getItem("refreshToken");
+			if (accessToken && refreshToken) {
+				zypeApi.refreshAccessToken(refreshToken)
+				.then(
+					resp => { _this.handleRefreshToken(resp); },
+					err => { _this.handleRefreshTokenErr(); }
+				);
+			}	else {
+				// create first controller
+				this.createNewController(MediaGridController, controllerArgs);
+			}
+		};
 
-            var newController = new controller();
+		/**
+		 * handleRefreshTokenResp() stores new access and refresh tokens then loads first controller
+		 * @param {Object} tokenResp - resp object returned from refresh token call
+		 */
+		this.handleRefreshTokenResp = tokenResp => {
+			localStorage.setItem("accessToken", tokenResp.access_token);
+			localStorage.setItem("refreshToken", tokenResp.refresh_token);
 
+			this.createNewController(MediaGridController, controllerArgs);
+		};
 
-            newController.init({
-                args: args,
-                callbacks: {
-                    createController: this.createControllerCallback,
-                    removeController: this.removeControllerCallback
-                }
-            });
+		/**
+		 * handleRefreshTokenErr() tries to create new token then load first controller
+		 * if fail to create, clear out account related data
+		 */
+		this.handleRefreshTokenErr = () => {
+			let email = localStorage.getItem("email");
+			let password = localStorage.getItem("password");
 
-            this.controllers.push(newController);
-        };
+			zypeApi.createLoginAccessToken(email, password)
+			.then(
+				resp => {
+					localStorage.setItem("accessToken", resp.access_token);
+					localStorage.setItem("refreshToken", resp.refreshToken);
 
-        this.removeCurrentController = function(){
-            if (this.controllers.length > 1){
-                var oldController = this.controllers.pop();
-                oldController.trigger("close");
+					_this.createNewController(MediaGridController, controllerArgs);
+				},
+				err => {
+					localStorage.removeItem("accessToken");
+					localStorage.removeItem("refreshToken");
+					localStorage.removeItem("email");
+					localStorage.removeItem("password");
 
-                var currentController = this.currentController();
-                currentController.trigger("show");
+					_this.createNewController(MediaGridController, controllerArgs);
+				}
+			);
+		};
 
-            // only controller. confirm app exit
-            } else {
-                this.confirmAppExit();
-            }
-        };
+		/**
+		 * Create / Remove controllers
+		 */
+		this.createNewController = (controller, args) => {
+			if (this.controllers.length > 0){
+				let currentController = this.currentController();
+				currentController.trigger("hide");
+			}
 
-        /**
-         * Show / Hide current controller
-         */
-        this.showCurrentController = function(){
-            var currentController = this.currentController();
-            currentController.trigger("show");
-        };
-
-        this.hideCurrentController = function(){
-            var currentController = this.currentController();
-            currentController.trigger("hide");
-        };
-
-
-        /**
-         * Button Presses
-         */
-        this.handleButtonPress = function(keyCode){
-            var currentController = this.currentController();
-            currentController.trigger("buttonPress", keyCode);
-        };
-
-        /**
-         * Exiting
-         */
-        this.exitApp = function(){
-            try { tizen.application.getCurrentApplication().exit(); } catch(e){}
-        };
-
-        this.forceAppExit = function(message){
-            alert(message);
-            _this.exitApp();
-        };
-
-        this.confirmAppExit = function(){
-            var leaveApp = confirm("Do you want to leave the app?");
-
-            if (leaveApp){ _this.exitApp(); }
-        };
+			let newController = new controller();
 
 
-        /**
-         * Register event handlers
-         */
-        this.registerHandler("settingsLoaded", this.handleAppLoad, this);
-        this.registerHandler("forceExitApp", this.forceAppExit, this);
-        this.registerHandler("exitApp", this.confirmAppExit, this);
-        this.registerHandler("buttonPress", this.handleButtonPress, this);
+			newController.init({
+				args: args,
+				callbacks: {
+					createController: this.createControllerCallback,
+					removeController: this.removeControllerCallback
+				}
+			});
+
+			this.controllers.push(newController);
+		};
+
+		this.removeCurrentController = () => {
+			if (this.controllers.length > 1){
+				let oldController = this.controllers.pop();
+				oldController.trigger("close");
+
+				let currentController = this.currentController();
+				currentController.trigger("show");
+
+			// only controller. confirm app exit
+			} else {
+				this.confirmAppExit();
+			}
+		};
+
+		/**
+		 * Show / Hide current controller
+		 */
+		this.showCurrentController = () => {
+			let currentController = this.currentController();
+			currentController.trigger("show");
+		};
+
+		this.hideCurrentController = () => {
+			let currentController = this.currentController();
+			currentController.trigger("hide");
+		};
 
 
-        $(document).keydown(function(e){
-            _this.trigger("buttonPress", e.keyCode);
-        });
+		/**
+		 * Button Presses
+		 */
+		this.handleButtonPress = keyCode => {
+			let currentController = this.currentController();
+			currentController.trigger("buttonPress", keyCode);
+		};
 
-        try {
-          webapis.network.addNetworkStateChangeListener(function(value) {
-            if (value == webapis.network.NetworkState.GATEWAY_DISCONNECTED) {
-                _this.forceExitApp("Internet disconnected. Closing app.");
-            } else if (value == webapis.network.NetworkState.GATEWAY_CONNECTED) {
-                alert("Internet reconnected");
-            }
-          });
+		/**
+		 * Exiting
+		 */
+		this.exitApp = () => {
+			NativePlatform.exit();
+		};
 
-          var connectedToNetwork = webapis.network.isConnectedToGateway();
-          if (!connectedToNetwork) { _this.forceExitApp("No network connection. Closing app."); }
-        } catch (e) {}
-    };
+		this.forceAppExit = message => {
+			alert(message);
+			_this.exitApp();
+		};
 
-    exports.AppController = AppController;
+		this.confirmAppExit = () => {
+			let leaveApp = confirm("Do you want to leave the app?");
+
+			if (leaveApp){ _this.exitApp(); }
+		};
+
+		/**
+		 * Handle network disconnect/reconnect
+		 */
+		this.handleNetworkDisconnect = () => {
+			let currentController = this.currentController();
+			currentController.trigger("networkDisconnect");
+		};
+
+		this.handleNetworkReconnect = () => {
+			let currentController = this.currentController();
+			currentController.trigger("networkReconnect");
+		};
+
+		/**
+		 * Register event handlers
+		 */
+		this.registerHandler("settingsLoaded", this.handleAppLoad, this);
+		this.registerHandler("forceExitApp", this.forceAppExit, this);
+		this.registerHandler("exitApp", this.confirmAppExit, this);
+		this.registerHandler("buttonPress", this.handleButtonPress, this);
+		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
+		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
+
+
+		$(document).keydown(e => {
+			let networkConnected = NativePlatform.isNetworkConnected();
+			if (networkConnected) { _this.trigger("buttonPress", e.keyCode); }
+		});
+
+		/**
+		 * Handle network disconnects / reconnects
+		 */ 
+		let disconnectedCallback = () => {
+			let currentController = _this.controllers[ _this.controllers.length - 1 ];
+			showSpinner();
+			showNetworkText();
+			currentController.trigger("networkDisconnect");
+		};
+
+		let reconnectedCallback = () => {
+			let currentController = _this.controllers[ _this.controllers.length - 1 ];
+			hideSpinner();
+			hideNetworkText();
+			currentController.trigger("networkReconnect");
+		};
+
+		// Pass in callbacks to handle network changes
+		NativePlatform.attachNetworkChangeCallbacks(disconnectedCallback, reconnectedCallback);
+		if (NativePlatform.isNetworkConnected() == false) this.forceAppExit("No network connection. Closing app.");
+
+		// In case user deep links within app
+		NativePlatform.setReLinkCallback(this.createControllerCallback);
+		window.addEventListener('appcontrol', NativePlatform.handleReLink);
+	};
+
+	exports.AppController = AppController;
 })(window);
