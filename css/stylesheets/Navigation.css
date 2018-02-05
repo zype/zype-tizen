@@ -21,11 +21,21 @@
 	padding-right: 7.5%;
 }
 
-.navigation-tabs-container.dark-theme{
-	background-color: #272822;
+.navigation-tabs-container.dark-theme {
+	background: linear-gradient(to bottom, 
+		rgba(0, 0, 0, 0.9) 60%, 
+		rgba(0, 0, 0, 0.6) 70%, 
+		rgba(0, 0, 0, 0.2) 85%,
+		rgba(0, 0, 0, 0.15) 95%,
+		rgba(0, 0, 0, 0.1) 100% );
 }
 .navigation-tabs-container.light-theme {
-	background-color: #CBCBCB;
+	background: linear-gradient(to bottom, 
+		rgba(255, 255, 255, 0.9) 60%, 
+		rgba(255, 255, 255, 0.6) 70%, 
+		rgba(255, 255, 255, 0.2) 85%,
+		rgba(255, 255, 255, 0.15) 95%,
+		rgba(255,255, 255, 0.1) 100% );
 }
 
 .navigation-tabs-container .navigation-tab {
@@ -38,7 +48,7 @@
 	line-height: 100%;
 	text-align: center;
 
-	margin-right: 1%;
+	margin-right: 2%;
 }
 
 .navigation-tabs-container .nav-tab-text {
@@ -49,7 +59,7 @@
 	margin-right: -50%;
 	transform: translate(-50%, -50%);
 
-	font-size: 2em;
+	font-size: 2.5em;
 	font-weight: bold;
 }
 

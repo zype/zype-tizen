@@ -1,8 +1,10 @@
 <script id="buttons-col-template" type="text/x-handlebars-template">
-	<div class="col-sm container">
+	<div class="col-sm container {{ css.classes.theme }}">
 			{{#each buttons}}
-			<div class="row button" index="{{index}}" role="{{role}}">
-				{{title}}
+			<div class="row button-container">
+				<div class="col-sm-4 col-sm-offset-2 button" index="{{index}}" role="{{role}}">
+					{{title}}
+				</div>
 			</div>
 			{{/each}}
 		</div>

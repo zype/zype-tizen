@@ -75,10 +75,18 @@
 					// if not inputting
 					this.handleEnter();
 					break;
-				// case TvKeys.BACK:
 				case TvKeys.RETURN:
 					if (this.view.isInputFocused()) {
 						this.view.trigger("blurInputs");
+					} else {
+						this.removeSelf();
+					}
+					break;
+
+				case TvKeys.BACK:
+
+					if (this.view.isInputFocused()){
+						// do nothing. let native keyboard delete character
 					} else {
 						this.removeSelf();
 					}

@@ -1,17 +1,19 @@
 <script id="account-view-template" type="text/x-handlebars-template">
 	<div class="account-view full-screen-view invisible {{ css.classes.theme }}" id="{{ css.ids.id }}">
-		<div class="container-fluid">
-			<div class="row">
+		<div class="container-fluid full-height">
+			<div class="row full-height">
 
 				<!-- Display Account -->
-				<div class="col-sm-6">
+				<div class="col-sm-6 full-height">
 					<div class="row account-header {{ css.classes.theme }} ">Account</div>
 					<div class="row account-email {{ css.classes.theme }} ">{{ email }}</div>
-					<div class="row app-icon"></div>
+					<div class="row app-icon-row">
+						<img class="app-icon" src="{{ appIconUrl }}" />
+					</div>
 				</div>
 
 				<!-- Buttons Container -->
-				<div class="buttons-container col-sm-6"></div>
+				<div class="buttons-container col-sm-6 full-height"></div>
 			</div>
 		</div>
 	</div>

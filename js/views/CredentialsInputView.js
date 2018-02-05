@@ -42,7 +42,20 @@
 			var renderedTemplate = Utils.buildTemplate(template, context);
 			$(containerId).append(renderedTemplate);
 			
-            this.trigger("loadComplete");
+			// Set dynamic color
+			let selectors = [
+				this.id + " .confirm-button.focused",
+				this.id + ".credentials-input-view input.highlight",
+			];
+			let properties = [
+				{ "border": "solid 0.15em " + appDefaults.brandColor },
+				{ "border-bottom": "solid 0.1em " + appDefaults.brandColor }
+			];
+			let dynamicStyle = CssHelpers.createStyles(selectors, properties);
+
+			$(this.id).append(dynamicStyle);
+
+			this.trigger("loadComplete");
 		};
 
 

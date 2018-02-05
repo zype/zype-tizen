@@ -41,6 +41,13 @@
 			let renderedTemplate = Utils.buildTemplate(template, context);
 			$(videoDetailsContainerId).append(renderedTemplate);
 
+			// Set dynamic color
+			let selector = ".video-details-buttons-container .button.focused";
+			let properties = { "border": "solid 0.5em " + appDefaults.brandColor };
+			let dynamicStyle = CssHelpers.createStyle(selector, properties);
+
+			$(this.id).append(dynamicStyle);
+
 			this.trigger("loadComplete");
 		};
 

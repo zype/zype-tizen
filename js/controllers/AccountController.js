@@ -46,20 +46,20 @@
 		this.handleButtonPress = buttonPress => {
 			switch (buttonPress) {
 				case TvKeys.UP:
-					let canMoveUp = (buttonIndex > 0);
+					let canMoveUp = (this.buttonIndex > 0);
 
 					if (canMoveUp) {
 						this.buttonIndex -= 1;
-						this.view.focusButtonAt(this.buttonIndex);
+						this.view.trigger("focusButton", this.buttonIndex);
 					}
 
 					break;
 				case TvKeys.DOWN:
-					let canMoveDown = (buttonIndex < this.buttons.length - 1);
+					let canMoveDown = (this.buttonIndex < this.buttons.length - 1);
 
 					if (canMoveDown) {
 						this.buttonIndex += 1;
-						this.view.focusButtonAt(this.buttonIndex);
+						this.view.trigger("focusButton", this.buttonIndex);
 					}
 
 					break;
@@ -78,8 +78,7 @@
 						localStorage.removeItem("email");
 						localStorage.removeItem("password");
 
-						this.buttons = this.getButtons();
-						this.view.trigger("show", this.buttons);
+						this.trigger("show");
 					}
 
 					break;
@@ -105,7 +104,10 @@
 
 		this.show = () => {
 			this.buttons = this.getButtons();
+			this.buttonIndex = 0;
+
 			this.view.trigger("show", this.buttons);
+			this.view.trigger("focusButton", 0);
 		};
 
 		this.hide = () => {

@@ -47,6 +47,13 @@
 			let renderedTemplate = Utils.buildTemplate(template, context);
 			$(mediaGridContainerId).append(renderedTemplate);
 
+			// Set dynamic color
+			let selector = ".media-grid-thumbnail.focused-thumbnail";
+			let properties = { "border": "solid 0.5em " + appDefaults.brandColor };
+			let dynamicStyle = CssHelpers.createStyle(selector, properties);
+
+			$(this.id).append(dynamicStyle);
+
 			this.trigger("loadComplete");
 		};
 
