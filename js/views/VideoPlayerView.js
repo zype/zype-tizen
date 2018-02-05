@@ -81,13 +81,6 @@
 			let template = $(templateId);
 			let renderedTemplate = Utils.buildTemplate(template, context);
 			$("#app-container").append(renderedTemplate);
-
-			// Set dynamic color
-			let selector = "#video-player-ui .progress-bar-container .progress-bar";
-			let properties = { "background-color": appDefaults.brandColor };
-			let dynamicStyle = CssHelpers.createStyle(selector, properties);
-
-			$(this.id).append(dynamicStyle);
 		};
 
 		this.updateProgressBar = () => {

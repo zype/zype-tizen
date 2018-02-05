@@ -79,6 +79,7 @@
 						localStorage.removeItem("password");
 
 						this.trigger("show");
+						setTimeout(() => alert("Signed out"), 250);
 					}
 
 					break;
