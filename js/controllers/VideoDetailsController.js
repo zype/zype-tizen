@@ -170,13 +170,15 @@
 		/**
 		 * Helpers
 		 */
-		this.getButtons = function(videoId){
-			var buttons = [];
+		this.getButtons = videoId => {
+			let buttons = [];
 
-			var requiresEntitlement = this.videoRequiresEntitlement();
-			var signedIn = this.isSignedIn();
+			let requiresEntitlement = this.videoRequiresEntitlement();
+			let signedIn = this.isSignedIn();
 
-			if (!requiresEntitlement || signedIn){
+			let universalSvodEnabled = appDefaults.features.universalSubscription;
+
+			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
 				buttons.push({ title: appDefaults.labels.playButton, role: "play", data: { videoId: videoId }  });
 			} else {
 				buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
