@@ -76,11 +76,11 @@
 		 * Update view
 		 */
 		this.hide = () => {
-			this.navView.trigger("hide");
+			// this.navView.trigger("hide");
 			this.gridView.trigger("hide");
 		};
 		this.show = () => {
-			this.navView.trigger("show");
+			// this.navView.trigger("show");
 			this.gridView.trigger("show");
 		};
 		this.close = () => {
@@ -89,10 +89,10 @@
 				this.gridView = null;
 			}
 
-			if (this.navView) {
-				this.navView.trigger("close");
-				this.navView = null;
-			}
+			// if (this.navView) {
+			// 	this.navView.trigger("close");
+			// 	this.navView = null;
+			// }
 		};
 
 		/**
@@ -105,8 +105,11 @@
 			this.mediaContent = data;
 			this.createView();
 
-			this.viewIndex = ViewIndexes.NAVIGATION;
-			this.navView.focusTab();
+			// TODO: remove in future when adding nav bar back
+			this.gridView.setFocus();
+
+			// this.viewIndex = ViewIndexes.NAVIGATION;
+			// this.navView.focusTab();
 
 			// if deep linked, try to show video else, else show self
 			if(exports.deepLinkedData) {
@@ -115,7 +118,7 @@
 				zypeApi.getVideo(parsedData.videoId, {})
 				.then(
 					resp => {
-						_this.navView.trigger("hide");
+						// _this.navView.trigger("hide");
 						_this.gridView.trigger("hide");
 						_this.createController(VideoDetailsController, { video: resp.response });
 					},
@@ -141,11 +144,11 @@
 			gridView.init(gridViewArgs);
 			this.gridView = gridView;
 
-			let navViewArgs = { css: navigationCss(this.playlistLevel) };
+			// let navViewArgs = { css: navigationCss(this.playlistLevel) };
 			
-			let navView = new NavigationView();
-			navView.init(navViewArgs);
-			this.navView = navView;
+			// let navView = new NavigationView();
+			// navView.init(navViewArgs);
+			// this.navView = navView;
 		};
 
 		/**
@@ -168,24 +171,28 @@
 						this.gridView.setFocus();
 					
 					// cannot go up in grid view. focus the nav bar
-					} else {
-						this.gridView.unfocusThumbnails();
+					} 
+					// else {
+					// 	this.gridView.unfocusThumbnails();
 						
-						this.viewIndex = ViewIndexes.NAVIGATION;
-						this.navView.focusTab();
-					}
+					// 	this.viewIndex = ViewIndexes.NAVIGATION;
+					// 	this.navView.focusTab();
+					// }
 					break;
 
 				case TvKeys.DOWN:
 					let gridCanMoveDown = (currentPos && currentPos[0] + 1 < this.mediaContent.length);
 
-					if (this.viewIndex == ViewIndexes.NAVIGATION) {
-						this.navView.unfocusTabs();
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.unfocusTabs();
 
-						this.viewIndex = ViewIndexes.MEDIAGRID;
-						this.gridView.setFocus();
+					// 	this.viewIndex = ViewIndexes.MEDIAGRID;
+					// 	this.gridView.setFocus();
 
-					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
+
+					if (gridCanMoveDown) {
+
 						this.gridView.shiftRowsUp();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
@@ -196,9 +203,10 @@
 				case TvKeys.LEFT:
 					let gridCanMoveLeft = (currentPos[1] - 1 >= 0);
 
-					if (this.viewIndex == ViewIndexes.NAVIGATION) {
-						this.navView.decrementTab();
-					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveLeft) {
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.decrementTab();
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveLeft) {
+					if (gridCanMoveLeft) {
 						this.gridView.unfocusThumbnails();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.setFocus();
@@ -213,9 +221,10 @@
 				case TvKeys.RIGHT:
 					let gridCanMoveRight = (currentPos[1] + 1 < currentRowContent.length );
 
-					if (this.viewIndex == ViewIndexes.NAVIGATION) {
-						this.navView.incrementTab();
-					} else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveRight) {
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	this.navView.incrementTab();
+					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveRight) {
+					if (gridCanMoveRight) {
 						this.gridView.unfocusThumbnails();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.setFocus();
@@ -228,21 +237,22 @@
 
 				case TvKeys.ENTER:
 					
-					// Nav View
-					if (this.viewIndex == ViewIndexes.NAVIGATION) {
-						let currentTab = this.navView.currentTab();
+					// // Nav View
+					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
+					// 	let currentTab = this.navView.currentTab();
 
-						if (currentTab.role == "home") {
-							this.navView.unfocusTabs();
-							this.viewIndex = ViewIndexes.MEDIAGRID;
-							this.gridView.setFocus();
-						} else if (currentTab.role == "account") {
-							let controllerArgs = {};
-							this.createController(AccountController, controllerArgs);
-						}
+					// 	if (currentTab.role == "home") {
+					// 		this.navView.unfocusTabs();
+					// 		this.viewIndex = ViewIndexes.MEDIAGRID;
+					// 		this.gridView.setFocus();
+					// 	} else if (currentTab.role == "account") {
+					// 		let controllerArgs = {};
+					// 		this.createController(AccountController, controllerArgs);
+					// 	}
 
-					// Grid View
-					} else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
+					// // Grid View
+					// } else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
+
 						let itemSelected = this.focusedContent();
 
 						if (itemSelected.content){
@@ -259,7 +269,8 @@
 								});
 							}
 						}
-					}
+
+					// }
 					break;
 
 				case TvKeys.RETURN:
