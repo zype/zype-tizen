@@ -9,7 +9,9 @@
 			"hide",
 			"close",
 			"networkDisconnect",
-			"networkReconnect"
+			"networkReconnect",
+			"enterBackgroundState",
+			"returnBackgroundState"
 		]);
 
 		var _this = this;
@@ -86,6 +88,9 @@
 		 */
 		this.handleNetworkDisconnect = () => {};
 		this.handleNetworkReconnect = () => {};
+
+		this.enterBackgroundState = () => {};
+		this.returnBackgroundState = () => {};
 
 		/**
 		 * Event Handlers
@@ -211,6 +216,8 @@
 		this.registerHandler("close", this.close, this);
 		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
 		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
+		this.registerHandler("enterBackgroundState", this.enterBackgroundState, this);
+		this.registerHandler("returnBackgroundState", this.returnBackgroundState, this);
 	};
 
 	exports.VideoDetailsController = VideoDetailsController;

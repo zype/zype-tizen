@@ -202,6 +202,16 @@
 			currentController.trigger("networkReconnect");
 		};
 
+		this.handleVisibilityChange = () => {
+			let currentController = this.currentController();
+
+			if (document.hidden) {
+				currentController.trigger("enterBackgroundState");
+			} else {
+				currentController.trigger("returnBackgroundState");
+			}
+		};
+
 		/**
 		 * Register event handlers
 		 */
@@ -211,7 +221,6 @@
 		this.registerHandler("buttonPress", this.handleButtonPress, this);
 		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
 		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
-
 
 		$(document).keydown(e => {
 			let networkConnected = NativePlatform.isNetworkConnected();
@@ -242,6 +251,8 @@
 		// In case user deep links within app
 		NativePlatform.setReLinkCallback(this.createControllerCallback);
 		window.addEventListener('appcontrol', NativePlatform.handleReLink);
+
+		document.addEventListener('visibilitychange', this.handleVisibilityChange);
 	};
 
 	exports.AppController = AppController;

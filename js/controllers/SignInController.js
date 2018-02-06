@@ -10,7 +10,9 @@
 			"close",
 			"signIn",
 			"networkDisconnect",
-			"networkReconnect"
+			"networkReconnect",
+			"enterBackgroundState",
+			"returnBackgroundState"
 		]);
 
 		let _this = this;
@@ -193,6 +195,9 @@
 		this.handleNetworkDisconnect = () => {};
 		this.handleNetworkReconnect = () => {};
 
+		this.enterBackgroundState = () => {};
+		this.returnBackgroundState = () => {};
+
 		this.registerHandler("loadComplete", this.show, this);
 		this.registerHandler("buttonPress", this.handleButtonPress, this);
 		this.registerHandler("show", this.show, this);
@@ -201,6 +206,8 @@
 		this.registerHandler("signIn", this.signIn, this);
 		this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
 		this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
+		this.registerHandler("enterBackgroundState", this.enterBackgroundState, this);
+		this.registerHandler("returnBackgroundState", this.returnBackgroundState, this);
 	};
 
 	if (!exports.SignInController) { exports.SignInController = SignInController; };
