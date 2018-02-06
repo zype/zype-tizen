@@ -32,6 +32,7 @@ IT or developer support strongly recommended. Creating the final app package req
 - Within the `widget`, set the `< COMPANY WEBSITE >` in the `id` with your company or app's website.
 - Inside `tizen:display-name` set `< COMPANY NAME >` to your company's name.
 - Inside `tizen:application` set `< APP NAME >` in the `id` with the name of your app. Be sure to remove the whitespace. _Example:_ If your app name is `Intergalactic Sports Network`, the app name in the id should be `randomId.IntergalacticSportsNetwork`.
+- Under `author`, replace `< COMPANY WEBSITE >`, `< CONTACT EMAIL >` and `< COMPANY NAME >` with the name and contact info of your company.
 - Under `tizen:metadata`, set the `endpoint_URL` with the URL of your Preview JSON. For more information on the Samsung Preview and it's the requirements, see: [http://developer.samsung.com/tv/develop/guides/smart-hub-preview](http://developer.samsung.com/tv/develop/guides/smart-hub-preview). The `action_data` sent is a `videoId` with the video id for the video on Zype. For an example of the preview JSON file, see [http://zype.mixicon.com/tizen/samsung.json](http://zype.mixicon.com/tizen/samsung.json).
 
 4. Replace image assets. __**Note:**__ You will need addition assets when submitting to the Samsung TV marketplace. These are only the images required within the app itself.

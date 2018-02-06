@@ -14,6 +14,7 @@
 	<tizen:setting pointing-device-support="disable" />
 
 	<tizen:application id="qiVQ28GSXC.< APP NAME >" package="qiVQ28GSXC" required_version="3.0"/>
+	<author href="< COMPANY WEBSITE >" email="< CONTACT EMAIL >">< COMPANY NAME ></author>
 	<content src="index.html"/>
 	<feature name="http://tizen.org/feature/screen.size.all"/>
 	<icon src="icon.png"/>
