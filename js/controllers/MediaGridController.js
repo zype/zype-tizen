@@ -33,12 +33,16 @@
 		this.playlistLevel = null;
 		this.mediaContent = [];
 
+		this.controllerIndex = null;
+
 		this.gridView = null;
 		this.navView = null;
+		this.confirmExitView = null;
 
 		const ViewIndexes = {
 			NAVIGATION: 0,
-			MEDIAGRID: 1
+			MEDIA_GRID: 1,
+			CONFIRM_DIALOG: 2
 		};
 
 		this.viewIndex = null;
@@ -57,6 +61,8 @@
 
 			let args = options.args;
 			let callbacks = options.callbacks;
+
+			this.controllerIndex = args.controllerIndex;
 
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
@@ -105,6 +111,8 @@
 
 		this.handleData = data => {
 			this.mediaContent = data;
+			this.viewIndex = ViewIndexes.MEDIA_GRID;
+
 			this.createView();
 
 			// TODO: remove in future when adding nav bar back
@@ -151,6 +159,18 @@
 			// let navView = new NavigationView();
 			// navView.init(navViewArgs);
 			// this.navView = navView;
+
+
+			let dialogViewArgs = { 
+				id: "controller-" + String(this.controllerIndex) + "-dialog",
+				text: "Do you wish to exit the app?",
+				confirmText: "Okay",
+				cancelText: "Cancel"
+			 };
+
+			 let dialogView = new ConfirmDialogView();
+			 dialogView.init(dialogViewArgs);
+			 this.confirmExitView = dialogView;
 		};
 
 		/**
@@ -164,9 +184,10 @@
 				case TvKeys.UP:					
 					let gridCanMoveUp = (currentPos && currentPos[0] - 1 > -1);
 
-					// not at top row of grid view
-					if (gridCanMoveUp) {
-						
+					if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+						// do nothing
+					} else if (gridCanMoveUp) {
+						// not at top row of grid view
 						this.gridView.shiftRowsDown();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
@@ -193,7 +214,9 @@
 
 					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
 
-					if (gridCanMoveDown) {
+						if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+							// do nothing
+						} else if (gridCanMoveDown) {
 
 						this.gridView.shiftRowsUp();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
@@ -208,7 +231,9 @@
 					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
 					// 	this.navView.decrementTab();
 					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveLeft) {
-					if (gridCanMoveLeft) {
+					if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+						this.confirmExitView.trigger("focusConfirm");
+					} else if (gridCanMoveLeft) {
 						this.gridView.unfocusThumbnails();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.setFocus();
@@ -226,7 +251,9 @@
 					// if (this.viewIndex == ViewIndexes.NAVIGATION) {
 					// 	this.navView.incrementTab();
 					// } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) && gridCanMoveRight) {
-					if (gridCanMoveRight) {
+					if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+						this.confirmExitView.trigger("focusCancel");
+					} else if (gridCanMoveRight) {
 						this.gridView.unfocusThumbnails();
 						this.gridView.currentPosition = this.getNewPosition(buttonPress);
 						this.gridView.setFocus();
@@ -252,8 +279,20 @@
 					// 		this.createController(AccountController, controllerArgs);
 					// 	}
 
+
+					if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+						let exitApp = this.confirmExitView.value;
+
+						if (exitApp) {
+							// AppController exits app if no more controllers
+							this.removeSelf();
+						} else {
+							this.confirmExitView.trigger("hide");
+							this.viewIndex = ViewIndexes.MEDIA_GRID;
+							this.gridView.setFocus();
+						}
 					// // Grid View
-					// } else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
+					} else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
 
 						let itemSelected = this.focusedContent();
 
@@ -272,12 +311,19 @@
 							}
 						}
 
-					// }
+					}
 					break;
 
 				case TvKeys.RETURN:
 				case TvKeys.BACK:
-					this.removeSelf();
+					if (this.controllerIndex == 0 && (this.viewIndex != ViewIndexes.CONFIRM_DIALOG)) {
+						this.viewIndex = ViewIndexes.CONFIRM_DIALOG;
+						this.confirmExitView.trigger("show");
+					} else {
+						this.viewIndex = ViewIndexes.MEDIA_GRID;
+						this.confirmExitView.trigger("hide");
+					}
+
 					break;
 
 				default:

@@ -15,7 +15,9 @@
 		]);
 
 		let _this = this;
-		
+
+		this.controllerIndex = null;
+
 		this.view = null;
 		this.buttons = [];
 		this.buttonIndex = null;
@@ -31,6 +33,8 @@
 
 			let args = options.args;
 			let callbacks = options.callbacks;
+
+			this.controllerIndex = args.controllerIndex;
 
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;

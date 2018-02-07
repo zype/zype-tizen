@@ -25,6 +25,7 @@ $(document).ready(() => {
 			$.getScript("js/models/PlaylistModel.js"),
 
 			// Views
+			$.getScript("js/views/ConfirmDialogView.js"),
 			$.getScript("js/views/AccountView.js"),
 			$.getScript("js/views/NavigationView.js"),
 			$.getScript("js/views/CredentialsInputView.js"),
