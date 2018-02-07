@@ -15,7 +15,9 @@
 		]);
 
 		var _this = this;
-		
+
+		this.controllerIndex = null;
+
 		this.view = null;
 
 		/**
@@ -32,6 +34,8 @@
 
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
+
+			this.controllerIndex = args.controllerIndex;
 
 			var viewArgs = {
 				title: args.title,

@@ -123,6 +123,7 @@
 
 			let newController = new controller();
 
+			args.controllerIndex = this.controllers.length;
 
 			newController.init({
 				args: args,
@@ -136,16 +137,16 @@
 		};
 
 		this.removeCurrentController = () => {
-			if (this.controllers.length > 1){
+			if (this.controllers.length > 0){
 				let oldController = this.controllers.pop();
 				oldController.trigger("close");
 
-				let currentController = this.currentController();
-				currentController.trigger("show");
-
-			// only controller. confirm app exit
-			} else {
-				this.confirmAppExit();
+				if (this.controllers.length == 0){
+					this.exitApp();
+				} else {
+					let currentController = this.currentController();
+					currentController.trigger("show");
+				}
 			}
 		};
 
