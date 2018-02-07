@@ -202,8 +202,8 @@
 
 			let thumbnailRight = thumbnailInfo.left + (1.25 * thumbnailInfo.width);
 
-			let touchesLeft = (thumbnailRight.left <= 0 || thumbnailRight <= 0);
-			let touchesRight = (thumbnailRight.left >= htmlWidth || thumbnailRight >= htmlWidth);
+			let touchesLeft = (thumbnailInfo.left <= 0 || thumbnailRight <= 0);
+			let touchesRight = (thumbnailInfo.left >= htmlWidth || thumbnailRight >= htmlWidth);
 
 			return (touchesLeft || touchesRight);
 		};
