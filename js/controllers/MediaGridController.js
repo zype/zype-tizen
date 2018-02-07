@@ -97,6 +97,11 @@
 				this.gridView = null;
 			}
 
+			if (this.confirmExitView) {
+				this.confirmExitView.trigger("close");
+				this.confirmExitView = null;
+			}
+
 			// if (this.navView) {
 			// 	this.navView.trigger("close");
 			// 	this.navView = null;
