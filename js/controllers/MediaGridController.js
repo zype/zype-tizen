@@ -292,7 +292,7 @@
 							this.gridView.setFocus();
 						}
 					// // Grid View
-					} else if (this.viewIndex == ViewIndexes.MEDIAGRID) {
+					} else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
 
 						let itemSelected = this.focusedContent();
 
@@ -319,9 +319,11 @@
 					if (this.controllerIndex == 0 && (this.viewIndex != ViewIndexes.CONFIRM_DIALOG)) {
 						this.viewIndex = ViewIndexes.CONFIRM_DIALOG;
 						this.confirmExitView.trigger("show");
-					} else {
+					} else if (this.controllerIndex == 0) {
 						this.viewIndex = ViewIndexes.MEDIA_GRID;
 						this.confirmExitView.trigger("hide");
+					} else {
+						this.removeSelf();
 					}
 
 					break;
