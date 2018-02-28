@@ -38,7 +38,9 @@ $(document).ready(() => {
 			$.getScript("js/controllers/SignInController.js"),
 			$.getScript("js/controllers/AccountController.js"),
 			$.getScript("js/controllers/DialogController.js"),
-			$.getScript(nativePlatformLibs.nativePlayerController),
+			// $.getScript(nativePlatformLibs.nativePlayerController),
+			$.getScript("js/controllers/VideoPlayerController.js"),
+
 			$.getScript("js/controllers/VideoDetailsController.js"),
 			$.getScript("js/controllers/MediaGridController.js"),
 

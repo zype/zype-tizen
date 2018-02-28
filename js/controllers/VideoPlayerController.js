@@ -24,6 +24,7 @@
 
 		this.view = null;
 
+		this.player = null;
 		this.playerReady = false;
 
 		/**
@@ -95,46 +96,60 @@
 		 * Helpers
 		 */ 
 		this.preparePlayer = () => {
-			// clear out old player	
-			$("#zype_player").empty();
+			$(".zype-player").empty();
 
-			let playerScript = this.playerInfo.body;
-			let attachZypePlayer = () => new Function(playerScript);
+			let zypePlayer = document.querySelector(".zype-player");
+			this.player = new THEOplayer.Player(zypePlayer, {
+				libraryLocation: "lib/theoplayer",
+				allowNativeFullscreen: true
+			});
 
-			let zypePlayerCallback = () => {
+			let source = null;
 
-				if (typeof theoplayer !== "undefined" && typeof theoplayer.player !== "undefined" && typeof theoplayer.player(0) !== "undefined") {
+			if (this.playerInfo.body) {
+				let body = this.playerInfo.body;
+				source = body.outputs[0] || body.files[0];
+			}
+
+			if (source) {
+				let type = (source.name == "m3u8" || source.name == "hls") ? 
+						"application/x-mpegurl" : 
+						"application/dash+xml";
+
+				this.player.source = {
+					sources: [{
+						src: source.url,
+						type: type
+					}]
+				};
+				this.player.volume = 1;
+				this.player.autoplay = false;
+				this.player.controls = false;
+
+				this.player.addEventListener("timeupdate", e => _this.trigger("updateViewTime") );
+				this.player.addEventListener("ended", e=> _this.removeSelf() );
+				this.player.addEventListener("error", e => console.log(e.error) );
+
+				let playerReadyCallback = () => {
 					_this.view.trigger("updateTime", 0);
 					_this.view.trigger("updateState", "playing");
 					_this.view.trigger("loadComplete");
 					_this.view.trigger("fadeOut", fadeTime);
 
-					theoplayer.player(0).addEventListener("timeupdate", e => {
-						_this.trigger("updateViewTime");
-					});
-					theoplayer.player(0).addEventListener("ended", () => {
-						_this.removeSelf();
-					});
-
-					theoplayer.player(0).volume = 1;
-					theoplayer.player(0).controls = false;
-					theoplayer.player(0).play();
-
-
+					_this.player.play();
 					hideSpinner();
 					_this.playerReady = true;
+				};
 
-				} else {
-					console.log("theoplayer not ready");
-					setTimeout(zypePlayerCallback, 500);
-				}
+				this.player.addEventListener("readystatechange", e => {
+					if (e.readyState == 4) playerReadyCallback();
+				});
 
-			};
-
-			(attachZypePlayer())();
-
-			zypePlayerCallback();
-			
+				this.player.play();
+			}
+			else {
+				this.removeSelf();
+			}
 		};
 
 		this.prepareRemote = () => {
@@ -156,7 +171,7 @@
 		// called which the video player is running
 		this.updateViewCurrentTime = () => {
 			try {
-				let currentTime = theoplayer.player(0).currentTime || 0;
+				let currentTime = this.player.currentTime || 0;
 
 				if (this.view && currentTime){
 					this.view.trigger("updateTime", [currentTime]);
@@ -176,8 +191,8 @@
 
 		this.close = () => {
 			try {
-				theoplayer.destroy(0);
-				$("#zype_player").empty();
+				this.player.destroy();
+				$(".zype-player").addClass("invisible");
 			} catch(e){
 				console.log(e);
 			}
@@ -203,14 +218,14 @@
 
 							this.playerReady = false;
 
-							let currentTime = theoplayer.player(0).currentTime;
-							theoplayer.player(0).currentTime = currentTime - 10;
+							let currentTime = this.player.currentTime;
+							this.player.currentTime = currentTime - 10;
 
 							this.updateViewCurrentTime();
 							this.view.trigger("updateState", "playing");
 							this.view.fadeOut(fadeTime);
 
-							theoplayer.player(0).play();
+							this.player.play();
 							this.playerReady = true;
 						} catch(e){ 
 							console.log(e);
@@ -227,14 +242,14 @@
 
 							this.playerReady = false;
 
-							let currentTime = theoplayer.player(0).currentTime;
-							theoplayer.player(0).currentTime = currentTime + 10;
+							let currentTime = this.player.currentTime;
+							this.player.currentTime = currentTime + 10;
 
 							this.updateViewCurrentTime();
 							this.view.trigger("updateState", "playing");
 							this.view.fadeOut(fadeTime);
 
-							theoplayer.player(0).play();
+							this.player.play();
 							this.playerReady = true;
 						} catch(e){ 
 							console.log(e);
@@ -245,7 +260,7 @@
 				case TvKeys.ENTER:
 				case TvKeys.PLAYPAUSE:
 					try {
-						let paused = theoplayer.player(0).paused;
+						let paused = this.player.paused;
 
 						this.updateViewCurrentTime();
 
@@ -255,12 +270,12 @@
 							this.view.fadeIn();
 							this.view.fadeOut(fadeTime);
 
-							theoplayer.player(0).play();
+							this.player.play();
 						} else {
 							this.view.trigger("updateState", "paused");
 							this.view.fadeIn();
 
-							theoplayer.player(0).pause();
+							this.player.pause();
 						}
 						this.playerReady = true;
 
@@ -276,7 +291,7 @@
 						this.view.fadeIn();
 						this.view.fadeOut(fadeTime);
 
-						theoplayer.player(0).play();
+						this.player.play();
 						this.playerReady = true;
 
 					} catch (error) {
@@ -289,7 +304,7 @@
 						this.updateViewCurrentTime();
 						this.view.trigger("updateState", "paused");
 						this.view.fadeIn();
-						theoplayer.player(0).pause();
+						this.player.pause();
 						this.playerReady = true;
 					} catch (error) {
 						console.log(e);
@@ -315,34 +330,51 @@
 		 */
 		this.handleNetworkDisconnect = () => {
 			try {
+				this.player.pause();
+
 				this.updateViewCurrentTime();
 				this.view.trigger("updateState", "paused");
-				theoplayer.player(0).pause();
+
+				console.log("Network disconnect");
 			} catch(e){}
 		};
 
 		this.handleNetworkReconnect = () => {
 			try {
+				this.player.play();
+
 				this.view.fadeIn();
 				this.updateViewCurrentTime();
 				this.view.trigger("updateState", "playing");
 
 				this.view.fadeOut(fadeTime);
 
-				theoplayer.player(0).play();
+				console.log("Network reconnect");
 			} catch(e){}
 		};
 
 		this.enterBackgroundState = () => {
 			try {
-				theoplayer.player(0).pause();
+				this.player.pause();
 				console.log("Suspending");
 			} catch(e){}
 		};
 
 		this.returnBackgroundState = () => {
 			try {
-				theoplayer.player(0).play();
+				let callback = () => {
+					if (this.player.paused) this.player.play();
+					console.log("Playing video");
+				};
+
+				setTimeout(callback, 500);
+
+				this.view.fadeIn();
+				this.updateViewCurrentTime();
+				this.view.trigger("updateState", "playing");
+
+				this.view.fadeOut(fadeTime);
+
 				console.log("Restoring");
 			} catch(e){}
 		};

@@ -1,5 +1,6 @@
 body video,
-#zype_player {
+#zype_player,
+body .zype-player {
 	height: 100%;
 	width: 100%;
 	top: 0;
