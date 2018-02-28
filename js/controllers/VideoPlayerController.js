@@ -27,6 +27,8 @@
 		this.player = null;
 		this.playerReady = false;
 
+		this.analyticsManager = null;
+
 		/**
 		 * Callbacks
 		 */
@@ -60,7 +62,7 @@
 		 * Event handlers
 		 */ 
 		this.handlePlayerResp = resp => {
-			_this.playerInfo = resp;
+			this.playerInfo = resp;
 
 			this.createView();
 			this.prepareRemote();
@@ -126,26 +128,40 @@
 				this.player.autoplay = false;
 				this.player.controls = false;
 
-				this.player.addEventListener("timeupdate", e => _this.trigger("updateViewTime") );
-				this.player.addEventListener("ended", e=> _this.removeSelf() );
-				this.player.addEventListener("error", e => console.log(e.error) );
+				let analyticsInfo = FormatHelpers.getAkamaiAnalytics(this.playerInfo, {});
 
-				let playerReadyCallback = () => {
-					_this.view.trigger("updateTime", 0);
+				this.analyticsManager = new VideoAnalyticsManager(analyticsInfo);
+				this.analyticsManager.handleInitSession();
+
+				this.player.addEventListener("play", this.analyticsManager.handlePlay);
+				
+				this.player.addEventListener("ended", e => {
+					_this.analyticsManager.handleEnd("Play ended");
+					_this.removeSelf();
+				});
+				
+				this.player.addEventListener("paused", this.analyticsManager.handlePause);
+				this.player.addEventListener("error", this.analyticsManager.handleError);
+				this.player.addEventListener("waiting", this.analyticsManager.handleBufferStart);
+				this.player.addEventListener("playing", this.analyticsManager.handleBufferEnd);
+				this.player.addEventListener("ratechange", e => {
+					this.analyticsManager.handleBitRateChange(e.playbackRate);
+				});
+
+				// update player view
+				this.player.addEventListener("timeupdate", e => _this.trigger("updateViewTime") );
+
+				this.player.addEventListener("canplaythrough", e => {
+					_this.view.trigger("updateTime", e.currentTime);
 					_this.view.trigger("updateState", "playing");
 					_this.view.trigger("loadComplete");
 					_this.view.trigger("fadeOut", fadeTime);
 
-					_this.player.play();
 					hideSpinner();
-					_this.playerReady = true;
-				};
-
-				this.player.addEventListener("readystatechange", e => {
-					if (e.readyState == 4) playerReadyCallback();
 				});
 
 				this.player.play();
+				this.playerReady = true;
 			}
 			else {
 				this.removeSelf();
@@ -312,11 +328,13 @@
 					break;
 
 				case TvKeys.STOP:
+					this.analyticsManager.handleEnd("Viewer stopping watching");
 					this.removeSelf();
 					break;
 
 				case TvKeys.BACK:
 				case TvKeys.RETURN:
+					this.analyticsManager.handleEnd("Viewer stopping watching");
 					this.removeSelf();
 					break;
 
@@ -331,6 +349,7 @@
 		this.handleNetworkDisconnect = () => {
 			try {
 				this.player.pause();
+				this.analyticsManager.handleAppExit();
 
 				this.updateViewCurrentTime();
 				this.view.trigger("updateState", "paused");
@@ -356,6 +375,7 @@
 		this.enterBackgroundState = () => {
 			try {
 				this.player.pause();
+				this.analyticsManager.handleAppExit();
 				console.log("Suspending");
 			} catch(e){}
 		};

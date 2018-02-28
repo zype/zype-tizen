@@ -1,11 +1,11 @@
 (function(exports){
-    "use strict";
+	"use strict";
 
-    var ObjectHelpers = function(){
-        this.getObjectName = function(obj){
-            return obj.constructor.name;
-        };
-    };
+	let ObjectHelpers = function(){
+		this.getObjectName = obj => obj.constructor.name;
 
-    exports.ObjectHelpers = new ObjectHelpers();
+		this.isObjectEmpty = obj => Object.keys(obj).length === 0;
+	};
+
+	exports.ObjectHelpers = new ObjectHelpers();
 })(window);
