@@ -137,10 +137,12 @@
 						_this.gridView.trigger("hide");
 						_this.createController(VideoDetailsController, { video: resp.response });
 					},
-					err => { hideSpinner(); }
+					err => { 
+						setTimeout(() => hideSpinner(), 250); 
+					}
 				);
 			} else {
-				hideSpinner();
+				setTimeout(() => hideSpinner(), 250);
 			}
 
 			exports.deepLinkedData = null;

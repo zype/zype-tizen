@@ -1,4 +1,5 @@
-let VideoAnalyticsManager = function(args){
+var VideoAnalyticsManager = function(args){
+	"use strict";
 
 	window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = args.beacon;
 
