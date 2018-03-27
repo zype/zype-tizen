@@ -18,6 +18,10 @@ $(document).ready(() => {
 
 			$.getScript("js/helpers/zype-api-helpers.js"),
 			$.getScript("js/helpers/css-helpers.js"),
+			$.getScript("js/helpers/format-helpers.js"),
+
+			$.getScript("lib/akamai/akamai.min.js"),
+			$.getScript("js/services/VideoAnalyticsManager.js"),
 
 			// Models
 			$.getScript(nativePlatformLibs.keyCodes),

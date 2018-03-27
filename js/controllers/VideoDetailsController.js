@@ -114,7 +114,27 @@
 			this.view = view;
 
 			this.updateButtons();
-			hideSpinner();
+
+			if(exports.deepLinkedData) {
+				let videoId = this.content._id;
+
+				let auth = {};
+				if (localStorage.getItem("accessToken")) {
+					auth = { access_token: localStorage.getItem("accessToken") };
+				} else {
+					auth = { app_key: zypeApi.appKey };
+				}
+
+				this.createController(VideoPlayerController, {
+					videoId: videoId,
+					auth: auth
+				});
+
+				exports.deepLinkedData = null;
+			}
+			else {
+				hideSpinner();
+			}
 		};
 
 		this.handleButtonPress = function(buttonPress){

@@ -125,6 +125,8 @@
 
 			args.controllerIndex = this.controllers.length;
 
+			this.controllers.push(newController);
+
 			newController.init({
 				args: args,
 				callbacks: {
@@ -132,8 +134,6 @@
 					removeController: this.removeControllerCallback
 				}
 			});
-
-			this.controllers.push(newController);
 		};
 
 		this.removeCurrentController = () => {
