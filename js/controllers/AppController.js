@@ -144,6 +144,7 @@
 				if (this.controllers.length == 0){
 					this.exitApp();
 				} else {
+					hideSpinner();
 					let currentController = this.currentController();
 					currentController.trigger("show");
 				}
