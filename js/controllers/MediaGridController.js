@@ -142,8 +142,6 @@
 			} else {
 				hideSpinner();
 			}
-
-			exports.deepLinkedData = null;
 		};
 
 		this.createView = () => {

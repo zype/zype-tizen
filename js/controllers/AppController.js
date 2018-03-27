@@ -125,6 +125,8 @@
 
 			args.controllerIndex = this.controllers.length;
 
+			this.controllers.push(newController);
+
 			newController.init({
 				args: args,
 				callbacks: {
@@ -132,8 +134,6 @@
 					removeController: this.removeControllerCallback
 				}
 			});
-
-			this.controllers.push(newController);
 		};
 
 		this.removeCurrentController = () => {
@@ -144,6 +144,7 @@
 				if (this.controllers.length == 0){
 					this.exitApp();
 				} else {
+					hideSpinner();
 					let currentController = this.currentController();
 					currentController.trigger("show");
 				}
