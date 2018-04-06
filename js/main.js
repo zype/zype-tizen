@@ -22,6 +22,7 @@ $(document).ready(() => {
 
 			$.getScript("lib/akamai/akamai.min.js"),
 			$.getScript("js/services/VideoAnalyticsManager.js"),
+			$.getScript("js/services/AdsService.js"),
 
 			// Models
 			$.getScript(nativePlatformLibs.keyCodes),
