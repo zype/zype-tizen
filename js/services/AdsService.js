@@ -57,6 +57,16 @@
 			}
 		};
 
+		// closeAdManager() cleans up adsManager when the user is not watching video
+		this.closeAdManager = () => {
+			try {
+				if (this.adsManager) {
+					if (this.adsManager.getRemainingTime() > 0) this.adsManager.stop();
+					this.adsManager.destroy();
+				}
+			} catch(e) { console.error(e); }
+		};
+
 		// onManagerLoaded() - creates this.adsManager when ad request is fulfilled
 		this.onManagerLoaded = adsManagerLoadedEvent => {
 			console.log("Ads manager loaded: ");
@@ -81,6 +91,10 @@
 			this.adsManager.addEventListener(
 				google.ima.AdEvent.Type.COMPLETE,
 				_this.onResumeRequested
+			);
+			this.adsManager.addEventListener(
+				google.ima.AdEvent.Type.STARTED,
+				function(){ hideSpinner(); }
 			);
 
 			try {
