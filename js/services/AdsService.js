@@ -26,6 +26,7 @@
 			this.hideAdPlayer();
 
 			// resume video
+			hideSpinner();
 			this.resumeVideoPlayerCallback();
 
 			try {
@@ -40,6 +41,7 @@
 			try {
 				console.log("Pausing for ad...");
 				this.showAdPlayer();
+				hideSpinner();
 				this.pauseVideoPlayerCallback();
 			} catch(e){
 				console.log(e);
@@ -51,6 +53,7 @@
 			try {
 				console.log("Coming back from ad...");
 				this.hideAdPlayer();
+				hideSpinner();
 				this.resumeVideoPlayerCallback();
 			} catch(e){
 				console.log(e);
