@@ -96,13 +96,21 @@
 				_this.onResumeRequested
 			);
 			this.adsManager.addEventListener(
+				google.ima.AdEvent.Type.LOADED,
+				function(adEvent){
+					let ad = adEvent.getAd();
+
+					if (ad.isLinear()) { this.start(); }
+					else { _this.onResumeRequested(); }
+				}
+			);
+			this.adsManager.addEventListener(
 				google.ima.AdEvent.Type.STARTED,
 				function(){ hideSpinner(); }
 			);
 
 			try {
 				this.adsManager.init(window.innerWidth, window.innerHeight, google.ima.ViewMode.NORMAL);
-				this.adsManager.start();
 			} catch(e) {
 				this.hideAdPlayer();
 				this.resumeVideoPlayerCallback();
