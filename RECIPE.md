@@ -35,7 +35,7 @@ IT or developer support strongly recommended. Creating the final app package req
 - Under `author`, replace `< COMPANY WEBSITE >`, `< CONTACT EMAIL >` and `< COMPANY NAME >` with the name and contact info of your company.
 - Under `tizen:metadata`, set the `endpoint_URL` with the URL of your Preview JSON. For more information on the Samsung Preview and it's the requirements, see: [http://developer.samsung.com/tv/develop/guides/smart-hub-preview](http://developer.samsung.com/tv/develop/guides/smart-hub-preview). The `action_data` sent is a `videoId` with the video id for the video on Zype. For an example of the preview JSON file, see [http://zype.mixicon.com/tizen/samsung.json](http://zype.mixicon.com/tizen/samsung.json).
 
-```json
+```
 // Required JSON format
 {
   "sections": [
