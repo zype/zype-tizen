@@ -33,7 +33,8 @@
 				buttons: this.buttons,
 				css: args.css,
 				images: {
-					appIcon: appDefaults.appIconUrl
+					appIcon: appDefaults.appIconUrl,
+					overlay: (appDefaults.theme == "dark-theme" ? "overlay.png" : "whiteoverlay.png")
 				}
 			};
 
