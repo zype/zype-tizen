@@ -32,9 +32,33 @@
             {{#each rowData}}
             <div class="media-grid-row {{thumbnailLayout}} ">
                 <div class="media-grid-row-title-container">
-                    <h2 class="media-grid-row-title {{ ../css.classes.theme }} ellipsis-text">{{title}}</h2>
+                    <h2 class="media-grid-row-title {{ ../css.classes.theme }} ellipsis-text">
+                        {{#ifCond colorObj.playlist_title_font_color "!=" null}}
+                            <!-- playlist title font color -->
+                            <font color="#{{colorObj.playlist_title_font_color}}">{{title}}</font>
+                        {{/ifCond}}
+
+                        {{#ifCond colorObj.playlist_title_font_color "==" null}}
+                            <!-- default -->
+                            {{title}}
+                        {{/ifCond}}
+                    </h2>
                 </div>
 
+                {{#ifCond colorObj.playlist_bg_color "!=" null}}
+                <!-- playlist background color -->
+                <div class="media-grid-row-thumbnails-container" style="background-color: #{{colorObj.playlist_bg_color}};">
+                    {{#each content}}
+                        <img
+                            src="{{smallThumbnailUrl}}"
+                            alt="Small thumbnail for {{title}}"
+                            class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
+                    {{/each}}
+                </div>
+                {{/ifCond}}
+
+                {{#ifCond colorObj.playlist_bg_color "==" null}}
+                <!-- default -->
                 <div class="media-grid-row-thumbnails-container">
                     {{#each content}}
                         <img
@@ -43,6 +67,7 @@
                             class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
                     {{/each}}
                 </div>
+                {{/ifCond}}
             </div>
             {{/each}}
 

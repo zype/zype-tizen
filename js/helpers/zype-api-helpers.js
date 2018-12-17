@@ -32,6 +32,7 @@
                                     ]);
 
                                     playlistChildrenArray.push({
+                                        id: playlists[i]._id,
                                         type: "videos",
                                         title: playlists[i].title,
                                         thumbnailLayout: playlists[i].thumbnail_layout
@@ -45,6 +46,7 @@
                                     ]);
 
                                     playlistChildrenArray.push({
+                                        id: playlists[i]._id,
                                         type: "playlists",
                                         title: playlists[i].title,
                                         thumbnailLayout: playlists[i].thumbnail_layout
