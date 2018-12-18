@@ -100,23 +100,19 @@
     left: 0;
     width: 100%;
 
-    padding-left: 7.5%;
     padding-bottom: 0.5em;
 }
 
 .media-grid-row.landscape {
-    height: 35vh;
-    max-height: 35vh;
 }
 
 .media-grid-row.poster {
-    height: 45vh;
-    max-height: 45vh;
 }
 
 .media-grid-row-title-container {
     max-width: 40%;
     margin-bottom: 0.75em;
+    margin-left: 7.5%;
 }
 
 .media-grid-row-title {
@@ -125,10 +121,17 @@
 }
 
 .media-grid-row-thumbnails-container {
+    min-height: 80%;
+    width: 100%;
+}
+
+.media-grid-row-thumbnails {
     display: block;
     white-space: nowrap;
     width: 100%;
-    height: 80%;
+    height: 100%;
+    margin-left: 7.5%;
+    padding: 1.5em 0em;
 }
 
 .media-grid-thumbnail {

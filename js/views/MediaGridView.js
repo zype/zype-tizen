@@ -14,6 +14,7 @@
 		// MARK: - HTML ids
 		let templateId = "#media-grid-view-template";
 		let mediaGridContainerId = "#media-grid-container";
+		const rowLeftMargin = "7.5%";
 
 		// MARK: - Properties
 		this.id = null;
@@ -130,8 +131,8 @@
 		 * @param {*} rowIndex - index of row to be reset
 		 */
 		this.resetRowMarginAt = rowIndex => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[rowIndex];
-			$(row).css({ "margin-left": "0px" });
+			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[rowIndex];
+			$(row).css({ "margin-left": rowLeftMargin });
 		};
 
 		// shiftRowsUp() moves all rows up
@@ -161,9 +162,9 @@
 		 * @param {Integer} index - row index of row to be shifted left
 		 */
 		this.shiftRowLeftAt = index => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[index];
+			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
 			let thumbnail = $(row).find(".media-grid-thumbnail")[0];
-			let shiftPercentage = (2 * $(thumbnail).width() / $(window).width()) * 100;
+			let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
 
 			let newLeftPosition = this.rowsLeftPositions[index] - shiftPercentage;
 			this.rowsLeftPositions[index] = newLeftPosition;
@@ -175,9 +176,9 @@
 		 * @param {Integer} index - row index of row to be shifted right
 		 */
 		this.shiftRowRightAt = index => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails-container")[index];
+			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
 			let thumbnail = $(row).find(".media-grid-thumbnail")[0];
-			let shiftPercentage = (2 * $(thumbnail).width() / $(window).width()) * 100;
+			let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
 
 			let newLeftPosition = this.rowsLeftPositions[index] + shiftPercentage;
 			this.rowsLeftPositions[index] = newLeftPosition;

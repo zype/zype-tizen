@@ -240,9 +240,9 @@
 
           // } else if ((this.viewIndex == ViewIndexes.MEDIAGRID) &&  gridCanMoveDown) {
 
-            if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
-              // do nothing
-            } else if (gridCanMoveDown) {
+          if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {
+            // do nothing
+          } else if (gridCanMoveDown) {
 
             this.gridView.shiftRowsUp();
             this.gridView.currentPosition = this.getNewPosition(buttonPress);
@@ -266,6 +266,9 @@
 
             if (this.gridView.focusedThumbTouchesEdge()) {
               this.gridView.shiftRowRightAt(this.gridView.currentPosition[0]);
+
+              // if column index is 1 or less, reset margin
+              if (currentPos[1] <= 1) this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
             }
           }
 

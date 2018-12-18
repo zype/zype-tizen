@@ -48,26 +48,21 @@
                 {{#ifCond colorObj.playlist_bg_color "!=" null}}
                 <!-- playlist background color -->
                 <div class="media-grid-row-thumbnails-container" style="background-color: #{{colorObj.playlist_bg_color}};">
-                    {{#each content}}
-                        <img
-                            src="{{smallThumbnailUrl}}"
-                            alt="Small thumbnail for {{title}}"
-                            class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
-                    {{/each}}
-                </div>
                 {{/ifCond}}
 
                 {{#ifCond colorObj.playlist_bg_color "==" null}}
                 <!-- default -->
                 <div class="media-grid-row-thumbnails-container">
-                    {{#each content}}
-                        <img
-                            src="{{smallThumbnailUrl}}"
-                            alt="Small thumbnail for {{title}}"
-                            class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
-                    {{/each}}
-                </div>
                 {{/ifCond}}
+                    <div class="media-grid-row-thumbnails">
+                        {{#each content}}
+                            <img
+                                src="{{smallThumbnailUrl}}"
+                                alt="Small thumbnail for {{title}}"
+                                class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
+                        {{/each}}
+                    </div>
+                </div>
             </div>
             {{/each}}
 
