@@ -4,6 +4,10 @@ var appDefaults = {
 	clientId: "< client id >",
 	clientSecret: "< client secret >",
 	rootPlaylistId: "< root playlist id >",
+	marketplace: {
+		secret: "< marketplace secret >",
+		appId: "< marketplace app id >"
+	}
 	theme: "dark-theme",
 	brandColor: "#ffffff",
 	thumbnailUrl: "assets/images/placeholder.png",
