@@ -7,7 +7,7 @@ var appDefaults = {
 	marketplace: {
 		secret: "< marketplace secret >",
 		appId: "< marketplace app id >"
-	}
+	},
 	theme: "dark-theme",
 	brandColor: "#ffffff",
 	thumbnailUrl: "assets/images/placeholder.png",
