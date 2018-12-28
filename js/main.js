@@ -12,8 +12,6 @@ $(document).ready(() => {
 			$.getScript("js/helpers/spinner.js"),
 
 			// Get dependencies
-			$.getScript("lib/hmac-sha256.js"),
-			$.getScript("lib/enc-base64-min.js"),
 			$.getScript("lib/ZypeEndpoints.js"),
 			$.getScript("lib/ZypeJSBase.js"),
 			$.getScript("lib/EventsHandler.js"),
