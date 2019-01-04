@@ -19,12 +19,13 @@
 
     // MARK: - Properties
     this.id = null;
-    this.currentPosition = [];
+    this.currentPosition = []; // 1-dim array of 2 indexes (row, column)
     this.currentRowsTopPosition = null;
-    this.rowsLeftPositions = [];
+    this.rowsLeftPositions = []; // 1-dim array of row positions
+    this.sliderIndex = null; // integer
 
-    this.mediaContent = null;
-    this.sliders = null;
+    this.mediaContent = null; // 1-dim array of row content
+    this.sliders = null; // 1-dim array of sliders
 
     // Initialization
     this.init = args => {
@@ -54,7 +55,7 @@
       $(mediaGridContainerId).append(renderedTemplate);
 
       // Set dynamic color
-      let selector = ".media-grid-thumbnail.focused-thumbnail";
+      let selector = ".media-grid-thumbnail.focused-thumbnail, .slider .slider-img.focused-slider";
       let properties = { "border": "solid 0.5em " + appDefaults.brandColor };
       let dynamicStyle = CssHelpers.createStyle(selector, properties);
 
@@ -229,6 +230,42 @@
       let touchesRight = (thumbnailInfo.left >= htmlWidth || thumbnailRight >= htmlWidth);
 
       return (touchesLeft || touchesRight);
+    };
+
+    /**
+     * Sliders
+     */
+    this.unfocusSliders = () => {
+      $(this.id + " .slider-img").removeClass("focused-slider");
+    };
+
+    // focusSlider() sets css class to focus slider
+    // - requires this.sliderIndex to be set
+    this.focusSlider = () => {
+      let currentSlider = $(this.id).find(".slider-img")[this.sliderIndex];
+      $(currentSlider).addClass("focused-slider");
+    };
+
+    // moveSliderContainer() sets position of slider container
+    // - requires this.sliderIndex to be set
+    this.moveSliderContainer = () => {
+      // should only have one .slider-container div
+      let sliderContainer = $(this.id + " .sliders-container")[0];
+      let sliderWidth = $(sliderContainer).width();
+      let newLeft = -(this.sliderIndex * sliderWidth);
+
+      $(sliderContainer).css("position", "relative").animate({
+        "left": String(newLeft) + "px"
+      }, 500);
+    };
+
+    this.setFocusedSlider = index => {
+      if (this.sliders[index]) {
+        this.sliderIndex = index;
+        this.unfocusSliders();
+        this.focusSlider();
+        this.moveSliderContainer();
+      }
     };
 
     /**
