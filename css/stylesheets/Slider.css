@@ -1,0 +1,19 @@
+.sliders-container {
+  position: absolute;
+  height: 50%;
+  width: 100%;
+  display: block;
+}
+
+.sliders-container .slider {
+  height: 100%;
+  width: 100%;
+}
+
+.slider .slider-img {
+  width: 100%;
+  object-fit: fill;
+
+  /* debugging */
+  border: solid 1em red;
+}

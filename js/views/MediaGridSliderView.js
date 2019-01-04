@@ -1,255 +1,275 @@
 (function(exports) {
-	"use strict";
+  "use strict";
 
-	// Similar to MediaGridView except with sliders in place of display
-	let MediaGridSliderView = function() {
-		EventsHandler.call(this, [
-			"loadComplete",
-			"show",
-			"hide",
-			"close"
-		]);
+  // Similar to MediaGridView except with sliders in place of display
+  let MediaGridSliderView = function() {
+    EventsHandler.call(this, [
+      "loadComplete",
+      "show",
+      "hide",
+      "close"
+    ]);
 
-		let _this = this;
+    let _this = this;
 
-		// MARK: - HTML ids
-		let templateId = "#media-grid-slider-view-template";
-		let mediaGridContainerId = "#media-grid-slider-container";
-		const rowLeftMargin = "7.5%";
+    // MARK: - HTML ids
+    let templateId = "#media-grid-slider-view-template";
+    let mediaGridContainerId = "#media-grid-slider-container";
+    const rowLeftMargin = "7.5%";
 
-		// MARK: - Properties
-		this.id = null;
-		this.currentPosition = [];
-		this.currentRowsTopPosition = null;
-		this.rowsLeftPositions = [];
+    // MARK: - Properties
+    this.id = null;
+    this.currentPosition = [];
+    this.currentRowsTopPosition = null;
+    this.rowsLeftPositions = [];
 
-		this.mediaContent = null;
+    this.mediaContent = null;
+    this.sliders = null;
 
-		// Initialization
-		this.init = args => {
-			this.mediaContent = args.mediaContent;
-			this.currentPosition = [0, 0];
-			this.currentRowsTopPosition = 0;
+    // Initialization
+    this.init = args => {
+      this.mediaContent = args.mediaContent;
+      this.sliders = args.sliders;
+      this.currentPosition = [0, 0];
+      this.currentRowsTopPosition = 0;
 
-			for (let i = 0; i < this.mediaContent.length; i++) {
-				this.rowsLeftPositions.push(0);
-			}
+      for (let i = 0; i < this.mediaContent.length; i++) {
+        this.rowsLeftPositions.push(0);
+      }
 
-			this.id = "#" + args.css.ids.id;
+      this.id = "#" + args.css.ids.id;
 
-			let context = {
-				rowData: this.mediaContent,
-				css: args.css,
-				images: {
-					appIcon: appDefaults.appIconUrl,
-					overlay: (appDefaults.theme == "dark-theme" ? "overlay.png" : "whiteoverlay.png")
-				}
-			};
+      let context = {
+        rowData: this.mediaContent,
+        sliders: this.sliderInfo(this.sliders),
+        css: args.css,
+        images: {
+          appIcon: appDefaults.appIconUrl,
+          overlay: (appDefaults.theme == "dark-theme" ? "overlay.png" : "whiteoverlay.png")
+        }
+      };
 
-			let template = $(templateId);
-			let renderedTemplate = Utils.buildTemplate(template, context);
-			$(mediaGridContainerId).append(renderedTemplate);
+      let template = $(templateId);
+      let renderedTemplate = Utils.buildTemplate(template, context);
+      $(mediaGridContainerId).append(renderedTemplate);
 
-			// Set dynamic color
-			let selector = ".media-grid-thumbnail.focused-thumbnail";
-			let properties = { "border": "solid 0.5em " + appDefaults.brandColor };
-			let dynamicStyle = CssHelpers.createStyle(selector, properties);
+      // Set dynamic color
+      let selector = ".media-grid-thumbnail.focused-thumbnail";
+      let properties = { "border": "solid 0.5em " + appDefaults.brandColor };
+      let dynamicStyle = CssHelpers.createStyle(selector, properties);
 
-			$(this.id).append(dynamicStyle);
+      $(this.id).append(dynamicStyle);
 
-			this.trigger("loadComplete");
-		};
+      this.trigger("loadComplete");
+    };
 
-		// MARK: - Private Helpers
-		this.rowIndex = () => this.currentPosition[0];
-		this.colIndex = () => this.currentPosition[1];
-		this.rowHeightAtIndex = index => {
-			let row = $(this.id + " .media-grid-row")[index];
-			return $(row).height();
-		}
+    // MARK: - Private Helpers
+    this.rowIndex = () => this.currentPosition[0];
+    this.colIndex = () => this.currentPosition[1];
+    this.rowHeightAtIndex = index => {
+      let row = $(this.id + " .media-grid-row")[index];
+      return $(row).height();
+    }
 
-		this.focusedContent = () => {
-			if (!this.mediaContent)	return null;
-			return this.mediaContent[this.rowIndex()].content[this.colIndex()];
-		};
+    this.sliderInfo = sliders => {
+      let info = [];
 
-		// focusThumbnail() sets focus on thumbnail based on current position
-		this.focusThumbnail = () => {
-			let currentRow = $(this.id + " .media-grid-row")[this.rowIndex()];
-			let currentThumbnail = $(currentRow).find(".media-grid-thumbnail")[this.colIndex()];
-			$(currentThumbnail).addClass("focused-thumbnail");
-		};
+      for (let i = 0; i < sliders.length; i++) {
+        let imgUrl = "";
+        if (sliders[i].pictures.length > 0) imgUrl = sliders[i].pictures[0].url;
 
-		this.updateBackgroundThumbnail = () => {
-			let focusedContent = this.focusedContent();
-			let largeThumb = $(this.id + " .large-thumbnail");
-			
-			if (focusedContent) {
-				let thumbnailLayout = this.mediaContent[this.rowIndex()].thumbnailLayout;
+        info.push({
+          videoId: sliders[i].videoid,
+          playlistId: sliders[i].playlistid,
+          imgUrl: imgUrl
+        });
+      }
 
-				if (thumbnailLayout && thumbnailLayout == "poster") {
-					largeThumb.attr("src", focusedContent.posterThumbnailUrl);
-				} else {
-					largeThumb.attr("src", focusedContent.largeThumbnailUrl);
-				}
-			} else {
-				largeThumb.attr("src", appDefaults.thumbnailUrl);
-			}
-		};
+      return info;
+    };
 
-		this.updateFocusedText = () => {
-			let focusedContent = this.focusedContent();
-			let title = focusedContent.title || "";
-			let description = focusedContent.description || "";
+    this.focusedContent = () => {
+      if (!this.mediaContent)  return null;
+      return this.mediaContent[this.rowIndex()].content[this.colIndex()];
+    };
 
-			$(this.id + " .focused-content-info-title").text(title);
-			$(this.id + " .focused-content-info-description").text(description);
-		};
+    // focusThumbnail() sets focus on thumbnail based on current position
+    this.focusThumbnail = () => {
+      let currentRow = $(this.id + " .media-grid-row")[this.rowIndex()];
+      let currentThumbnail = $(currentRow).find(".media-grid-thumbnail")[this.colIndex()];
+      $(currentThumbnail).addClass("focused-thumbnail");
+    };
 
-		this.prepareView = () => {
-			this.updateBackgroundThumbnail();
-			this.updateFocusedText();
-			this.show();
-		};
+    this.updateBackgroundThumbnail = () => {
+      let focusedContent = this.focusedContent();
+      let largeThumb = $(this.id + " .large-thumbnail");
+      
+      if (focusedContent) {
+        let thumbnailLayout = this.mediaContent[this.rowIndex()].thumbnailLayout;
 
-		// MARK: - Public Methods
+        if (thumbnailLayout && thumbnailLayout == "poster") {
+          largeThumb.attr("src", focusedContent.posterThumbnailUrl);
+        } else {
+          largeThumb.attr("src", focusedContent.largeThumbnailUrl);
+        }
+      } else {
+        largeThumb.attr("src", appDefaults.thumbnailUrl);
+      }
+    };
 
-		/**
-		 * setNewPosition() sets the new position
-		 * @param {Integer[]} position - int array of 2 values (row index, col index)
-		 */
-		this.setNewPosition = position => {
-			this.currentPosition = position;
-		};
+    this.updateFocusedText = () => {
+      let focusedContent = this.focusedContent();
+      let title = focusedContent.title || "";
+      let description = focusedContent.description || "";
 
-		// unfocusThumbnails() removes focus class from all thumbnails
-		this.unfocusThumbnails = () => {
-			$(this.id + " .media-grid-thumbnail").removeClass("focused-thumbnail");
-		};
+      $(this.id + " .focused-content-info-title").text(title);
+      $(this.id + " .focused-content-info-description").text(description);
+    };
 
-		/**
-		 * resetRowMargin() resets the left margin of row
-		 * @param {*} rowIndex - index of row to be reset
-		 */
-		this.resetRowMarginAt = rowIndex => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[rowIndex];
-			$(row).css({ "margin-left": rowLeftMargin });
-		};
+    this.prepareView = () => {
+      this.updateBackgroundThumbnail();
+      this.updateFocusedText();
+      this.show();
+    };
 
-		// shiftRowsUp() moves all rows up
-		this.shiftRowsUp = () => {
-			let currentRowHeight = this.rowHeightAtIndex(this.rowIndex());
+    // MARK: - Public Methods
 
-			let newTopPosition = this.currentRowsTopPosition - currentRowHeight;
-			this.currentRowsTopPosition = newTopPosition;
-			$(this.id + " .media-grid-rows-container").css({top: String(this.currentRowsTopPosition) + "px"});
+    /**
+     * setNewPosition() sets the new position
+     * @param {Integer[]} position - int array of 2 values (row index, col index)
+     */
+    this.setNewPosition = position => {
+      this.currentPosition = position;
+    };
 
-			this.hideRowsAboveLimit();
-		};
+    // unfocusThumbnails() removes focus class from all thumbnails
+    this.unfocusThumbnails = () => {
+      $(this.id + " .media-grid-thumbnail").removeClass("focused-thumbnail");
+    };
 
-		// shiftRowsDown() moves all rows down
-		this.shiftRowsDown = () => {
-			let nextRowHeight = this.rowHeightAtIndex(this.rowIndex() - 1);
-			let newTopPosition = this.currentRowsTopPosition + nextRowHeight;
+    /**
+     * resetRowMargin() resets the left margin of row
+     * @param {*} rowIndex - index of row to be reset
+     */
+    this.resetRowMarginAt = rowIndex => {
+      let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[rowIndex];
+      $(row).css({ "margin-left": rowLeftMargin });
+    };
 
-			this.currentRowsTopPosition = newTopPosition;
-			$(this.id + " .media-grid-rows-container").css({top: String(this.currentRowsTopPosition) + "px"});
+    // shiftRowsUp() moves all rows up
+    this.shiftRowsUp = () => {
+      let currentRowHeight = this.rowHeightAtIndex(this.rowIndex());
 
-			this.hideRowsAboveLimit();
-		};
+      let newTopPosition = this.currentRowsTopPosition - currentRowHeight;
+      this.currentRowsTopPosition = newTopPosition;
+      $(this.id + " .media-grid-rows-container").css({top: String(this.currentRowsTopPosition) + "px"});
 
-		/**
-		 * shiftRowLeftAt() moves a row to the left
-		 * @param {Integer} index - row index of row to be shifted left
-		 */
-		this.shiftRowLeftAt = index => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
-			let thumbnail = $(row).find(".media-grid-thumbnail")[0];
-			let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
+      this.hideRowsAboveLimit();
+    };
 
-			let newLeftPosition = this.rowsLeftPositions[index] - shiftPercentage;
-			this.rowsLeftPositions[index] = newLeftPosition;
-			$(row).css({"margin-left": String(newLeftPosition) + "%"});
-		};
+    // shiftRowsDown() moves all rows down
+    this.shiftRowsDown = () => {
+      let nextRowHeight = this.rowHeightAtIndex(this.rowIndex() - 1);
+      let newTopPosition = this.currentRowsTopPosition + nextRowHeight;
 
-		/**
-		 * shiftRowRightAt() moves a row to the right
-		 * @param {Integer} index - row index of row to be shifted right
-		 */
-		this.shiftRowRightAt = index => {
-			let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
-			let thumbnail = $(row).find(".media-grid-thumbnail")[0];
-			let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
+      this.currentRowsTopPosition = newTopPosition;
+      $(this.id + " .media-grid-rows-container").css({top: String(this.currentRowsTopPosition) + "px"});
 
-			let newLeftPosition = this.rowsLeftPositions[index] + shiftPercentage;
-			this.rowsLeftPositions[index] = newLeftPosition;
-			$(row).css({"margin-left": String(newLeftPosition) + "%"});
-		};
+      this.hideRowsAboveLimit();
+    };
 
-		/**
-		 * focusedThumbTouchesEdge() returns boolean
-		 * checks if focused thumbnail too close to left/right of client window
-		 * @return {Bool}
-		 */
-		this.focusedThumbTouchesEdge = () => {
-			let focusedThumbnail = $(this.id + " .focused-thumbnail")[0];
+    /**
+     * shiftRowLeftAt() moves a row to the left
+     * @param {Integer} index - row index of row to be shifted left
+     */
+    this.shiftRowLeftAt = index => {
+      let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
+      let thumbnail = $(row).find(".media-grid-thumbnail")[0];
+      let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
 
-			let thumbnailInfo = {
-				height: $(focusedThumbnail).height(),
-				width: $(focusedThumbnail).width(),
-				top: $(focusedThumbnail).position().top,
-				left: $(focusedThumbnail).position().left
-			};
+      let newLeftPosition = this.rowsLeftPositions[index] - shiftPercentage;
+      this.rowsLeftPositions[index] = newLeftPosition;
+      $(row).css({"margin-left": String(newLeftPosition) + "%"});
+    };
 
-			let htmlWidth = document.documentElement.clientWidth;
+    /**
+     * shiftRowRightAt() moves a row to the right
+     * @param {Integer} index - row index of row to be shifted right
+     */
+    this.shiftRowRightAt = index => {
+      let row = $(this.id + " .media-grid-row .media-grid-row-thumbnails")[index];
+      let thumbnail = $(row).find(".media-grid-thumbnail")[0];
+      let shiftPercentage = (1.25 * $(thumbnail).width() / $(window).width()) * 100;
 
-			let thumbnailRight = thumbnailInfo.left + (1.25 * thumbnailInfo.width);
+      let newLeftPosition = this.rowsLeftPositions[index] + shiftPercentage;
+      this.rowsLeftPositions[index] = newLeftPosition;
+      $(row).css({"margin-left": String(newLeftPosition) + "%"});
+    };
 
-			let touchesLeft = (thumbnailInfo.left <= 0 || thumbnailRight <= 0);
-			let touchesRight = (thumbnailInfo.left >= htmlWidth || thumbnailRight >= htmlWidth);
+    /**
+     * focusedThumbTouchesEdge() returns boolean
+     * checks if focused thumbnail too close to left/right of client window
+     * @return {Bool}
+     */
+    this.focusedThumbTouchesEdge = () => {
+      let focusedThumbnail = $(this.id + " .focused-thumbnail")[0];
 
-			return (touchesLeft || touchesRight);
-		};
+      let thumbnailInfo = {
+        height: $(focusedThumbnail).height(),
+        width: $(focusedThumbnail).width(),
+        top: $(focusedThumbnail).position().top,
+        left: $(focusedThumbnail).position().left
+      };
 
-		/**
-		 * Update DOM
-		 */ 
-		this.setFocus = () => {
-			this.unfocusThumbnails();
-			this.focusThumbnail();
-			this.updateBackgroundThumbnail();
-			this.updateFocusedText();
-		};
+      let htmlWidth = document.documentElement.clientWidth;
 
-		this.hideRowsAboveLimit = () => {
-			$(this.id + " .media-grid-row").each( (index, value) => {
-				let row = $(value);
-				if (row.hasClass("invisible")){
-					$(value).removeClass("invisible");
-				}
+      let thumbnailRight = thumbnailInfo.left + (1.25 * thumbnailInfo.width);
 
-				if ($(value).position().top < 0){
-					$(value).addClass("invisible");
-				}
-			});
-		};
+      let touchesLeft = (thumbnailInfo.left <= 0 || thumbnailRight <= 0);
+      let touchesRight = (thumbnailInfo.left >= htmlWidth || thumbnailRight >= htmlWidth);
 
-		/**
-		 * show / hide / close self
-		 */ 
-		this.show = () => $(this.id).removeClass("invisible");
-		this.hide = () => $(this.id).addClass("invisible");
-		this.close = () => $(this.id).remove();
+      return (touchesLeft || touchesRight);
+    };
+
+    /**
+     * Update DOM
+     */ 
+    this.setFocus = () => {
+      this.unfocusThumbnails();
+      this.focusThumbnail();
+      this.updateBackgroundThumbnail();
+      this.updateFocusedText();
+    };
+
+    this.hideRowsAboveLimit = () => {
+      $(this.id + " .media-grid-row").each( (index, value) => {
+        let row = $(value);
+        if (row.hasClass("invisible")){
+          $(value).removeClass("invisible");
+        }
+
+        if ($(value).position().top < 0){
+          $(value).addClass("invisible");
+        }
+      });
+    };
+
+    /**
+     * show / hide / close self
+     */ 
+    this.show = () => $(this.id).removeClass("invisible");
+    this.hide = () => $(this.id).addClass("invisible");
+    this.close = () => $(this.id).remove();
 
 
-		/**
-		 * Register event handlers
-		 */ 
-		this.registerHandler("show", this.show, this);
-		this.registerHandler("hide", this.hide, this);
-		this.registerHandler("close", this.close, this);
-		this.registerHandler("loadComplete", this.prepareView, this);
-	};
+    /**
+     * Register event handlers
+     */ 
+    this.registerHandler("show", this.show, this);
+    this.registerHandler("hide", this.hide, this);
+    this.registerHandler("close", this.close, this);
+    this.registerHandler("loadComplete", this.prepareView, this);
+  };
 
-	if (!exports.MediaGridSliderView) exports.MediaGridSliderView = MediaGridSliderView;
+  if (!exports.MediaGridSliderView) exports.MediaGridSliderView = MediaGridSliderView;
 })(window);

@@ -69,7 +69,7 @@
       this.removeSelf = callbacks.removeController;
 
       this.playlistLevel = args.playlistLevel;
-      if (args.sliders) this.sliders = args.sliders;
+      if (args.sliders) this.sliders = this.parsedSliders(args.sliders);
 
       // fetch playlist and video content
       ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId)
@@ -174,6 +174,7 @@
 
       let gridViewArgs = {
         mediaContent: structuredData,
+        sliders: this.sliders,
         playlistLevel: this.playlistLevel,
         css: mediaGridCss(this.playlistLevel)
       };
@@ -432,6 +433,15 @@
         content: this.mediaContent[currentPosition[0]].content[currentPosition[1]],
         contentType: this.mediaContent[currentPosition[0]].type
       };
+    };
+
+    // Accept array of sliders and only return valid ones (has video or playlist id)
+    this.parsedSliders = sliders => {
+      let validSliders = [];
+      for (let i = 0; i < sliders.length; i++) {
+        if (sliders[i].videoid || sliders[i].playlistid) validSliders.push(sliders[i]);
+      }
+      return validSliders;
     };
 
     this.enterBackgroundState = () => {};
