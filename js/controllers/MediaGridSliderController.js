@@ -91,8 +91,10 @@
       this.gridView.trigger("hide");
     };
     this.show = () => {
-      // this.navView.trigger("show");
       this.gridView.trigger("show");
+
+      this.viewIndex = ViewIndexes.SLIDERS;
+      this.gridView.setFocusedSlider(this.gridView.sliderIndex);
     };
     this.close = () => {
       if (this.gridView) {
@@ -124,12 +126,6 @@
       let createViewCallback = () => {
         this.createView();
         this.navView.trigger("hide");
-
-        // TODO: remove in future when adding nav bar back
-        // this.gridView.setFocus();
-
-        // this.viewIndex = ViewIndexes.NAVIGATION;
-        // this.navView.focusTab();
 
         this.viewIndex = ViewIndexes.SLIDERS;
         this.gridView.setFocusedSlider(0);
@@ -192,7 +188,6 @@
       let navView = new NavigationView();
       navView.init(navViewArgs);
       this.navView = navView;
-
 
       let dialogViewArgs = {
         id: "controller-" + String(this.controllerIndex) + "-dialog",
@@ -264,7 +259,10 @@
         case TvKeys.LEFT:
           let gridCanMoveLeft = (currentPos[1] - 1 >= 0);
 
-          if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
+          if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) { // set dialog to confirm
+            this.confirmExitView.trigger("focusConfirm");
+
+          } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
             this.navView.decrementTab();
 
           } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
@@ -281,17 +279,16 @@
               // if column index is 1 or less, reset margin
               if (currentPos[1] <= 1) this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
             }
-
-          } else if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) { // set dialog to confirm
-            this.confirmExitView.trigger("focusConfirm");
           }
-
           break;
 
         case TvKeys.RIGHT:
           let gridCanMoveRight = (currentPos[1] + 1 < currentRowContent.length );
 
-          if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
+          if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) { // set dialog to cancel
+            this.confirmExitView.trigger("focusCancel");
+
+          } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
             this.navView.incrementTab();
 
           } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
@@ -305,9 +302,6 @@
             if (this.gridView.focusedThumbTouchesEdge()) {
               this.gridView.shiftRowLeftAt(this.gridView.currentPosition[0]);
             }
-
-          } else if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) { // set dialog to cancel
-            this.confirmExitView.trigger("focusCancel");
           }
           break;
 
@@ -351,7 +345,7 @@
                   video: itemSelected.content
                 });
               } else if (itemSelected.contentType == "playlists") {
-                this.createController(MediaGridSliderController, {
+                this.createController(MediaGridController, {
                   playlistLevel: this.playlistLevel + 1,
                   playlistId: itemSelected.content._id
                 });

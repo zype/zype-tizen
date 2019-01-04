@@ -43,11 +43,7 @@
       let context = {
         rowData: this.mediaContent,
         sliders: this.sliderInfo(this.sliders),
-        css: args.css,
-        images: {
-          appIcon: appDefaults.appIconUrl,
-          overlay: (appDefaults.theme == "dark-theme" ? "overlay.png" : "whiteoverlay.png")
-        }
+        css: args.css
       };
 
       let template = $(templateId);
@@ -101,35 +97,7 @@
       $(currentThumbnail).addClass("focused-thumbnail");
     };
 
-    this.updateBackgroundThumbnail = () => {
-      let focusedContent = this.focusedContent();
-      let largeThumb = $(this.id + " .large-thumbnail");
-      
-      if (focusedContent) {
-        let thumbnailLayout = this.mediaContent[this.rowIndex()].thumbnailLayout;
-
-        if (thumbnailLayout && thumbnailLayout == "poster") {
-          largeThumb.attr("src", focusedContent.posterThumbnailUrl);
-        } else {
-          largeThumb.attr("src", focusedContent.largeThumbnailUrl);
-        }
-      } else {
-        largeThumb.attr("src", appDefaults.thumbnailUrl);
-      }
-    };
-
-    this.updateFocusedText = () => {
-      let focusedContent = this.focusedContent();
-      let title = focusedContent.title || "";
-      let description = focusedContent.description || "";
-
-      $(this.id + " .focused-content-info-title").text(title);
-      $(this.id + " .focused-content-info-description").text(description);
-    };
-
     this.prepareView = () => {
-      this.updateBackgroundThumbnail();
-      this.updateFocusedText();
       this.show();
     };
 
@@ -274,8 +242,6 @@
     this.setFocus = () => {
       this.unfocusThumbnails();
       this.focusThumbnail();
-      this.updateBackgroundThumbnail();
-      this.updateFocusedText();
     };
 
     this.hideRowsAboveLimit = () => {
