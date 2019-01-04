@@ -246,7 +246,7 @@
           } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
             this.navView.decrementTab();
 
-          } else if (this.viewIndex == ViewIndexes.MEDIAGRID && gridCanMoveLeft) { // go to left in row
+          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveLeft) { // go to left in row
             this.gridView.unfocusThumbnails();
             this.gridView.currentPosition = this.getNewPosition(buttonPress);
             this.gridView.setFocus();
