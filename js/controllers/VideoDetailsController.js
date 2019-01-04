@@ -207,11 +207,11 @@
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
-			// if (!universalSvodEnabled || !requiresEntitlement || signedIn){
+			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
 				buttons.push({ title: appDefaults.labels.playButton, role: "play", data: { videoId: videoId }  });
-			// } else {
-			// 	buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
-			// }
+			} else {
+				buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
+			}
 
 			return buttons;
 		};

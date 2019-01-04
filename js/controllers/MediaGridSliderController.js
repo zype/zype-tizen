@@ -1,7 +1,7 @@
 (function(exports){
   "use strict";
 
-  let MediaGridController = function(){
+  let MediaGridSliderController = function(){
     EventsHandler.call(this, [
       "loadComplete",
       "buttonPress",
@@ -32,6 +32,7 @@
 
     this.playlistLevel = null;
     this.mediaContent = [];
+    this.sliders = [];
 
     this.controllerIndex = null;
 
@@ -41,8 +42,9 @@
 
     const ViewIndexes = {
       NAVIGATION: 0,
-      MEDIA_GRID: 1,
-      CONFIRM_DIALOG: 2
+      SLIDERS: 1,
+      MEDIA_GRID: 2,
+      CONFIRM_DIALOG: 3
     };
 
     this.viewIndex = null;
@@ -68,6 +70,7 @@
       this.removeSelf = callbacks.removeController;
 
       this.playlistLevel = args.playlistLevel;
+      if (args.sliders) this.sliders = this.parsedSliders(args.sliders);
 
       // fetch playlist and video content
       ZypeApiHelpers.getPlaylistChildren(zypeApi, args.playlistId)
@@ -90,8 +93,8 @@
     this.show = () => {
       this.gridView.trigger("show");
 
-      this.viewIndex = ViewIndexes.MEDIA_GRID;
-      this.gridView.setFocus();
+      this.viewIndex = ViewIndexes.SLIDERS;
+      this.gridView.setFocusedSlider(this.gridView.sliderIndex);
     };
     this.close = () => {
       if (this.gridView) {
@@ -123,7 +126,9 @@
       let createViewCallback = () => {
         this.createView();
         this.navView.trigger("hide");
-        this.gridView.setFocus();
+
+        this.viewIndex = ViewIndexes.SLIDERS;
+        this.gridView.setFocusedSlider(0);
 
         // if deep linked, try to show video else, else show self
         if(exports.deepLinkedData) {
@@ -170,11 +175,12 @@
 
       let gridViewArgs = {
         mediaContent: structuredData,
+        sliders: this.sliders,
         playlistLevel: this.playlistLevel,
         css: mediaGridCss(this.playlistLevel)
       };
 
-      let gridView = new MediaGridView();
+      let gridView = new MediaGridSliderView();
       gridView.init(gridViewArgs);
       this.gridView = gridView;
 
@@ -206,30 +212,43 @@
         case TvKeys.UP:
           let gridCanMoveUp = (currentPos && currentPos[0] - 1 > -1);
 
-          if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveUp) { // move 1 row up
-            this.gridView.shiftRowsDown();
-            this.gridView.currentPosition = this.getNewPosition(buttonPress);
-            this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
-            this.gridView.setFocus();
-          
-          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && !gridCanMoveUp) { // go to nav
+          if (this.viewIndex == ViewIndexes.SLIDERS) { // go to nav bar
             this.gridView.unfocusThumbnails();
+            this.gridView.unfocusSliders();
 
             this.viewIndex = ViewIndexes.NAVIGATION;
             this.navView.trigger("show");
             this.navView.focusTab();
+
+          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveUp) { // move 1 row up
+            this.gridView.shiftRowsDown();
+            this.gridView.currentPosition = this.getNewPosition(buttonPress);
+            this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
+            this.gridView.setFocus();
+
+          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && !gridCanMoveUp) { // go to sliders
+            this.gridView.unfocusThumbnails();
+            this.viewIndex = ViewIndexes.SLIDERS;
+            this.gridView.setFocusedSlider(this.gridView.sliderIndex);
           }
           break;
 
         case TvKeys.DOWN:
           let gridCanMoveDown = (currentPos && currentPos[0] + 1 < this.mediaContent.length);
 
-          if (this.viewIndex == ViewIndexes.NAVIGATION) { // go to rows
+          if (this.viewIndex == ViewIndexes.NAVIGATION) { // go to sliders
             this.navView.unfocusTabs();
+            this.navView.trigger("hide");
+
+            this.viewIndex = ViewIndexes.SLIDERS;
+            this.gridView.setFocusedSlider(this.gridView.sliderIndex);
+
+          } else if (this.viewIndex == ViewIndexes.SLIDERS) { // go to rows
+            this.gridView.unfocusSliders();
             this.viewIndex = ViewIndexes.MEDIA_GRID;
             this.gridView.setFocus();
 
-          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID &&  gridCanMoveDown) { // go 1 row down
+          } else if ((this.viewIndex == ViewIndexes.MEDIA_GRID) &&  gridCanMoveDown) { // go down 1 row
             this.gridView.shiftRowsUp();
             this.gridView.currentPosition = this.getNewPosition(buttonPress);
             this.gridView.resetRowMarginAt(this.gridView.currentPosition[0]);
@@ -245,6 +264,9 @@
 
           } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
             this.navView.decrementTab();
+
+          } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
+            this.gridView.setFocusedSlider(this.gridView.sliderIndex - 1);
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveLeft) { // go to left in row
             this.gridView.unfocusThumbnails();
@@ -263,11 +285,14 @@
         case TvKeys.RIGHT:
           let gridCanMoveRight = (currentPos[1] + 1 < currentRowContent.length );
 
-          if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) {  // set dialog to confirm
+          if (this.viewIndex == ViewIndexes.CONFIRM_DIALOG) { // set dialog to cancel
             this.confirmExitView.trigger("focusCancel");
 
           } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // change nav item
             this.navView.incrementTab();
+
+          } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
+            this.gridView.setFocusedSlider(this.gridView.sliderIndex + 1);
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveRight) { // go to right in row
             this.gridView.unfocusThumbnails();
@@ -297,17 +322,19 @@
           } else if (this.viewIndex == ViewIndexes.NAVIGATION) { // nav bar
             let currentTab = this.navView.currentTab();
 
-            if (currentTab.role == "home") { // focus rows
+            if (currentTab.role == "home") { // focus sliders
               this.navView.unfocusTabs();
-              this.viewIndex = ViewIndexes.MEDIA_GRID;
-              this.gridView.setFocus();
+              this.navView.trigger("hide");
+
+              this.viewIndex = ViewIndexes.SLIDERS;
+              this.gridView.setFocusedSlider(this.gridView.sliderIndex);
+
             } else if (currentTab.role == "account") { // navigate to sign in
               let controllerArgs = {};
               this.createController(AccountController, controllerArgs);
             }
 
-          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
-
+          } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) { // transition to video/playlist
             let itemSelected = this.focusedContent();
 
             if (itemSelected.content){
@@ -325,6 +352,35 @@
               }
             }
 
+          } else if (this.viewIndex == ViewIndexes.SLIDERS) { // sliders
+            let focusedSlider = this.sliders[this.gridView.sliderIndex];
+            let videoId = focusedSlider.videoid;
+            let playlistId = focusedSlider.playlistid;
+
+            let goToPlaylist = id => {
+              this.createController(MediaGridController, {
+                playlistLevel: this.playlistLevel + 1,
+                playlistId: id
+              });
+            };
+
+            if (videoId) {
+              // if video found, show video
+              // else, show playlist
+              zypeApi.getVideo(videoId, {})
+              .then(
+                res => {
+                  this.createController(VideoDetailsController, {
+                    video: res.response
+                  });
+                },
+                err => {
+                  goToPlaylist(playlistId);
+                }
+              )
+            } else { // playlist
+              goToPlaylist(playlistId);
+            }
           }
           break;
 
@@ -417,6 +473,15 @@
       };
     };
 
+    // Accept array of sliders and only return valid ones (has video or playlist id)
+    this.parsedSliders = sliders => {
+      let validSliders = [];
+      for (let i = 0; i < sliders.length; i++) {
+        if (sliders[i].videoid || sliders[i].playlistid) validSliders.push(sliders[i]);
+      }
+      return validSliders;
+    };
+
     this.enterBackgroundState = () => {};
     this.returnBackgroundState = () => {};
 
@@ -434,5 +499,5 @@
     this.registerHandler("returnBackgroundState", this.returnBackgroundState, this);
   };
 
-  exports.MediaGridController = MediaGridController;
+  exports.MediaGridSliderController = MediaGridSliderController;
 })(window);

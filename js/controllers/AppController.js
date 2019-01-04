@@ -70,7 +70,17 @@
 				);
 			}	else {
 				// create first controller
-				this.createNewController(MediaGridController, controllerArgs);
+
+				let cb = res => {
+					if (res.response && res.response.length) {
+						controllerArgs.sliders = res.response;
+						this.createNewController(MediaGridSliderController, controllerArgs);
+					} else {
+						this.createNewController(MediaGridController, controllerArgs);
+					}
+				};
+
+				zypeApi.getSliders().then(cb, cb);
 			}
 		};
 

@@ -6,6 +6,13 @@
     height: 100%;
 }
 
+.media-grid-view.dark-theme {
+    background-color: #000000;
+}
+.media-grid-view.light-theme {
+    background-color: #ffffff;
+}
+
 .focused-content-info-container {
     position: absolute;
     width: 100%;
