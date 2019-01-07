@@ -207,7 +207,7 @@
 
 				case "signin":
 					this.view.trigger("hide");
-					this.createController(SignInController, {});
+					this.createController(OAuthController, {});
 					break;
 
 				case "resume":

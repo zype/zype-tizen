@@ -43,7 +43,7 @@ $(document).ready(() => {
 			$.getScript("js/views/SearchView.js"),
 
 			// Controllers
-			$.getScript("js/controllers/SignInController.js"),
+			$.getScript("js/controllers/OAuthController.js"),
 			$.getScript("js/controllers/AccountController.js"),
 			$.getScript("js/controllers/DialogController.js"),
 			$.getScript(nativePlatformLibs.nativePlayerController),
