@@ -5,7 +5,7 @@
    * Used for user credential input (signin or signup)
    */ 
     var CredentialsInputView = function(){
-    EventsHandler.call(this, ["loadComplete" , "show", "hide", "close", "blurInputs", "focusInput", "setInput", "focusConfirm", "unfocusConfirm", "highlightInput", "removeHighlights"]);
+    EventsHandler.call(this, ["loadComplete" , "show", "hide", "close", "blurInputs", "focusInput", "setInput", "focusConfirm", "unfocusConfirm", "highlightInput", "removeHighlights", "toggleState", "focusToggle", "unfocusToggle"]);
     var _this = this;
 
     var templateId = "#credentials-input-view-template";
@@ -15,6 +15,8 @@
 
     this.title = null;
     this.confirmButton = null;
+    this.showToggle = null;
+    this.toggleStateText = null;
 
     this.email = null;
     this.password = null;
@@ -23,17 +25,21 @@
      * Initialization
      */
     this.init = function(args){
-      this.title       = args.title;
-      this.confirmButton   = args.confirmButton;
+      this.title = args.title;
+      this.confirmButton = args.confirmButton;
+      this.showToggle = args.showToggle;
+      this.toggleStateText = args.toggleStateText;
 
       this.id = "#" + args.id;
 
       var context = {
-        title:       this.title,
-        confirmButton:   this.confirmButton,
+        title: this.title,
+        confirmButton: this.confirmButton,
+        toggleStateText: this.toggleStateText,
+        showToggle: this.showToggle,
         css: {
-          classes:   { theme: appDefaults.theme },
-          ids:     { id: args.id },
+          classes: { theme: appDefaults.theme },
+          ids: { id: args.id },
           positions: this.getPositionPixels()
         }
       };
@@ -189,6 +195,28 @@
     };
 
     /**
+     * Update text between sign in or sign up state
+     */
+    this.toggleState = args => {
+      this.title = args.title;
+      this.confirmButton = args.confirmButton;
+      this.showToggle = args.showToggle;
+      this.toggleStateText = args.toggleStateText;
+
+      $(this.id + " .title").text(this.title);
+      $(this.id + " .confirm-text").text(this.confirmButton);
+      $(this.id + " .toggle-state-text").text(this.toggleStateText);
+    };
+
+    this.focusToggle = () => {
+      $(this.id + ".toggle-state-text").addClass("focused");
+    };
+
+    this.unfocusToggle = () => {
+      $(this.id + ".toggle-state-text").removeClass("focused");
+    };
+
+    /**
      * show / hide / remove self from DOM
      */ 
     this.show = function(){
@@ -222,6 +250,9 @@
     this.registerHandler("unfocusConfirm", this.unfocusConfirmButton, this);
     this.registerHandler("highlightInput", this.highlightInput, this);
     this.registerHandler("removeHighlights", this.removeHighlights, this);
+    this.registerHandler("toggleState", this.toggleState, this);
+    this.registerHandler("focusToggle", this.focusToggle, this);
+    this.registerHandler("unfocusToggle", this.unfocusToggle, this);
   };
 
   if (!exports.CredentialsInputView) { exports.CredentialsInputView = CredentialsInputView; };

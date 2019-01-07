@@ -9,6 +9,7 @@
       "hide",
       "close",
       "signIn",
+      "signUp",
       "networkDisconnect",
       "networkReconnect",
       "enterBackgroundState",
@@ -16,14 +17,21 @@
     ]);
 
     let _this = this;
+
+    const ControllerState = {
+      SIGN_IN: 0,
+      SIGN_UP: 1
+    };
     
     /**
-     * Set as 0, 1, or 2
-     *     0: Email input
-     *     1: Password input
-     *     2: Confirmation button
+     * Set as 0-3
+     *   0: Email input
+     *   1: Password input
+     *   2: Confirmation button
+     *   3: Link to sign up/in (only show if using Marketplace Connect)
      */
     this.currentIndex = null;
+    this.currentState = null;
 
     this.controllerIndex = null;
 
@@ -37,6 +45,17 @@
 
     /**
      * Initialization
+     * 
+     * options = {
+     *   args: {
+     *     controllerIndex: an integer to keep track,
+     *     isSignUp: a boolean for whether to start as sign up
+     *   },
+     *   callbacks: {
+     *     createController: callback for creating next controller,
+     *     removeSelf: callback for removing self and returning to prev controller
+     *   }
+     * }
      */
     this.init = options => {
       showSpinner();
@@ -49,11 +68,13 @@
       this.createController = callbacks.createController;
       this.removeSelf = callbacks.removeController;
 
-      let viewArgs = {
-        title: "Sign in to your Account",
-        confirmButton: "Sign In",
-        id: "sign-in-view"
-      };
+      if (args.isSignUp) {
+        this.currentState = ControllerState.SIGN_UP;
+      } else {
+        this.currentState = ControllerState.SIGN_IN;
+      }
+
+      let viewArgs = this.viewArgs(this.current)
 
       let view = new CredentialsInputView();
       view.init(viewArgs);
@@ -62,6 +83,28 @@
       this.currentIndex = 0;
 
       hideSpinner();
+    };
+
+    this.viewArgs = isSignUp => {
+      // Note: may need to update this if more native monetizations are supported
+      let showToggle = appDefaults.features.nativeSubscription;
+
+      let signUpArgs = {
+        title: "Sign up for Account",
+        confirmButton: "Create Account",
+        id: "auth-view",
+        toggleStateText: "Sign In",
+        showToggle: showToggle
+      };
+      let signInArgs = {
+        title: "Sign into your Account",
+        confirmButton: "Sign In",
+        id: "auth-view",
+        toggleStateText: "Sign up",
+        showToggle: showToggle
+      };
+
+      return isSignUp ? signUpArgs : signInArgs;
     };
 
     /**
@@ -118,6 +161,14 @@
           this.currentIndex += 1;
           this.view.trigger("removeHighlights");
           this.view.trigger("focusConfirm");
+          break;
+        case 2:
+          if (this.view.showToggle) { // change bwtn sign in/up
+            this.currentIndex += 1;
+            this.view.trigger("unfocusConfirm");
+            this.view.trigger("focusToggle");
+          }
+          break;
         default:
           break;
       }
@@ -133,6 +184,10 @@
           this.currentIndex -= 1;
           this.view.trigger("unfocusConfirm");
           this.view.trigger("highlightInput", "password");
+        case 3:
+          this.currentIndex -= 1;
+          this.view.trigger("unfocusToggle");
+          this.view.trigger("focusConfirm");
         default:
           break;
       }
@@ -150,20 +205,29 @@
           var credentials = this.view.getCurrentValues();
           this.trigger("signIn", credentials);
           break;
+        case 3:
+          let viewArgs = null;
+          if (this.currentState == ControllerState.SIGN_IN) { // set to sign up
+            this.currentState = ControllerState.SIGN_UP;
+            viewArgs = this.viewArgs(true);
+          } else { // set to sign in
+            this.currentState = ControllerState.SIGN_IN;
+            viewArgs = this.viewArgs(false);
+          }
+          this.view.toggleState(viewArgs);
+          break;
         default:
           break;
       }
     };
 
     /**
-     * Handle Sign In
+     * Handle Sign In/Up
      */
     this.signIn = credentials => {
-      let email = credentials.email, password = credentials.password;
-      if (email.length == 0){
-        alert("Email is empty");
-      } else if (password.length == 0){
-        alert("Password is empty");
+      let errMsg = this.validateCredenitals(credentials);
+      if (errMsg) {
+        alert(errMsg);
       } else {
         zypeApi.createLoginAccessToken(credentials.email, credentials.password)
         .then(
@@ -174,6 +238,38 @@
           err => { alert("Cannot find user") }
         );
       }
+    };
+
+    this.signUp = credentials => {
+      let errMsg = this.validateCredenitals(credentials);
+      if (errMsg) {
+        alert(errMsg);
+      } else {
+        let params = {
+          "consumer[email]": credentials.email, 
+          "consumer[password]": credentials.password
+        };
+        zypeApi.createConsumer(params).then(
+          resp => {
+            _this.signIn({email: credentials.email, password: credentials.password});
+          },
+          err => {
+            alert("Could not create account");
+          }
+        );
+      }
+    };
+
+    this.validateCredenitals = credentials => {
+      let errorMsg;
+
+      if (credentials.email.length == 0){
+        errorMsg = "Email is empty";
+      } else if (credentials.password.length == 0){
+        errorMsg = "Password is empty";
+      }
+
+      return errorMsg;
     };
 
     this.saveUser = (tokenResp, credentials) => {
@@ -208,6 +304,8 @@
     this.registerHandler("hide", this.hide, this);
     this.registerHandler("close", this.close, this);
     this.registerHandler("signIn", this.signIn, this);
+    this.registerHandler("signUp", this.signUp, this);
+    this.registerHandler("toggleState", this.toggleState, this);
     this.registerHandler("networkDisconnect", this.handleNetworkDisconnect, this);
     this.registerHandler("networkReconnect", this.handleNetworkReconnect, this);
     this.registerHandler("enterBackgroundState", this.enterBackgroundState, this);

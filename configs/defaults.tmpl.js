@@ -23,6 +23,7 @@ var appDefaults = {
 		signInButton: "Sign In"
 	},
 	features: {
+		nativeSubscription: false,
 		universalSubscription: false,
 		showThumbnailTitles: true
 	}
