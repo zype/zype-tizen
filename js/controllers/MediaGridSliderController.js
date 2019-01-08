@@ -92,6 +92,7 @@
     };
     this.show = () => {
       this.gridView.trigger("show");
+      this.gridView.unfocusThumbnails();
 
       this.viewIndex = ViewIndexes.SLIDERS;
       this.gridView.setFocusedSlider(this.gridView.sliderIndex);

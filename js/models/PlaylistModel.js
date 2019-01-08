@@ -40,7 +40,7 @@ var PlaylistModel = function(args) {
         if (_this.images){
             for (i = 0; i < _this.images.length; i++) {
                 var image = _this.images[i];
-                if (image.layout == "") return image.url;
+                if (image.layout == "poster") return image.url;
             }
         }
 
