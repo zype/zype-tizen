@@ -5,7 +5,22 @@
    * Used for user credential input (signin or signup)
    */ 
     var CredentialsInputView = function(){
-    EventsHandler.call(this, ["loadComplete" , "show", "hide", "close", "blurInputs", "focusInput", "setInput", "focusConfirm", "unfocusConfirm", "highlightInput", "removeHighlights", "toggleState", "focusToggle", "unfocusToggle"]);
+    EventsHandler.call(this, [
+      "loadComplete" ,
+      "show",
+      "hide",
+      "close",
+      "blurInputs",
+      "focusInput",
+      "setInput",
+      "focusConfirm",
+      "unfocusConfirm",
+      "highlightInput",
+      "removeHighlights",
+      "toggleState",
+      "focusToggle",
+      "unfocusToggle"
+    ]);
     var _this = this;
 
     var templateId = "#credentials-input-view-template";
@@ -38,7 +53,10 @@
         toggleStateText: this.toggleStateText,
         showToggle: this.showToggle,
         css: {
-          classes: { theme: appDefaults.theme },
+          classes: {
+            theme: appDefaults.theme,
+            brandColor: appDefaults.brandColor
+          },
           ids: { id: args.id },
           positions: this.getPositionPixels()
         }
@@ -209,11 +227,11 @@
     };
 
     this.focusToggle = () => {
-      $(this.id + ".toggle-state-text").addClass("focused");
+      $(this.id + " .toggle-state-text").addClass("focused");
     };
 
     this.unfocusToggle = () => {
-      $(this.id + ".toggle-state-text").removeClass("focused");
+      $(this.id + " .toggle-state-text").removeClass("focused");
     };
 
     /**

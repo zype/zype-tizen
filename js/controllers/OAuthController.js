@@ -10,6 +10,7 @@
       "close",
       "signIn",
       "signUp",
+      "toggleState",
       "networkDisconnect",
       "networkReconnect",
       "enterBackgroundState",
@@ -74,7 +75,7 @@
         this.currentState = ControllerState.SIGN_IN;
       }
 
-      let viewArgs = this.viewArgs(this.current)
+      let viewArgs = this.viewArgs(args.isSignUp);
 
       let view = new CredentialsInputView();
       view.init(viewArgs);
@@ -163,7 +164,7 @@
           this.view.trigger("focusConfirm");
           break;
         case 2:
-          if (this.view.showToggle) { // change bwtn sign in/up
+          if (this.view.showToggle) {
             this.currentIndex += 1;
             this.view.trigger("unfocusConfirm");
             this.view.trigger("focusToggle");
@@ -184,6 +185,7 @@
           this.currentIndex -= 1;
           this.view.trigger("unfocusConfirm");
           this.view.trigger("highlightInput", "password");
+          break;
         case 3:
           this.currentIndex -= 1;
           this.view.trigger("unfocusToggle");
