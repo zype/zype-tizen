@@ -94,14 +94,14 @@
         title: "Sign up for Account",
         confirmButton: "Create Account",
         id: "auth-view",
-        toggleStateText: "Sign In",
+        toggleStateText: "Already have an account",
         showToggle: showToggle
       };
       let signInArgs = {
         title: "Sign into your Account",
         confirmButton: "Sign In",
         id: "auth-view",
-        toggleStateText: "Sign up",
+        toggleStateText: "Sign up for an account",
         showToggle: showToggle
       };
 
@@ -205,7 +205,11 @@
           break;
         case 2:
           var credentials = this.view.getCurrentValues();
-          this.trigger("signIn", credentials);
+          if (this.currentState == ControllerState.SIGN_UP) {
+            this.trigger("signUp", credentials);
+          } else {
+            this.trigger("signIn", credentials);
+          }
           break;
         case 3:
           let viewArgs = null;
