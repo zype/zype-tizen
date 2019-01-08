@@ -52,14 +52,20 @@
 
                 {{#ifCond colorObj.playlist_bg_color "==" null}}
                 <!-- default -->
-                <div class="media-grid-row-thumbnails-container">
+                <div class="media-grid-row-thumbnails-container {{thumbnailLayout}}">
                 {{/ifCond}}
                     <div class="media-grid-row-thumbnails">
                         {{#each content}}
+                            <h1>{{posterThumbnailUrl}}</h1>
                             <img
+                                {{#ifCond ../thumbnailLayout "==" "poster"}}
+                                src="{{posterThumbnailUrl}}"
+                                {{/ifCond}}
+                                {{#ifCond ../thumbnailLayout "!=" "poster"}}
                                 src="{{smallThumbnailUrl}}"
+                                {{/ifCond}}
                                 alt="Small thumbnail for {{title}}"
-                                class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-landscape-thumbnail" />
+                                class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-{{../thumbnailLayout}}-thumbnail" />
                         {{/each}}
                     </div>
                 </div>
