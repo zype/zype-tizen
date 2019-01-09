@@ -11,6 +11,9 @@
 
     let _this = this;
 
+    this.video = null;
+    this.products = [];
+
     // MARK: - HTML ids
     let templateId = "#purchase-view-template";
     let purchaseContainerId = "#purchase-container";
@@ -18,10 +21,15 @@
     this.id = null;
     
     this.init = args => {
+      this.video = args.video;
+      this.products = args.products;
+
       let id = "purchase-view";
       this.id = "#" + id;
 
       let context = {
+        video: this.video,
+        products: this.products,
         css: {
           classes: { theme: appDefaults.theme },
           ids: { id: id }

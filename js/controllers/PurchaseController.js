@@ -19,6 +19,8 @@
     this.controllerIndex = null;
 
     this.view = null;
+    this.video = null; // video that triggered purchase flow
+    this.products = [];
 
     /**
      * Callbacks
@@ -33,11 +35,61 @@
       let callbacks = options.callbacks;
 
       this.controllerIndex = args.controllerIndex;
+      this.video = args.video;
 
       this.createController = callbacks.createController;
       this.removeSelf = callbacks.removeController;
 
-      let viewArgs = {};
+      let successCb = resp => {
+        this.createView();
+      };
+      let errorCb = resp => {
+        this.removeSelf();
+      };
+
+      this.fetchAssociatedProducts(successCb, errorCb);
+    };
+
+    /**
+     * Private Helpers
+     */
+
+    // fetchAssociatedProducts() - finds products associated with video and creates view if success
+    this.fetchAssociatedProducts = (successCallback, errCallback) => {
+      if (this.video) {
+        // list support monetizations
+        let subRequired = this.video.subscription_required;
+
+        let productsCb = resp => {
+          if (resp.ItemDetails && resp.ItemDetails.length > 0) {
+            let products = [];
+
+            for (let i = 0; i < resp.ItemDetails.length; i++) {
+              let product = resp.ItemDetails[i];
+              if (subRequired && product.ItemType == 4) products.push(product);
+            }
+
+            this.products = products;
+
+            successCallback();
+          } else {
+            errCallback();
+          }
+        };
+
+        // only works when running on device
+        NativeMarket.requestProducts(appDefaults.marketplace, productsCb, errCallback);
+
+      } else {
+        errCallback();
+      }
+    };
+
+    this.createView = () => {
+      let viewArgs = {
+        video: this.video,
+        products: this.products
+      };
 
       let view = new PurchaseView();
       view.init(viewArgs);
@@ -47,6 +99,9 @@
       hideSpinner();
     };
 
+    /**
+     * Event Handlers
+     */
     this.handleButtonPress = buttonPress => {
       switch (buttonPress) {
         case TvKeys.UP:
