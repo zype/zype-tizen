@@ -8,6 +8,7 @@
       return new Promise((resolve, reject) => {
         let params = {
           "q": query,
+          "per_page": 500,
           "playlist_id.inclusive": playlistId || ""
         };
 
@@ -20,6 +21,28 @@
           err => { // error. return empty array
             resolve([]);
           }
+        );
+      });
+    };
+
+    // find the consumer id then get consumer info
+    this.getConsumer = (zypeApi, accessToken) => {
+      return new Promise((resolve, reject) => {
+        zypeApi.getAccessTokenStatus(accessToken)
+        .then(
+          tokenStatus => {
+            let consumerId = tokenStatus.resource_owner_id;
+            if (consumerId) {
+              zypeApi.getConsumer(consumerId, accessToken, {})
+              .then(
+                consumerResp => resolve(consumerResp.response),
+                err => reject(err)
+              );
+            } else {
+              reject(null);
+            }
+          },
+          err => reject(err)
         );
       });
     };

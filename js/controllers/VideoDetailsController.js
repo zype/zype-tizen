@@ -25,6 +25,8 @@
 		this.buttons = [];
 		this.currentButtonIndex = null;
 
+		this.consumer = null;
+
 		/**
 		 * Callbacks
 		 */
@@ -55,7 +57,12 @@
 			this.content = args.content;
 			this.videoIndex = args.index;
 
-			this.createView();
+			if (this.isSignedIn()){
+				let cb = () => this.createView();
+				this.fetchConsumer(localStorage.getItem("accessToken"), cb);
+			} else {
+				this.createView();
+			}
 		};
 
 		this.updateButtons = () => {
@@ -76,8 +83,16 @@
 		 * Update view
 		 */ 
 		this.show = function(){
-			this.updateButtons();
-			this.view.show();
+			let cb = () => {
+				this.updateButtons();
+				this.view.show();
+			};
+
+			if (this.isSignedIn) {
+				this.fetchConsumer(localStorage.getItem("accessToken"), cb);
+			} else {
+				cb();
+			}
 		};
 
 		this.hide = function(){
@@ -205,7 +220,7 @@
 					});
 					break;
 
-				case "signin":
+				case "oauth":
 					this.view.trigger("hide");
 					this.createController(OAuthController, {});
 					break;
@@ -229,6 +244,11 @@
 						videoEndCallback: this.goToNextVideo
 					});
 					break;
+
+				case "subscribe":
+					this.view.trigger("hide");
+					this.createController(PurchaseController, {video: this.content});
+					break;
 				default:
 					break;
 			}
@@ -239,14 +259,18 @@
 		 */
 		this.getButtons = videoIds => {
 			let buttons = [];
-
 			let requiresEntitlement = this.videoRequiresEntitlement();
 			let signedIn = this.isSignedIn();
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
+<<<<<<< HEAD
 			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
 				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
+=======
+			let addPlayBtns = () => {
+				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+>>>>>>> Created base purchase controller and view. Added transition to purchase controller from video details
 				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
 
 				let playButton = {
@@ -265,8 +289,22 @@
 					};
 					buttons.push(resumeButton);
 				}
+			};
+
+			if (requiresEntitlement) {
+				if (this.content.subscription_required && appDefaults.features.nativeSubscription) {
+					if (this.consumer && this.consumer.subscription_count > 0) {
+						addPlayBtns();
+					} else {
+						buttons.push({ title: appDefaults.labels.subscribeButton, role: "subscribe", data: {} });
+					}
+				} else if (!signedIn) {
+					buttons.push({ title: appDefaults.labels.signInButton, role: "oauth", data: {} });
+				} else {
+					addPlayBtns();
+				}
 			} else {
-				buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
+				addPlayBtns();
 			}
 
 			return buttons;
@@ -284,6 +322,19 @@
 		this.isSignedIn = function(){
 			var accessToken = localStorage.getItem("accessToken");
 			return (accessToken) ? true : false;
+		};
+
+		this.fetchConsumer = (accessToken, callback) => {
+			ZypeApiHelpers.getConsumer(zypeApi, accessToken)
+			.then(
+				consumer => {
+					this.consumer = consumer;
+					callback();
+				},
+				err => { 
+					callback(); 
+				}
+			);
 		};
 
 		/**

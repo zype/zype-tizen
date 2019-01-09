@@ -20,11 +20,12 @@ var appDefaults = {
 		playButton: "Play",
 		playFromBegButton: "Play from beginning",
 		resumeButton: "Resume",
-		signInButton: "Sign In"
+		signInButton: "Sign In",
+		subscribeButton: "Subscribe"
 	},
 	features: {
 		nativeSubscription: false,
 		universalSubscription: false,
 		showThumbnailTitles: true
 	}
-}
+};

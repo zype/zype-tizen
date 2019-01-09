@@ -62,12 +62,9 @@
 				{ index: "1", title: "Search", role: "search" }
 			];
 
-			let universalSvodEnabled = appDefaults.features.universalSubscription;
-
-			if (universalSvodEnabled) {
-				let accountTab = { index: "2", title: "Account", role: "account" };
-				tabs.push(accountTab);
-			}
+			// Comment below out if not using signin
+			let accountTab = { index: "2", title: "Account", role: "account" };
+			tabs.push(accountTab);
 
 			return tabs;
 		};
