@@ -24,7 +24,7 @@
       this.video = args.video;
       this.products = args.products;
 
-      let id = "purchase-view";
+      let id = "purchase-view-" + this.video._id;
       this.id = "#" + id;
 
       let context = {
