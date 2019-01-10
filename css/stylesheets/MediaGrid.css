@@ -111,7 +111,7 @@
 }
 
 .media-grid-row.landscape {
-  height: 380px;
+  height: 340px;
 }
 
 .media-grid-row.poster {
@@ -152,13 +152,13 @@ height: 90%;
 }
 
 .media-grid-landscape-thumbnail {
-  width: 35vh;
-  height: 20vh;
+  width: 30vh;
+  height: 17vh;
 }
 
 .media-grid-poster-thumbnail {
-  width: 20vh;
-  height: 35vh;
+  width: 17vh;
+  height: 30vh;
   object-fit: cover;
   overflow: hidden;
 }
