@@ -30,7 +30,10 @@
 			showSpinner();
 
 			zypeApi.getApp().then(
-				resp  => { _this.trigger("settingsLoaded", resp.response); },
+				resp  => {
+					_this.hideSplashImage();
+					_this.trigger("settingsLoaded", resp.response);
+				},
 				err   => {  _this.trigger("forceExitApp", "App misconfigured. Exitting..."); }
 			);
 		};
@@ -50,15 +53,27 @@
 			_this.removeCurrentController();
 		};
 
-		this.handleAppLoad = settings => {
-			// accessible from all controllers
-			exports.zypeAppSettings = settings;
-
+		this.findMediaController = () => {
 			let playlistId = zypeAppSettings.featured_playlist_id || appDefaults.rootPlaylistId;
 			let controllerArgs = {
 				playlistLevel: 0,
 				playlistId: playlistId
 			};
+			let cb = res => {
+				if (res.response && res.response.length) {
+					controllerArgs.sliders = res.response;
+					this.createNewController(MediaGridSliderController, controllerArgs);
+				} else {
+					this.createNewController(MediaGridController, controllerArgs);
+				}
+			};
+
+			zypeApi.getSliders().then(cb, cb);
+		};
+
+		this.handleAppLoad = settings => {
+			// accessible from all controllers
+			exports.zypeAppSettings = settings;
 
 			let accessToken = localStorage.getItem("accessToken");
 			let refreshToken = localStorage.getItem("refreshToken");
@@ -70,17 +85,7 @@
 				);
 			}	else {
 				// create first controller
-
-				let cb = res => {
-					if (res.response && res.response.length) {
-						controllerArgs.sliders = res.response;
-						this.createNewController(MediaGridSliderController, controllerArgs);
-					} else {
-						this.createNewController(MediaGridController, controllerArgs);
-					}
-				};
-
-				zypeApi.getSliders().then(cb, cb);
+				this.findMediaController();
 			}
 		};
 
@@ -92,7 +97,7 @@
 			localStorage.setItem("accessToken", tokenResp.access_token);
 			localStorage.setItem("refreshToken", tokenResp.refresh_token);
 
-			this.createNewController(MediaGridController, controllerArgs);
+			this.findMediaController();
 		};
 
 		/**
@@ -109,7 +114,7 @@
 					localStorage.setItem("accessToken", resp.access_token);
 					localStorage.setItem("refreshToken", resp.refreshToken);
 
-					_this.createNewController(MediaGridController, controllerArgs);
+					_this.findMediaController();
 				},
 				err => {
 					localStorage.removeItem("accessToken");
@@ -117,7 +122,7 @@
 					localStorage.removeItem("email");
 					localStorage.removeItem("password");
 
-					_this.createNewController(MediaGridController, controllerArgs);
+					_this.findMediaController();
 				}
 			);
 		};
@@ -222,6 +227,15 @@
 			} else {
 				currentController.trigger("returnBackgroundState");
 			}
+		};
+
+		// called before loading 1st view controller
+		this.hideSplashImage = () => {
+			let splashImageContainerId = "#splash-image-container";
+			let splashImageId = "#splash-image";
+
+			$(splashImageContainerId).hide();
+			$(splashImageId).hide();
 		};
 
 		/**
