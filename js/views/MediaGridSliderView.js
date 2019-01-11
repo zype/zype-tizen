@@ -219,8 +219,11 @@
     this.moveSliderContainer = () => {
       // should only have one .slider-container div
       let sliderContainer = $(this.id + " .sliders-container")[0];
-      let sliderWidth = $(sliderContainer).width();
-      let newLeft = -(this.sliderIndex * sliderWidth);
+
+      let slider = $(this.id).find(".slider")[0];
+      let sliderWidth = $(slider).width();
+      let sliderPadding = sliderWidth * 0.025;
+      let newLeft = -(this.sliderIndex * (sliderWidth + sliderPadding) );
 
       $(sliderContainer).css("position", "relative").animate({
         "left": String(newLeft) + "px"
