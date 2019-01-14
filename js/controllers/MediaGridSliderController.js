@@ -47,6 +47,9 @@
       CONFIRM_DIALOG: 3
     };
 
+    const moveSliderInterval = 5000; // time in ms
+    this.sliderInterval = null; // interval for automoving sliders
+
     this.viewIndex = null;
 
     /**
@@ -87,10 +90,12 @@
      * Update view
      */
     this.hide = () => {
+      this.clearInterval();
       this.navView.trigger("hide");
       this.gridView.trigger("hide");
     };
     this.show = () => {
+      this.setupSliderInterval();
       this.gridView.trigger("show");
       this.gridView.unfocusThumbnails();
 
@@ -98,6 +103,7 @@
       this.gridView.setFocusedSlider(this.gridView.sliderIndex);
     };
     this.close = () => {
+      this.clearInterval();
       if (this.gridView) {
         this.gridView.trigger("close");
         this.gridView = null;
@@ -195,11 +201,13 @@
         text: "Do you wish to exit the app?",
         confirmText: "Okay",
         cancelText: "Cancel"
-       };
+      };
 
-       let dialogView = new ConfirmDialogView();
-       dialogView.init(dialogViewArgs);
-       this.confirmExitView = dialogView;
+      let dialogView = new ConfirmDialogView();
+      dialogView.init(dialogViewArgs);
+      this.confirmExitView = dialogView;
+
+      this.setupSliderInterval();
     };
 
     /**
@@ -481,6 +489,29 @@
         if (sliders[i].videoid || sliders[i].playlistid) validSliders.push(sliders[i]);
       }
       return validSliders;
+    };
+
+    // called via interval
+    this.moveSliders = () => {
+      let currentIndex = this.gridView.sliderIndex;
+      let nextIndex = (this.sliders[currentIndex + 1]) ? currentIndex + 1 : 0;
+      if (this.viewIndex == ViewIndexes.SLIDERS) {
+        this.gridView.setFocusedSlider(nextIndex);
+      } else {
+        this.gridView.setAndMoveSlider(nextIndex);
+      }
+    };
+
+    // clean up
+    this.clearInterval = () => {
+      clearInterval(this.sliderInterval);
+      this.sliderInterval = null;
+    };
+
+    // setup slider interval
+    this.setupSliderInterval = () => {
+      if (this.sliderInterval) this.clearInterval();
+      this.sliderInterval = setInterval(this.moveSliders, moveSliderInterval);
     };
 
     this.enterBackgroundState = () => {};

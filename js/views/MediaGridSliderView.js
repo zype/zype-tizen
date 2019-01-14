@@ -230,11 +230,17 @@
       }, 500);
     };
 
+    // sets and focuses a specific slider
     this.setFocusedSlider = index => {
+      this.setAndMoveSlider(index);
+      this.focusSlider();
+    };
+
+    // set and moves to specfic slider
+    this.setAndMoveSlider = index => {
       if (this.sliders[index]) {
         this.sliderIndex = index;
         this.unfocusSliders();
-        this.focusSlider();
         this.moveSliderContainer();
       }
     };
