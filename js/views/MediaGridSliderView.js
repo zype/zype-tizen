@@ -223,8 +223,8 @@
 
       let slider = $(this.id).find(".slider")[0];
       let sliderWidth = $(slider).width();
-      let sliderPadding = sliderWidth * 0.025;
-      let newLeft = -(this.sliderIndex * (sliderWidth + sliderPadding) );
+      let sliderMargin = sliderWidth * 0.025;
+      let newLeft = -(this.sliderIndex * (sliderWidth + sliderMargin) );
 
       $(sliderContainer).css("position", "relative").animate({
         "left": String(newLeft) + "px"

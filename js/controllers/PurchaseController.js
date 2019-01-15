@@ -22,6 +22,15 @@
     this.video = null; // video that triggered purchase flow
     this.products = [];
 
+    this.consumer = null;
+
+    const ViewIndexes = {
+      PRODUCTS: 0,
+      SIGN_IN: 1
+    };
+
+    this.viewIndex = null;
+
     /**
      * Callbacks
      */
@@ -40,14 +49,20 @@
       this.createController = callbacks.createController;
       this.removeSelf = callbacks.removeController;
 
+      // fetch products callbacks
       let successCb = resp => {
-        this.createView();
+        let cb = () => { this.createView() };
+        this.fetchConsumerThenCallback(cb);
       };
       let errorCb = resp => {
         this.removeSelf();
       };
 
-      this.fetchAssociatedProducts(successCb, errorCb);
+      // this.fetchAssociatedProducts(successCb, errorCb);
+
+      // debug code work on UI without needing tv connected
+      this.products = appDefaults.mockData.products;
+      successCb(); // create view
     };
 
     /**
@@ -66,6 +81,8 @@
 
             for (let i = 0; i < resp.ItemDetails.length; i++) {
               let product = resp.ItemDetails[i];
+
+              // TODO: Add logic for comparing product's ItemID to marketplace ids from Zype plans
               if (subRequired && product.ItemType == 4) products.push(product);
             }
 
@@ -85,6 +102,31 @@
       }
     };
 
+    this.fetchConsumer = (accessToken, callback) => {
+      ZypeApiHelpers.getConsumer(zypeApi, accessToken)
+      .then(
+        consumer => {
+          this.consumer = consumer;
+          callback();
+        },
+        err => {
+          callback();
+        }
+      );
+    };
+
+    this.isSignedIn = () => (localStorage.getItem("accessToken")) ? true : false;
+
+    // calls fetchConsumer() with callback function passed in
+    this.fetchConsumerThenCallback = callback => {
+      if (this.isSignedIn()) {
+        let token = localStorage.getItem("accessToken");
+        this.fetchConsumer(token, callback);
+      } else {
+        callback();
+      }
+    };
+
     this.createView = () => {
       let viewArgs = {
         video: this.video,
@@ -96,6 +138,16 @@
       this.view = view;
       this.trigger("loadComplete");
 
+      this.viewIndex = ViewIndexes.PRODUCTS;
+      this.view.focusProduct();
+
+      if (this.consumer) {
+        this.view.updateEmail(this.consumer.email);
+        this.view.showSignedIn();
+      } else {
+        this.view.showSignIn();
+      }
+
       hideSpinner();
     };
 
@@ -105,14 +157,75 @@
     this.handleButtonPress = buttonPress => {
       switch (buttonPress) {
         case TvKeys.UP:
+          this.viewIndex = ViewIndexes.PRODUCTS;
+          this.view.unfocusSignInButton();
+          this.view.focusProduct();
           break;
+
         case TvKeys.DOWN:
+          if (!this.isSignedIn()){
+            this.viewIndex = ViewIndexes.SIGN_IN;
+            this.view.unfocusProducts();
+            this.view.focusSignInButton();
+          }
           break;
 
         case TvKeys.LEFT:
+          if (this.viewIndex == ViewIndexes.PRODUCTS) {
+            this.view.setFocusedProduct(this.view.productIndex - 1);
+          }
+          break;
+
         case TvKeys.RIGHT:
+          if (this.viewIndex == ViewIndexes.PRODUCTS) {
+            this.view.setFocusedProduct(this.view.productIndex + 1);
+          }
           break
         case TvKeys.ENTER:
+          if (this.viewIndex == ViewIndexes.PRODUCTS) {
+            let product = this.products[this.view.productIndex];
+
+            // hardcoded data for now
+            let associatePlan = {
+              _id: appDefaults.mockData.subscriptionPlan._id,
+              marketplace_ids: {
+                samsung_tv: product.ItemID
+              }
+            };
+            let zypeTransactionInfo = {
+              "app_id": zypeAppSettings._id,
+              "site_id": zypeAppSettings.site_id,
+              "consumer_id": this.consumer._id,
+              "plan_id": associatePlan._id
+            };
+            if (this.consumer) {
+              let cb = resp => {
+                let trialDays = product.SubscriptionInfo.freeTrialDayCount || 0;
+
+                let receiptInfo = {
+                  "AppID": appDefaults.marketplace.appId,
+                  "InvoiceID": resp.InvoiceID,
+                  "CustomID": NativeMarket.getUdid(),
+                  "CountryCode": NativeMarket.getCountryCode(),
+                  "freeTrialDayCount": trialDays
+                };
+
+                let receiptValidatorCb = resp => {
+                  debugger;
+                };
+
+                NativeMarke.callReceiptValidator(zypeTransactionInfo, receiptInfo, receiptValidatorCb, receiptValidatorCb);
+              };
+              NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, cb);
+
+            } else {
+              this.view.trigger("hide");
+              this.createController(OAuthController, { isSignUp: true });
+            }
+          } else if (this.viewIndex == ViewIndexes.SIGN_IN && !this.isSignedIn()) {
+            this.view.trigger("hide");
+            this.createController(OAuthController, {});
+          }
           break;
         case TvKeys.BACK:
         case TvKeys.RETURN:
@@ -124,7 +237,18 @@
     };
 
     this.show = () => {
-      this.view.trigger("show");
+      let cb = () => {
+        this.viewIndex = ViewIndexes.PRODUCTS;
+        this.view.trigger("show");
+
+        if (this.consumer) {
+          this.view.updateEmail(this.consumer.email);
+          this.view.showSignedIn();
+        } else {
+          this.view.showSignIn();
+        }
+      };
+      this.fetchConsumerThenCallback(cb);
     };
 
     this.hide = () => {

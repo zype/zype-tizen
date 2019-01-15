@@ -19,7 +19,19 @@
     let purchaseContainerId = "#purchase-container";
 
     this.id = null;
+    this.productIndex = null;
+
+    const viewText = {
+      header: "Choose an option",
+      description: "Please select one of the options to view content",
+      signInText: "Already have an account?",
+      signInButton: appDefaults.labels.signInButton,
+      signedInText: "Signed in as:"
+    };
     
+    /**
+     * Initialization
+     */
     this.init = args => {
       this.video = args.video;
       this.products = args.products;
@@ -32,9 +44,13 @@
         products: this.products,
         css: {
           classes: { theme: appDefaults.theme },
+          brandColor: appDefaults.brandColor,
           ids: { id: id }
-        }
+        },
+        text: viewText
       };
+
+      this.productIndex = 0;
 
       let template = $(templateId);
       let renderedTemplate = Utils.buildTemplate(template, context);
@@ -43,8 +59,68 @@
       this.trigger("loadComplete");
     };
 
+
+    /**
+     * Update view
+     */
+    this.unfocusProducts = () => $(this.id + " .product").removeClass("focused");
+
+    this.focusProduct = () => {
+      // Currently selected product
+      let currentProduct = $(this.id).find(".product")[this.productIndex];
+      $(currentProduct).addClass("focused");
+    };
+
+    this.moveProductsPosition = () => {
+      let productsContainer = $(this.id).find(".purchase-options")[0];
+
+      let product = $(this.id).find(".product")[0];
+      let productWidth = $(product).width();
+      let productMargin = productWidth * 0.10;
+      let newLeft = -(this.productIndex * (productWidth + productMargin));
+
+      $(productsContainer).css("position", "absolute").animate({
+        "left": String(newLeft) + "px"
+      }, 250);
+    };
+
+    this.setFocusedProduct = index => {
+      if (this.products[index]) {
+        this.productIndex = index;
+        this.unfocusProducts();
+        this.moveProductsPosition();
+        this.focusProduct();
+      }
+    };
+
+    // hide both sign in text and signed in text
+    this.hideAuth = () => {
+      $(this.id + " .signed-in-container").addClass("invisible");
+      $(this.id + " .signin-text-container").addClass("invisible");
+    };
+
+    this.showSignedIn = () => {
+      this.hideAuth();
+      $(this.id + " .signed-in-container").removeClass("invisible");
+    };
+
+    this.showSignIn = () => {
+      this.hideAuth();
+      $(this.id + " .signin-text-container").removeClass("invisible");
+    };
+
+    this.focusSignInButton = () => $(this.id + " .signin-button").addClass("focused");
+
+    this.unfocusSignInButton = () => $(this.id + " .signin-button").removeClass("focused");
+
+    this.updateEmail = email => $(this.id + " .email").text(email);
+
     // MARK: - Update view state
-    this.show = () => $(this.id).removeClass("invisible"); 
+    this.show = () => {
+      $(this.id).removeClass("invisible");
+      this.unfocusSignInButton();
+      this.setFocusedProduct(this.productIndex);
+    };
     this.hide = () => $(this.id).addClass("invisible");
     this.close = () => $(this.id).remove();
 
