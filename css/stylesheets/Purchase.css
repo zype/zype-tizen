@@ -41,8 +41,6 @@
   top: 40%;
   display: inline-flex;
   flex-flow: row nowrap;
-  justify-content: flex-start;
-
   margin: 0% 0% 0% 35%;
 }
 
@@ -54,6 +52,13 @@
   margin: 0% 10% 0% 0%;
 
   text-align: center;
+  display: table;
+}
+
+.purchase-options .product .text {
+  margin: 0 auto;
+  vertical-align: middle;
+  display: table-cell;
 }
 
 .purchase-options .product.dark-theme {
@@ -83,4 +88,8 @@
   left: 35%;
   text-align: center;
   font-size: 2em;
+}
+
+.signin-text-container .signin-button {
+  padding: 0.5em;
 }

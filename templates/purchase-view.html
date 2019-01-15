@@ -10,7 +10,27 @@
     <div class="purchase-options">
       {{#each products}}
       <div class="product {{ ../css.classes.theme }}">
-        <h1>{{ ItemID }}</h1>
+        <h1 class="text">
+        {{#ifCond ItemType "==" 4 }}
+          <!-- Subscription Product -->
+          Subscribe - {{ Price }} {{ CurrencyID }}
+
+            {{#ifCond SubscriptionInfo.freeTrialDayCount "!=" null }}
+            <!-- Free Trail -->
+            <br>
+            {{ SubscriptionInfo.freeTrialDayCount }} Day Trial
+          {{/ifCond}}
+        {{/ifCond}}
+
+        {{#ifCond ItemType "!=" 4 }}
+          <!-- Non-subscription Product -->
+          Purchase - {{ Price }} {{ CurrencyID }}
+        {{/ifCond}}
+
+          <br>
+          <br>
+          {{ ItemTitle }}
+        </h1>
       </div>
       {{/each}}
     </div>
@@ -30,9 +50,11 @@
     </div>
 
     <style>
-      .purchase-options .product.focused,
-      .signin-text-container .signin-button.focused {
+      .purchase-options .product.focused {
         border: 0.5em solid {{ css.brandColor }};
+      }
+      .signin-text-container .signin-button.focused {
+        border: 0.2em solid {{ css.brandColor }};
       }
     </style>
   </div>

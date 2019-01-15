@@ -94,7 +94,7 @@
         title: "Sign up for Account",
         confirmButton: "Create Account",
         id: "auth-view",
-        toggleStateText: "Already have an account",
+        toggleStateText: "Already have an account?",
         showToggle: showToggle
       };
       let signInArgs = {

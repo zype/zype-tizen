@@ -185,6 +185,8 @@
           if (this.viewIndex == ViewIndexes.PRODUCTS) {
             let product = this.products[this.view.productIndex];
 
+            debugger;
+
             // hardcoded data for now
             let associatePlan = {
               _id: appDefaults.mockData.subscriptionPlan._id,
@@ -192,13 +194,14 @@
                 samsung_tv: product.ItemID
               }
             };
-            let zypeTransactionInfo = {
-              "app_id": zypeAppSettings._id,
-              "site_id": zypeAppSettings.site_id,
-              "consumer_id": this.consumer._id,
-              "plan_id": associatePlan._id
-            };
-            if (this.consumer) {
+            if (this.isSignedIn()) {
+              let zypeTransactionInfo = {
+                "app_id": zypeAppSettings._id,
+                "site_id": zypeAppSettings.site_id,
+                "consumer_id": this.consumer._id,
+                "plan_id": associatePlan._id
+              };
+
               let cb = resp => {
                 let trialDays = product.SubscriptionInfo.freeTrialDayCount || 0;
 
@@ -211,12 +214,14 @@
                 };
 
                 let receiptValidatorCb = resp => {
+                  // need endpoint to test
                   debugger;
                 };
 
                 NativeMarke.callReceiptValidator(zypeTransactionInfo, receiptInfo, receiptValidatorCb, receiptValidatorCb);
               };
-              NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, cb);
+              // NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, cb);
+              alert("You want to purchase this product: " + JSON.stringify(product));
 
             } else {
               this.view.trigger("hide");
@@ -241,10 +246,11 @@
         this.viewIndex = ViewIndexes.PRODUCTS;
         this.view.trigger("show");
 
-        if (this.consumer) {
+        if (this.isSignedIn()) {
           this.view.updateEmail(this.consumer.email);
           this.view.showSignedIn();
         } else {
+          this.consumer = null;
           this.view.showSignIn();
         }
       };

@@ -41,7 +41,7 @@
 
       let context = {
         video: this.video,
-        products: this.products,
+        products: this.formattedProducts(this.products),
         css: {
           classes: { theme: appDefaults.theme },
           brandColor: appDefaults.brandColor,
@@ -57,6 +57,19 @@
       $(purchaseContainerId).append(renderedTemplate);
 
       this.trigger("loadComplete");
+    };
+
+    /**
+     * Helpers
+     */
+    this.formattedProducts = products => {
+      let formattedProducts = products;
+
+      for (let i = 0; i < formattedProducts.length; i++) {
+        formattedProducts[i].Price = formattedProducts[i].Price.toFixed(2); // number to decimal string
+      }
+
+      return formattedProducts;
     };
 
 
