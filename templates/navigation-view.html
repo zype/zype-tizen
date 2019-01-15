@@ -1,17 +1,19 @@
 <script id="navigation-view-template" type="text/x-handlebars-template">
-	<div class="navigation-view {{ css.classes.theme }} invisible" id="{{ css.ids.id }}">
+  <div class="navigation-view {{ css.classes.theme }} invisible" id="{{ css.ids.id }}">
 
-		<div class="navigation-tabs-container {{ css.classes.theme }} ">
-			{{#each tabs}}
-			<div 
-				class="navigation-tab {{ ../css.classes.theme }} " 
-				index="{{index}}" 
-				role="{{role}}" >
-				<p class="nav-tab-text">{{title}}</p>
-			</div>
-			{{/each}}
-		</div>
+    <div class="navigation-tabs-container {{ css.classes.theme }} ">
+      {{#each tabs}}
+      <div
+        class="navigation-tab {{ ../css.classes.theme }} "
+        index="{{index}}"
+        role="{{role}}" >
+        <p class="nav-tab-text">
+          {{#ifCond role "==" "search"}}&#x1f50d;&nbsp;&nbsp;{{/ifCond}}
+          {{title}}
+        </p>
+      </div>
+      {{/each}}
+    </div>
 
-	</div>
-
+  </div>
 </script>

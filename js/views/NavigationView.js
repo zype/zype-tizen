@@ -57,12 +57,15 @@
 		 * @return {Object[]} - array of tab objects
 		 */
 		this.getTabs = () => {
-			let tabs = [{ index: "0", title: "Home", role: "home"}];
+			let tabs = [
+				{ index: "0", title: "Home", role: "home"},
+				{ index: "1", title: "Search", role: "search" }
+			];
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
 			if (universalSvodEnabled) {
-				let accountTab = { index: "1", title: "Account", role: "account" };
+				let accountTab = { index: "2", title: "Account", role: "account" };
 				tabs.push(accountTab);
 			}
 

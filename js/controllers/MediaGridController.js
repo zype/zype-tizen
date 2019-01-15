@@ -304,6 +304,8 @@
             } else if (currentTab.role == "account") { // navigate to sign in
               let controllerArgs = {};
               this.createController(AccountController, controllerArgs);
+            } else if (currentTab.role == "search") { // search
+              console.log("Entering search");
             }
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
