@@ -7,10 +7,7 @@
         class="navigation-tab {{ ../css.classes.theme }} "
         index="{{index}}"
         role="{{role}}" >
-        <p class="nav-tab-text">
-          {{#ifCond role "==" "search"}}&#x1f50d;&nbsp;&nbsp;{{/ifCond}}
-          {{title}}
-        </p>
+        <p class="nav-tab-text">{{title}}</p>
       </div>
       {{/each}}
     </div>
