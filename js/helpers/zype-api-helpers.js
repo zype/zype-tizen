@@ -4,11 +4,11 @@
   let ZypeApiHelpers = function(){
     let _this = this;
 
-    this.searchVideos = (zypeApi, query, playlistId = "") => {
+    this.searchVideos = (zypeApi, query, playlistId) => {
       return new Promise((resolve, reject) => {
         let params = {
           "q": query,
-          "playlist_id.inclusive": playlistId
+          "playlist_id.inclusive": playlistId || ""
         };
 
         zypeApi.getVideos(params)

@@ -15,7 +15,7 @@
     this.videos = [];
     this.videoIndex = null; // integer
 
-    // MARK: - HTML ids
+    // MARK: - Dynamic CSS
     const templateId = "#search-view-template";
     const videosTemplateId = "#search-videos-template";
     const searchContainerId = "#search-container";
@@ -23,6 +23,15 @@
     const videosContainerClass =  " .videos-container";
     const videoClass = " .video";
     const videoTitleClass = " .video-title";
+
+    // need pixels instead of % for position bc window size changes when keyboard appears
+    const queryContainerTop = window.innerHeight * 0.25;
+    const queryContainerHeight = window.innerHeight * 0.10;
+    const videoContainerTop = window.innerHeight * 0.50;
+    const videoContainerWidth = window.innerWidth * 0.20;
+    const videoContainerHeight = window.innerHeight * 0.20;
+    const videoTitleContainerTop = window.innerHeight * 0.80;
+    const videoTitleContainerLeft = window.innerWidth * 0.10;
 
     this.id = null;
 
@@ -39,7 +48,22 @@
             theme: appDefaults.theme
           },
           brandColor: appDefaults.brandColor,
-          ids: { id: id }
+          ids: { id: id },
+          positions: {
+            queryContainer: {
+              top: String(queryContainerTop) + "px",
+              height: String(queryContainerHeight) + "px"
+            },
+            videoContainer: {
+              top: String(videoContainerTop) + "px",
+              width: String(videoContainerWidth) + "px",
+              height: String(videoContainerHeight) + "px"
+            },
+            videoTitleContainer: {
+              top: String(videoTitleContainerTop) + "px",
+              left: String(videoTitleContainerLeft) + "px",
+            }
+          }
         },
         appIconUrl: appDefaults.appIconUrl
       };
@@ -85,6 +109,8 @@
     this.updateVideoTitle = () => {
       let video = this.videos[this.videoIndex];
       if (video) $(this.id + videoTitleClass).text(video.title);
+
+      if (this.videos.length == 0) $(this.id + videoTitleClass).text("No results found");
     };
 
     // setFocusedVideo() sets selected video index and focuses video thumbnail
@@ -96,8 +122,8 @@
         this.unfocusVideos();
         this.focusVideo();
         this.moveVideoContainer();
-        this.updateVideoTitle();
       }
+      this.updateVideoTitle();
     };
 
     // setVideos() updates the videos in view and focuses first

@@ -67,7 +67,7 @@
         videos => {
           this.videos = videos;
           this.view.setVideos(videos);
-          this.viewIndex = ViewIndex.VIDEOS;
+          this.viewIndex = (videos.length > 0) ? ViewIndex.VIDEOS : videoIndex.SEARCH_BAR;
         },
         err => {} // ignore err for now
       );

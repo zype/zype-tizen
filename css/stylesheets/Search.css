@@ -30,8 +30,6 @@
 .search-view .query-container {
   position: absolute;
   width: 100%;
-  height: 10%;
-  top: 25%;
   left: 0%;
 }
 .search-view .query-input {
@@ -56,11 +54,6 @@
 
 .search-view .videos-container {
   position: absolute;
-  width: 20%;
-  height: 20%;
-  min-width: 20%;
-  min-height: 20%;
-  top: 50%;
 
   display: flex;
   flex-flow: row nowrap;
@@ -87,8 +80,6 @@
 
 .search-view .video-title-container {
   position: absolute;
-  top: 80%;
-  left: 10%;
 }
 .search-view .video-title {
   font-size: 2em;
