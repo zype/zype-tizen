@@ -4,6 +4,26 @@
   let ZypeApiHelpers = function(){
     let _this = this;
 
+    this.searchVideos = (zypeApi, query, playlistId = "") => {
+      return new Promise((resolve, reject) => {
+        let params = {
+          "q": query,
+          "playlist_id.inclusive": playlistId
+        };
+
+        zypeApi.getVideos(params)
+        .then(
+          resp => {
+            let videos = resp.response;
+            resolve(videos);
+          },
+          err => { // error. return empty array
+            resolve([]);
+          }
+        );
+      });
+    };
+
     this.getPlaylistChildren = (zypeApi, playlistId) => {
       return new Promise((resolve, reject) => {
         let params = {

@@ -19,6 +19,12 @@
     this.controllerIndex = null;
 
     this.view = null;
+    this.viewIndex = null;
+
+    const ViewIndex = {
+      SEARCH_BAR: 0,
+      VIDEOS: 1
+    };
 
     /**
      * Callbacks
@@ -47,37 +53,79 @@
       this.view = view;
       this.trigger("loadComplete");
 
+      this.viewIndex = ViewIndex.SEARCH_BAR;
+
       hideSpinner();
+    };
+
+    /**
+     * Helpers
+     */
+    this.searchVideos = query => {
+      ZypeApiHelpers.searchVideos(zypeApi, query, appDefaults.rootPlaylistId)
+      .then(
+        videos => {
+          this.videos = videos;
+          this.view.setVideos(videos);
+          this.viewIndex = ViewIndex.VIDEOS;
+        },
+        err => {} // ignore err for now
+      );
     };
 
     this.handleButtonPress = buttonPress => {
       switch (buttonPress) {
         case TvKeys.UP:
+          this.viewIndex = ViewIndex.SEARCH_BAR;
+          this.view.unfocusVideos();
+          this.view.highlightInput();
           break;
         case TvKeys.DOWN:
+          if (this.videos.length > 0) {
+            this.viewIndex = ViewIndex.VIDEOS;
+            this.view.blurInput();
+            this.view.unhighlightInput();
+            this.view.setFocusedVideo(this.view.videoIndex);
+          }
           break;
         case TvKeys.LEFT:
+          if (this.viewIndex == ViewIndex.VIDEOS) {
+            this.view.setFocusedVideo(this.view.videoIndex - 1);
+          }
+          break;
         case TvKeys.RIGHT:
+          if (this.viewIndex == ViewIndex.VIDEOS) {
+            this.view.setFocusedVideo(this.view.videoIndex + 1);
+          }
           break
         case TvKeys.ENTER:
+          if (this.viewIndex == ViewIndex.SEARCH_BAR) {
+            if (this.view.isInputFocused()) {
+              this.view.blurInput();
+
+              let query = this.view.query();
+              if (query.length > 0) {
+                this.searchVideos(query);
+              }
+            } else {
+              this.view.focusInput();
+            }
+          } else {
+            let selectedVid = this.videos[this.view.videoIndex];
+            this.createController(VideoDetailsController, {video: selectedVid});
+          }
           break;
         case TvKeys.BACK:
         case TvKeys.RETURN:
-          this.removeSelf();
+          if (!this.view.isInputFocused()) this.removeSelf();
           break;
         default:
           break;
       }
     };
 
-    this.show = () => {
-      this.view.trigger("show", this.buttons);
-    };
-
-    this.hide = () => {
-      this.view.trigger("hide");
-    };
-
+    this.show = () => this.view.trigger("show");
+    this.hide = () => this.view.trigger("hide");
     this.close = () => {
       this.view.close();
       this.view = null;
