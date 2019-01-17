@@ -23,15 +23,16 @@
     const videosContainerClass =  " .videos-container";
     const videoClass = " .video";
     const videoTitleClass = " .video-title";
+    const videoResultsClass = " .video-results";
 
     // need pixels instead of % for position bc window size changes when keyboard appears
-    const queryContainerTop = window.innerHeight * 0.25;
+    const queryContainerTop = window.innerHeight * 0.20;
     const queryContainerHeight = window.innerHeight * 0.10;
-    const videoContainerTop = window.innerHeight * 0.50;
+    const videoContainerTop = window.innerHeight * 0.35;
     const videoContainerWidth = window.innerWidth * 0.20;
     const videoContainerHeight = window.innerHeight * 0.20;
-    const videoTitleContainerTop = window.innerHeight * 0.80;
-    const videoTitleContainerLeft = window.innerWidth * 0.10;
+    const videoResultsContainerTop = window.innerHeight * 0.60;
+    const videoResultsContainerLeft = window.innerWidth * 0.45;
 
     this.id = null;
 
@@ -59,9 +60,9 @@
               width: String(videoContainerWidth) + "px",
               height: String(videoContainerHeight) + "px"
             },
-            videoTitleContainer: {
-              top: String(videoTitleContainerTop) + "px",
-              left: String(videoTitleContainerLeft) + "px",
+            videoResultsContainer: {
+              top: String(videoResultsContainerTop) + "px",
+              left: String(videoResultsContainerLeft) + "px",
             }
           }
         },
@@ -106,24 +107,24 @@
       }, 200);
     };
 
-    this.updateVideoTitle = () => {
-      let video = this.videos[this.videoIndex];
-      if (video) $(this.id + videoTitleClass).text(video.title);
-
-      if (this.videos.length == 0) $(this.id + videoTitleClass).text("No results found");
+    this.updateVideoResult = () => {
+      let text = (this.videos.length > 0) ? "" : "No results found";
+      $(this.id + videoResultsClass).text(text);
     };
 
     // setFocusedVideo() sets selected video index and focuses video thumbnail
     this.setFocusedVideo = index => {
       if (this.videos[index]) {
         this.videoIndex = index;
-        this.unhighlightInput();
-        this.blurInput();
-        this.unfocusVideos();
-        this.focusVideo();
+        if (!this.isInputFocused()) { // only focus videos if user is not still typing
+          this.unhighlightInput();
+          this.blurInput();
+          this.unfocusVideos();
+          this.focusVideo();
+        }
         this.moveVideoContainer();
       }
-      this.updateVideoTitle();
+      this.updateVideoResult();
     };
 
     // setVideos() updates the videos in view and focuses first
@@ -142,7 +143,6 @@
       $(this.id + videosContainerClass).html(renderedTemplate);
 
       this.videoIndex = 0;
-      this.setFocusedVideo(this.videoIndex);
     };
 
     /**

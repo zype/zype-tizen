@@ -11,8 +11,8 @@
     <!-- Videos search container - empty initially -->
     <div class="videos-container"></div>
 
-    <div class="video-title-container">
-      <h3 class="video-title {{ css.classes.theme }}"></h3>
+    <div class="video-results-container">
+      <h3 class="video-results {{ css.classes.theme }}"></h3>
     </div>
   </div>
 
@@ -32,9 +32,9 @@
       width: {{ css.positions.videoContainer.width }};
       height: {{ css.positions.videoContainer.height }};
     }
-    .search-view .video-title-container {
-      top: {{ css.positions.videoTitleContainer.top }};
-      left: {{ css.positions.videoTitleContainer.left }};
+    .search-view .video-results-container {
+      top: {{ css.positions.videoResultsContainer.top }};
+      left: {{ css.positions.videoResultsContainer.left }};
     }
   </style>
 </script>
@@ -44,6 +44,7 @@
   {{#each videos}}
   <div class="video">
     <img class="video-thumbnail" src="{{imgUrl}}" />
+    <h2 class="video-title ellipsis-text {{ ../css.classes.theme }}">{{ title }}</h2>
   </div>
   {{/each}}
 </script>

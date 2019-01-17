@@ -26,6 +26,10 @@
       VIDEOS: 1
     };
 
+    const autoSearchInterval = 5000; // time in ms to auto search
+    this.searchInterval = null; // interval to auto search
+    this.lastQuery = null;
+
     /**
      * Callbacks
      */
@@ -54,25 +58,48 @@
       this.trigger("loadComplete");
 
       this.viewIndex = ViewIndex.SEARCH_BAR;
+      this.view.focusInput();
 
       hideSpinner();
+    };
+
+    /**
+     * Autosearch Interval
+     */
+    this.clearSearchInterval = () => {
+      clearInterval(this.searchInterval);
+      this.searchInterval = null;
+    };
+    this.setupSearchInterval = () => {
+      if (this.searchInterval) this.clearSearchInterval();
+      this.searchInterval = setInterval(this.validateSearch, autoSearchInterval);
     };
 
     /**
      * Helpers
      */
     this.searchVideos = query => {
+      this.lastQuery = query;
       ZypeApiHelpers.searchVideos(zypeApi, query, appDefaults.rootPlaylistId)
       .then(
         videos => {
           this.videos = videos;
           this.view.setVideos(videos);
-          this.viewIndex = (videos.length > 0) ? ViewIndex.VIDEOS : videoIndex.SEARCH_BAR;
+          // this.viewIndex = (videos.length > 0) ? ViewIndex.VIDEOS : videoIndex.SEARCH_BAR;
+          if (this.view.isInputFocused()) this.view.setFocusedVideo(this.view.videoIndex);
         },
         err => {} // ignore err for now
       );
     };
 
+    this.validateSearch = () => { // basic validation before searching
+      let query = this.view.query();
+      if (query.length >=3 && query != this.lastQuery) this.searchVideos(query);
+    };
+
+    /**
+     * Event Handlers
+     */
     this.handleButtonPress = buttonPress => {
       switch (buttonPress) {
         case TvKeys.UP:
@@ -102,19 +129,22 @@
           if (this.viewIndex == ViewIndex.SEARCH_BAR) {
             if (this.view.isInputFocused()) {
               this.view.blurInput();
-
-              let query = this.view.query();
-              if (query.length > 0) {
-                this.searchVideos(query);
-              }
             } else {
               this.view.focusInput();
             }
-          } else {
+
+            this.validateSearch();
+          } else if (this.viewIndex == ViewIndex.VIDEOS) {
             let selectedVid = this.videos[this.view.videoIndex];
             this.createController(VideoDetailsController, {video: selectedVid});
           }
           break;
+        case TvKeys.DONE:
+        case TvKeys.CANCEL:
+          this.view.blurInput();
+          this.validateSearch();
+          break;
+
         case TvKeys.BACK:
         case TvKeys.RETURN:
           if (!this.view.isInputFocused()) this.removeSelf();
@@ -124,9 +154,16 @@
       }
     };
 
-    this.show = () => this.view.trigger("show");
-    this.hide = () => this.view.trigger("hide");
+    this.show = () => {
+      this.view.trigger("show");
+      this.setupSearchInterval(); // auto search every N seconds
+    };
+    this.hide = () => {
+      this.view.trigger("hide");
+      this.clearSearchInterval();
+    };
     this.close = () => {
+      this.clearSearchInterval();
       this.view.close();
       this.view = null;
     };
