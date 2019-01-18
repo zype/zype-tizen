@@ -26,12 +26,12 @@
     const videoResultsClass = " .video-results";
 
     // need pixels instead of % for position bc window size changes when keyboard appears
-    const queryContainerTop = window.innerHeight * 0.20;
+    const queryContainerTop = window.innerHeight * 0.05;
     const queryContainerHeight = window.innerHeight * 0.10;
-    const videoContainerTop = window.innerHeight * 0.35;
+    const videoContainerTop = window.innerHeight * 0.20;
     const videoContainerWidth = window.innerWidth * 0.20;
     const videoContainerHeight = window.innerHeight * 0.20;
-    const videoResultsContainerTop = window.innerHeight * 0.60;
+    const videoResultsContainerTop = window.innerHeight * 0.45;
     const videoResultsContainerLeft = window.innerWidth * 0.45;
 
     this.id = null;
