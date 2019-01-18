@@ -38,6 +38,7 @@ $(document).ready(() => {
 			$.getScript("js/views/VideoDetailsView.js"),
 			$.getScript("js/views/MediaGridView.js"),
 			$.getScript("js/views/MediaGridSliderView.js"),
+			$.getScript("js/views/SearchView.js"),
 
 			// Controllers
 			$.getScript("js/controllers/SignInController.js"),
@@ -47,6 +48,7 @@ $(document).ready(() => {
 			$.getScript("js/controllers/VideoDetailsController.js"),
 			$.getScript("js/controllers/MediaGridController.js"),
 			$.getScript("js/controllers/MediaGridSliderController.js"),
+			$.getScript("js/controllers/SearchController.js"),
 
 			$.getScript(nativePlatformLibs.nativePlatform),
 			$.getScript("js/controllers/AppController.js")
