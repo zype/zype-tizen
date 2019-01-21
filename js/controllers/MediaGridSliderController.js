@@ -99,8 +99,11 @@
       this.gridView.trigger("show");
       this.gridView.unfocusThumbnails();
 
-      this.viewIndex = ViewIndexes.SLIDERS;
-      this.gridView.setFocusedSlider(this.gridView.sliderIndex);
+      if (this.viewIndex == ViewIndexes.SLIDERS) {
+        this.gridView.setFocusedSlider(this.gridView.sliderIndex);
+      } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
+        this.gridView.setFocus();
+      }
     };
     this.close = () => {
       this.clearInterval();
