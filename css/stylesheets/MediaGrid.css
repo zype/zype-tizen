@@ -198,7 +198,6 @@ height: 90%;
   /* overwrite white-space from .ellipsis-text */
   white-space: inherit;
   display: block;
-  display: -webkit-box;
 
   /* cut off after 1 lines */
   height: 1.5em;
