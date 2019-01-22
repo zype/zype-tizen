@@ -52,19 +52,22 @@
 
                 {{#ifCond colorObj.playlist_bg_color "==" null}}
                 <!-- default -->
-                <div class="media-grid-row-thumbnails-container {{thumbnailLayout}}">
+                <div class="media-grid-row-thumbnails-container">
                 {{/ifCond}}
                     <div class="media-grid-row-thumbnails">
                         {{#each content}}
-                            <img
-                                {{#ifCond ../thumbnailLayout "==" "poster"}}
-                                src="{{posterThumbnailUrl}}"
-                                {{/ifCond}}
-                                {{#ifCond ../thumbnailLayout "!=" "poster"}}
-                                src="{{smallThumbnailUrl}}"
-                                {{/ifCond}}
-                                alt="Small thumbnail for {{title}}"
-                                class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-{{../thumbnailLayout}}-thumbnail" />
+                            <div class="thumbnail-container {{ ../thumbnailLayout }} ">
+                                <img
+                                    {{#ifCond ../thumbnailLayout "==" "poster"}}
+                                    src="{{posterThumbnailUrl}}"
+                                    {{/ifCond}}
+                                    {{#ifCond ../thumbnailLayout "!=" "poster"}}
+                                    src="{{smallThumbnailUrl}}"
+                                    {{/ifCond}}
+                                    alt="Small thumbnail for {{title}}"
+                                    class="{{ ../../css.classes.theme }} media-grid-thumbnail media-grid-{{../thumbnailLayout}}-thumbnail" />
+                                <h2 class="video-title ellipsis-text {{ ../../css.classes.theme }}">{{ title }}</h2>
+                            </div>
                         {{/each}}
                     </div>
                 </div>

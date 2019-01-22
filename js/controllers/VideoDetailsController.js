@@ -168,13 +168,13 @@
 		};
 
 		this.handleAction = function(action, data){
+			let videoId = data.videoId;
+			let auth = {};
+
 			switch (action) {
 				case "play":
 					this.view.trigger("hide");
 
-					let videoId = data.videoId;
-
-					let auth = {};
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
 					} else {
@@ -190,6 +190,24 @@
 				case "signin":
 					this.view.trigger("hide");
 					this.createController(SignInController, {});
+					break;
+
+				case "resume":
+					this.view.trigger("hide");
+
+					let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+
+					if (localStorage.getItem("accessToken")) {
+						auth = { access_token: localStorage.getItem("accessToken") };
+					} else {
+						auth = { app_key: zypeApi.appKey };
+					}
+
+					this.createController(VideoPlayerController, {
+						videoId: videoId,
+						playbackTime: playbackTime,
+						auth: auth
+					});
 					break;
 				default:
 					break;
@@ -208,7 +226,25 @@
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
 			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
-				buttons.push({ title: appDefaults.labels.playButton, role: "play", data: { videoId: videoId }  });
+				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
+
+				let playButton = {
+					title: btnTitle,
+					role: "play",
+					data: { videoId: videoId }
+				};
+
+				buttons.push(playButton);
+
+				if (playbackTime) {
+					let resumeButton = {
+						title: appDefaults.labels.resumeButton,
+						role: "resume",
+						data: { videoId: videoId }
+					};
+					buttons.push(resumeButton);
+				}
 			} else {
 				buttons.push({ title: appDefaults.labels.signInButton, role: "signin", data: {} });
 			}

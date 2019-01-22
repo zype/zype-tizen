@@ -12,6 +12,8 @@ var appDefaults = {
 	pauseButtonUrl: "assets/images/pause-button.png",
 	labels: {
 		playButton: "Play",
+		playFromBegButton: "Play from beginning",
+		resumeButton: "Resume",
 		signInButton: "Sign In"
 	},
 	features: {
