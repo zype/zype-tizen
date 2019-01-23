@@ -28,7 +28,15 @@
 
             {{#ifCond colorObj.playlist_bg_color "!=" null}}
             <!-- playlist background color -->
-            <div class="media-grid-row-thumbnails-container" style="background-color: #{{colorObj.playlist_bg_color}};">
+            <div class="media-grid-row-thumbnails-container custom-bg-color {{thumbnailLayout}}" style="background-color: #{{colorObj.playlist_bg_color}};">
+                <style>
+                    .media-grid-row-thumbnails-container.custom-bg-color .media-grid-thumbnail.dark-theme.focused-thumbnail {
+                        border-color: white;
+                    }
+                    .media-grid-row-thumbnails-container.custom-bg-color .media-grid-thumbnail.light-theme.focused-thumbnail {
+                        border-color: black;
+                    }
+                </style>
             {{/ifCond}}
 
             {{#ifCond colorObj.playlist_bg_color "==" null}}
