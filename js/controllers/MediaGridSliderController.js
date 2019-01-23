@@ -278,7 +278,13 @@
             this.navView.decrementTab();
 
           } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
-            this.gridView.setFocusedSlider(this.gridView.sliderIndex - 1);
+            let nextSlider = this.sliders[this.gridView.sliderIndex - 1];
+            if (nextSlider) {
+              this.gridView.setFocusedSlider(this.gridView.sliderIndex - 1);
+            } else {
+              this.gridView.setFocusedSlider(this.sliders.length - 1);
+            }
+            this.setupSliderInterval(); // should automatically clear out old interval
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveLeft) { // go to left in row
             this.gridView.unfocusThumbnails();
@@ -304,7 +310,13 @@
             this.navView.incrementTab();
 
           } else if (this.viewIndex == ViewIndexes.SLIDERS) { // change slider
-            this.gridView.setFocusedSlider(this.gridView.sliderIndex + 1);
+            let nextSlider = this.sliders[this.gridView.sliderIndex + 1];
+            if (nextSlider) {
+              this.gridView.setFocusedSlider(this.gridView.sliderIndex + 1);
+            } else {
+              this.gridView.setFocusedSlider(0);
+            }
+            this.setupSliderInterval(); // should automatically clear out old interval
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID && gridCanMoveRight) { // go to right in row
             this.gridView.unfocusThumbnails();
