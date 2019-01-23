@@ -41,6 +41,7 @@
       this.id = "#" + args.css.ids.id;
 
       let context = {
+        showThumbnailTitles: appDefaults.features.showThumbnailTitles,
         rowData: this.mediaContent,
         sliders: this.sliderInfo(this.sliders),
         css: args.css

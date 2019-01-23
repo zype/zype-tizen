@@ -61,7 +61,11 @@
 			};
 			let cb = res => {
 				if (res.response && res.response.length) {
-					controllerArgs.sliders = res.response;
+					let parsedSliders = res.response.filter(slider => {
+						return (slider.pictures && slider.pictures.length > 0);
+					});
+
+					controllerArgs.sliders = parsedSliders;
 					this.createNewController(MediaGridSliderController, controllerArgs);
 				} else {
 					this.createNewController(MediaGridController, controllerArgs);

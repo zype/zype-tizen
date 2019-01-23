@@ -17,6 +17,7 @@ var appDefaults = {
 		signInButton: "Sign In"
 	},
 	features: {
-		universalSubscription: false
+		universalSubscription: false,
+		showThumbnailTitles: true
 	}
 }

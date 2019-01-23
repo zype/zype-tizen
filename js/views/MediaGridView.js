@@ -37,6 +37,7 @@
 			this.id = "#" + args.css.ids.id;
 
 			let context = {
+				showThumbnailTitles: appDefaults.features.showThumbnailTitles,
 				rowData: this.mediaContent,
 				css: args.css,
 				images: {
