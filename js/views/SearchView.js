@@ -154,7 +154,7 @@
     };
 
     this.query = () => {
-      let input = $(this.id).find(".query-input")[0]
+      let input = $(this.id).find(".query-input")[0];
       return $(input).val();
     };
 
