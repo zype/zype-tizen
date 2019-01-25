@@ -213,7 +213,7 @@
 				case "resume":
 					this.view.trigger("hide");
 
-					let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+					let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
 
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
@@ -246,7 +246,7 @@
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
 			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
-				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoInde]);
+				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
 				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
 
 				let playButton = {

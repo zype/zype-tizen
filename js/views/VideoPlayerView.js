@@ -100,6 +100,17 @@
 			this.updateCurrentTime();
 		};
 
+		this.updateDuration = time => {
+			this.duration = time;
+			let timeString = secondsToMinutesString(this.duration);
+			$(this.id + " .duration").text(timeString);
+		};
+
+		this.updateTitle = title => {
+			this.title = title;
+			$(this.id + " .video-player-title").text(this.title);
+		};
+
 		this.setState = state => {
 			if (state == "playing" || state == "paused"){ this.state = state; }
 
