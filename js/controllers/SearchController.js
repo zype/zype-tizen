@@ -136,7 +136,7 @@
             this.validateSearch();
           } else if (this.viewIndex == ViewIndex.VIDEOS) {
             let selectedVid = this.videos[this.view.videoIndex];
-            this.createController(VideoDetailsController, {video: selectedVid});
+            this.createController(VideoDetailsController, {content: [selectedVid], index: 0});
           }
           break;
         case TvKeys.DONE:

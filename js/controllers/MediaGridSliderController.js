@@ -149,7 +149,7 @@
             resp => {
               _this.navView.trigger("hide");
               _this.gridView.trigger("hide");
-              _this.createController(VideoDetailsController, { video: resp.response });
+              _this.createController(VideoDetailsController, { content: [resp.response], index: 0 });
             },
             err => { hideSpinner(); }
           );
@@ -368,8 +368,13 @@
               this.gridView.trigger("hide");
 
               if (itemSelected.contentType == "videos"){
+                let row = this.gridView.currentPosition[0];
+                let videoIndex = this.gridView.currentPosition[1];
+                let content = this.mediaContent[row].content;
+
                 this.createController(VideoDetailsController, {
-                  video: itemSelected.content
+                  content: content,
+                  index: videoIndex
                 });
               } else if (itemSelected.contentType == "playlists") {
                 this.createController(MediaGridController, {
@@ -398,7 +403,8 @@
               .then(
                 res => {
                   this.createController(VideoDetailsController, {
-                    video: res.response
+                    content: [res.response],
+                    index: 0
                   });
                 },
                 err => {

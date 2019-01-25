@@ -19,6 +19,8 @@
 		this.controllerIndex = null;
 
 		this.content = null;
+		this.videoIndex = null; // current position
+
 		this.view = null;
 		this.buttons = [];
 		this.currentButtonIndex = null;
@@ -50,16 +52,18 @@
 			this.createController = callbacks.createController;
 			this.removeSelf = callbacks.removeController;
 
-			this.content = args.video;
+			this.content = args.content;
+			this.videoIndex = args.index;
 
 			this.createView();
 		};
 
 		this.updateButtons = () => {
-			this.buttons = this.getButtons(this.content._id);
+			let videoIds = this.content.map(vid => vid._id);
+			this.buttons = this.getButtons(videoIds);
 			let context = {
 				buttons: this.buttons,
-				css: videoDetailsCss(this.content._id)
+				css: videoDetailsCss(this.content[this.videoIndex]._id)
 			};
 
 			this.currentButtonIndex = 0;
@@ -100,12 +104,13 @@
 		 * Event Handlers
 		 */ 
 		this.createView = function(){
-			this.buttons = this.getButtons(this.content._id);
+			let videoIds = this.content.map(vid => vid._id);
+			this.buttons = this.getButtons(videoIds);
 			this.currentButtonIndex = 0;
 
 			var viewArgs = {
-				css: videoDetailsCss(this.content._id),
-				data: new VideoModel(this.content),
+				css: videoDetailsCss(this.content[this.videoIndex]._id),
+				data: new VideoModel(this.content[this.videoIndex]),
 				buttons: this.buttons
 			};
 
@@ -116,7 +121,7 @@
 			this.updateButtons();
 
 			if(exports.deepLinkedData) {
-				let videoId = this.content._id;
+				let videoId = this.content[this.videoIndex]._id;
 
 				let auth = {};
 				if (localStorage.getItem("accessToken")) {
@@ -126,8 +131,10 @@
 				}
 
 				this.createController(VideoPlayerController, {
-					videoId: videoId,
-					auth: auth
+					videoIds: videoIds,
+					index: this.videoIndex,
+					auth: auth,
+					videoEndCallback: this.goToNextVideo
 				});
 
 				exports.deepLinkedData = null;
@@ -135,6 +142,15 @@
 			else {
 				hideSpinner();
 			}
+		};
+
+		this.goToNextVideo = () => {
+			let nextIndex = this.videoIndex + 1;
+			this.videoIndex = (this.content[nextIndex]) ? nextIndex : 0;
+
+			this.view.trigger("close");
+			this.view = null;
+			this.createView();
 		};
 
 		this.handleButtonPress = function(buttonPress){
@@ -168,7 +184,7 @@
 		};
 
 		this.handleAction = function(action, data){
-			let videoId = data.videoId;
+			let videoIds = data.videoIds;
 			let auth = {};
 
 			switch (action) {
@@ -182,8 +198,10 @@
 					}
 
 					this.createController(VideoPlayerController, {
-						videoId: videoId,
-						auth: auth
+						videoIds: videoIds,
+						index: this.videoIndex,
+						auth: auth,
+						videoEndCallback: this.goToNextVideo
 					});
 					break;
 
@@ -195,7 +213,7 @@
 				case "resume":
 					this.view.trigger("hide");
 
-					let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+					let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
 
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
@@ -204,9 +222,11 @@
 					}
 
 					this.createController(VideoPlayerController, {
-						videoId: videoId,
+						videoIds: videoIds,
+						index: this.videoIndex,
 						playbackTime: playbackTime,
-						auth: auth
+						auth: auth,
+						videoEndCallback: this.goToNextVideo
 					});
 					break;
 				default:
@@ -217,7 +237,7 @@
 		/**
 		 * Helpers
 		 */
-		this.getButtons = videoId => {
+		this.getButtons = videoIds => {
 			let buttons = [];
 
 			let requiresEntitlement = this.videoRequiresEntitlement();
@@ -226,13 +246,13 @@
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
 			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
-				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
+				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
 				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
 
 				let playButton = {
 					title: btnTitle,
 					role: "play",
-					data: { videoId: videoId }
+					data: { videoIds: videoIds, index: this.videoIndex }
 				};
 
 				buttons.push(playButton);
@@ -241,7 +261,7 @@
 					let resumeButton = {
 						title: appDefaults.labels.resumeButton,
 						role: "resume",
-						data: { videoId: videoId }
+						data: { videoIds: videoIds, index: this.videoIndex }
 					};
 					buttons.push(resumeButton);
 				}
@@ -257,7 +277,7 @@
 		};
 
 		this.videoRequiresEntitlement = function(){
-			var video = this.content;
+			var video = this.content[this.videoIndex];
 			return (video.pass_required || video.purchase_required || video.rental_required || video.subscription_required);
 		};
 
