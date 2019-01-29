@@ -150,7 +150,7 @@
               alert("Successful purchase: " + product.ItemTitle);
             };
 
-            NativeMarke.callReceiptValidator(transactionInfo, receiptInfo, receiptValidatorCb, errorCb);
+            NativeMarket.callReceiptValidator(transactionInfo, receiptInfo, receiptValidatorCb, errorCb);
           };
 
           NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, errorCb);
