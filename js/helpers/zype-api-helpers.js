@@ -4,6 +4,37 @@
   let ZypeApiHelpers = function(){
     let _this = this;
 
+    this.findPlanByMarketplaceId = (zypeApi, marketplace, productId) => {
+      return new Promise((resolve, reject) => {
+        let params = { "per_page": 500 };
+
+        zypeApi.getPlans(params)
+        .then(
+          resp => {
+            let plans = resp.response;
+            let matchingPlan;
+
+            for (let i = 0; i < plans.length; i++) {
+              const plan = plans[i];
+              if (plan.marketplace_ids && plan.marketplace_ids[marketplace] == productId) {
+                matchingPlan = plan;
+                break;
+              }
+            }
+
+            if (matchingPlan) {
+              resolve(matchingPlan);
+            } else {
+              reject(null);
+            }
+          },
+          err => {
+            reject(null);
+          }
+        );
+      });
+    };
+
     this.searchVideos = (zypeApi, query, playlistId) => {
       return new Promise((resolve, reject) => {
         let params = {

@@ -99,6 +99,7 @@
       let emailContainerTop = 0.20;
       let passwordContainerTop = 0.35;
       let confirmContainerTop = 0.60;
+      let toggleContainerTop = 0.70;
       
       return {
         title: {
@@ -116,6 +117,9 @@
         confirm: {
           height: String(windowHeight * confirmContainerHeight) + "px",
           top: String(windowHeight * confirmContainerTop) + "px"
+        },
+        toggle: {
+          top: String(windowHeight * toggleContainerTop) + "px"
         }
       }
     };
@@ -135,10 +139,6 @@
     // email.height = 10%
     // password.height = 10%;
     // confirm button.height = 10%
-    
-    
-
-
 
 
 

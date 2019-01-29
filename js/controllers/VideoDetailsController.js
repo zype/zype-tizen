@@ -247,7 +247,7 @@
 
 				case "subscribe":
 					this.view.trigger("hide");
-					this.createController(PurchaseController, {video: this.content});
+					this.createController(PurchaseController, {video: this.content[this.videoIndex]});
 					break;
 				default:
 					break;
@@ -261,16 +261,12 @@
 			let buttons = [];
 			let requiresEntitlement = this.videoRequiresEntitlement();
 			let signedIn = this.isSignedIn();
+			let currentVideo = this.content[this.videoIndex];
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
-<<<<<<< HEAD
-			if (!universalSvodEnabled || !requiresEntitlement || signedIn){
-				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoIds[this.videoIndex]);
-=======
 			let addPlayBtns = () => {
-				let playbackTime = StorageManager.playbackTimes.getVideoTime(videoId);
->>>>>>> Created base purchase controller and view. Added transition to purchase controller from video details
+				let playbackTime = StorageManager.playbackTimes.getVideoTime(currentVideo._id);
 				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
 
 				let playButton = {
@@ -292,7 +288,7 @@
 			};
 
 			if (requiresEntitlement) {
-				if (this.content.subscription_required && appDefaults.features.nativeSubscription) {
+				if (currentVideo.subscription_required && appDefaults.features.nativeSubscription) {
 					if (this.consumer && this.consumer.subscription_count > 0) {
 						addPlayBtns();
 					} else {

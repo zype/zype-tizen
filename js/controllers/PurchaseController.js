@@ -58,16 +58,17 @@
         this.removeSelf();
       };
 
-      // this.fetchAssociatedProducts(successCb, errorCb);
-
-      // debug code work on UI without needing tv connected
-      this.products = appDefaults.mockData.products;
-      successCb(); // create view
+      this.fetchAssociatedProducts(successCb, errorCb);
     };
 
     /**
      * Private Helpers
      */
+
+    this.fetchMatchingZypePlan = (productId, successCallback, errCallback) => {
+      ZypeApiHelpers.findPlanByMarketplaceId(zypeApi, "samsung_tizen", productId)
+      .then(successCallback, errCallback);
+    };
 
     // fetchAssociatedProducts() - finds products associated with video and creates view if success
     this.fetchAssociatedProducts = (successCallback, errCallback) => {
@@ -116,6 +117,49 @@
     };
 
     this.isSignedIn = () => (localStorage.getItem("accessToken")) ? true : false;
+
+    this.purchaseSubscription = product => {
+      ZypeApiHelpers.findPlanByMarketplaceId(zypeApi, "samsung_tizen", product.ItemID)
+      .then(
+        plan => { // found matching plan on Zype
+          let transactionInfo = {
+            "app_id": zypeAppSettings._id,
+            "site_id": zypeAppSettings.site_id,
+            "consumer_id": this.consumer._id,
+            "plan_id": plan._id
+          };
+
+          let errorCb = err => {
+            alert("Error purchasing: " + product.ItemTitle);
+          };
+
+          // callback for receipt validator
+          let cb = resp => {
+            let trialDays = product.SubscriptionInfo.freeTrialDayCount || 0;
+
+            let receiptInfo = {
+              "AppID": appDefaults.marketplace.appId,
+              "InvoiceID": resp.InvoiceID,
+              "CustomID": NativeMarket.getUdid(),
+              "CountryCode": NativeMarket.getCountryCode(),
+              "freeTrialDayCount": trialDays
+            };
+
+            let receiptValidatorCb = resp => {
+              this.removeSelf();
+              alert("Successful purchase: " + product.ItemTitle);
+            };
+
+            NativeMarke.callReceiptValidator(transactionInfo, receiptInfo, receiptValidatorCb, errorCb);
+          };
+
+          NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, errorCb);
+        },
+        err => {
+          alert("Error. Unable to find matching subscription");
+        }
+      )
+    };
 
     // calls fetchConsumer() with callback function passed in
     this.fetchConsumerThenCallback = callback => {
@@ -185,44 +229,8 @@
           if (this.viewIndex == ViewIndexes.PRODUCTS) {
             let product = this.products[this.view.productIndex];
 
-            debugger;
-
-            // hardcoded data for now
-            let associatePlan = {
-              _id: appDefaults.mockData.subscriptionPlan._id,
-              marketplace_ids: {
-                samsung_tv: product.ItemID
-              }
-            };
             if (this.isSignedIn()) {
-              let zypeTransactionInfo = {
-                "app_id": zypeAppSettings._id,
-                "site_id": zypeAppSettings.site_id,
-                "consumer_id": this.consumer._id,
-                "plan_id": associatePlan._id
-              };
-
-              let cb = resp => {
-                let trialDays = product.SubscriptionInfo.freeTrialDayCount || 0;
-
-                let receiptInfo = {
-                  "AppID": appDefaults.marketplace.appId,
-                  "InvoiceID": resp.InvoiceID,
-                  "CustomID": NativeMarket.getUdid(),
-                  "CountryCode": NativeMarket.getCountryCode(),
-                  "freeTrialDayCount": trialDays
-                };
-
-                let receiptValidatorCb = resp => {
-                  // need endpoint to test
-                  debugger;
-                };
-
-                NativeMarke.callReceiptValidator(zypeTransactionInfo, receiptInfo, receiptValidatorCb, receiptValidatorCb);
-              };
-              // NativeMarket.purchaseAndGetInvoice(appDefaults.marketplace, product, cb, cb);
-              alert("You want to purchase this product: " + JSON.stringify(product));
-
+              this.purchaseSubscription(product);
             } else {
               this.view.trigger("hide");
               this.createController(OAuthController, { isSignUp: true });
