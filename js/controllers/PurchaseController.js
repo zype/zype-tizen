@@ -261,7 +261,10 @@
           this.consumer = null;
           this.view.showSignIn();
         }
+
+        hideSpinner();
       };
+      showSpinner();
       this.fetchConsumerThenCallback(cb);
     };
 
@@ -270,8 +273,15 @@
     };
 
     this.close = () => {
-      this.view.close();
-      this.view = null;
+      if (this.view) {
+        this.view.close();
+        this.view = null;
+      }
+
+      if (this.products.length == 0) {
+        showSpinner();
+        alert("Unable to connect to Samsung Checkout. Please try again later");
+      }
     };
 
     /**
