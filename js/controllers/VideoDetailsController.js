@@ -86,8 +86,10 @@
 			let cb = () => {
 				this.updateButtons();
 				this.view.show();
+				hideSpinner();
 			};
 
+			showSpinner();
 			if (this.isSignedIn) {
 				this.fetchConsumer(localStorage.getItem("accessToken"), cb);
 			} else {
