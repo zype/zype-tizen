@@ -66,6 +66,8 @@
 			let accountTab = { index: "2", title: "Account", role: "account" };
 			tabs.push(accountTab);
 
+			tabs.push({index: "3", title: "Favorites", role: "favorites"});
+
 			return tabs;
 		};
 

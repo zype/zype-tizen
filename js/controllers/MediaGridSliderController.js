@@ -359,6 +359,9 @@
             } else if (currentTab.role == "search") { // search
               let controllerArgs = {};
               this.createController(SearchController, controllerArgs);
+            } else if (currentTab.role == "favorites") { // favorites
+              let controllerArgs = {};
+              this.createController(FavoritesController, controllerArgs);
             }
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) { // transition to video/playlist

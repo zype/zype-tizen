@@ -42,6 +42,7 @@ $(document).ready(() => {
       $.getScript("js/views/MediaGridView.js"),
       $.getScript("js/views/MediaGridSliderView.js"),
       $.getScript("js/views/SearchView.js"),
+      $.getScript("js/views/FavoritesView.js"),
 
       // Controllers
       $.getScript("js/controllers/PurchaseController.js"),
@@ -53,6 +54,7 @@ $(document).ready(() => {
       $.getScript("js/controllers/MediaGridController.js"),
       $.getScript("js/controllers/MediaGridSliderController.js"),
       $.getScript("js/controllers/SearchController.js"),
+      $.getScript("js/controllers/FavoritesController.js"),
 
       $.getScript(nativePlatformLibs.nativePlatform),
       $.getScript("js/controllers/AppController.js")
