@@ -27,6 +27,11 @@
 
 		this.consumer = null;
 
+		// object of favorite video ids
+		// key: video id
+		// value: associated video favorite id
+		this.favoriteIds = null;
+
 		/**
 		 * Callbacks
 		 */
@@ -89,7 +94,7 @@
 				hideSpinner();
 			};
 
-			showSpinner();
+			//showSpinner();
 			if (this.isSignedIn) {
 				this.fetchConsumer(localStorage.getItem("accessToken"), cb);
 			} else {
@@ -251,6 +256,22 @@
 					this.view.trigger("hide");
 					this.createController(PurchaseController, {video: this.content[this.videoIndex]});
 					break;
+
+				case "favorite":
+					zypeApi.createConsumerVideoFavorite(this.consumer._id, data.id, localStorage.getItem("accessToken"))
+					.then(
+						resp => { this.trigger("show"); },
+						err => { this.trigger("show"); }
+					);
+					break;
+
+				case "unfavorite":
+					zypeApi.deleteConsumerVideoFavorite(this.consumer._id, this.favoriteIds[data.id], localStorage.getItem("accessToken"))
+					.then(
+						resp => { this.trigger("show"); },
+						err => { this.trigger("show"); }
+					);
+					break;
 				default:
 					break;
 			}
@@ -264,6 +285,7 @@
 			let requiresEntitlement = this.videoRequiresEntitlement();
 			let signedIn = this.isSignedIn();
 			let currentVideo = this.content[this.videoIndex];
+			let videoIsFav = this.currentVideoIsFav();
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
 
@@ -279,6 +301,7 @@
 
 				buttons.push(playButton);
 
+				// Resume
 				if (playbackTime) {
 					let resumeButton = {
 						title: appDefaults.labels.resumeButton,
@@ -286,6 +309,23 @@
 						data: { videoIds: videoIds, index: this.videoIndex }
 					};
 					buttons.push(resumeButton);
+				}
+
+				// Favorite
+				if (signedIn) {
+					if (videoIsFav) {
+						buttons.push({
+							title: "Unfavorite",
+							role: "unfavorite",
+							data: { id: currentVideo._id }
+						});
+					} else {
+						buttons.push({
+							title: "Favorite",
+							role: "favorite",
+							data: { id: currentVideo._id }
+						});
+					}
 				}
 			};
 
@@ -313,13 +353,18 @@
 		};
 
 		this.videoRequiresEntitlement = function(){
-			var video = this.content[this.videoIndex];
+			let video = this.content[this.videoIndex];
 			return (video.pass_required || video.purchase_required || video.rental_required || video.subscription_required);
 		};
 
 		this.isSignedIn = function(){
-			var accessToken = localStorage.getItem("accessToken");
+			let accessToken = localStorage.getItem("accessToken");
 			return (accessToken) ? true : false;
+		};
+
+		this.currentVideoIsFav = () => {
+			let video = this.content[this.videoIndex];
+			return (this.favoriteIds[video._id]) ? true : false;
 		};
 
 		this.fetchConsumer = (accessToken, callback) => {
@@ -327,11 +372,24 @@
 			.then(
 				consumer => {
 					this.consumer = consumer;
-					callback();
+					this.fetchVideoFavIds(this.consumer._id, accessToken, callback);
 				},
 				err => { 
 					callback(); 
 				}
+			);
+		};
+
+		this.fetchVideoFavIds = (consumerId, accessToken, callback) => {
+			zypeApi.getConsumerVideoFavorites(consumerId, accessToken)
+			.then(
+				videoFavsResp => {
+					let favoriteIds = {};
+					videoFavsResp.response.forEach(vidFav => favoriteIds[vidFav.video_id] = vidFav._id);
+					this.favoriteIds = favoriteIds;
+					callback();
+				},
+				callback
 			);
 		};
 

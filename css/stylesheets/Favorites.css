@@ -1,0 +1,14 @@
+.favorites-view {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0%;
+  left: 0%;
+}
+
+.favorites-view.dark-theme {
+  background-color: black;
+}
+.favorites-view.light-theme {
+  background-color: white;
+}

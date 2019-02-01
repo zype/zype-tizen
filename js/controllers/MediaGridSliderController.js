@@ -99,10 +99,11 @@
       this.gridView.trigger("show");
       this.gridView.unfocusThumbnails();
 
-      if (this.viewIndex == ViewIndexes.SLIDERS) {
-        this.gridView.setFocusedSlider(this.gridView.sliderIndex);
-      } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
+      if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
         this.gridView.setFocus();
+      } else {
+        this.viewIndex = ViewIndexes.SLIDERS;
+        this.gridView.setFocusedSlider(this.gridView.sliderIndex);
       }
     };
     this.close = () => {

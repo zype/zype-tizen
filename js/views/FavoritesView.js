@@ -12,19 +12,28 @@
     let _this = this;
 
     // MARK: - HTML ids
-    let templateId = "#favorites-view-template";
-    let favoritesContainerId = "#favorites-container";
+    const templateId = "#favorites-view-template";
+    const favoritesContainerId = "#favorites-container";
+    const favoritesHolderClass = " .favorites-holder";
+    const favoritesInfoClass = " .favorites-info";
+    const signInBtnClass = " .sign-in-button";
+    const helperMsgClass = " .helper-message";
 
     this.id = null;
+
+    this.favorites = null; // array of video objects
+    this.signedIn = null;  // bool
 
     /**
      * Initialization
      */
     this.init = args => {
-      let id = "favorites-view";
+      const id = "favorites-view";
       this.id = "#" + id;
 
-      let context = {
+      this.setSignedIn(args.signedIn);
+
+      const context = {
         css: {
           classes: { theme: appDefaults.theme },
           brandColor: appDefaults.brandColor,
@@ -32,11 +41,60 @@
         }
       };
 
-      let template = $(templateId);
-      let renderedTemplate = Utils.buildTemplate(template, context);
+      const template = $(templateId);
+      const renderedTemplate = Utils.buildTemplate(template, context);
       $(favoritesContainerId).append(renderedTemplate);
 
-      this.trigger("loadComplete");
+      this.setFavorites(args.favorites);
+
+      debugger;
+    };
+
+    /**
+     * Private methods
+     */
+    const showFavorites = () => $(this.id + favoritesHolderClass).removeClass("invisible");
+    const hideFavorites = () => $(this.id + favoritesHolderClass).addClass("invisible");
+
+    const showInfo = () => $(this.id + favoritesInfoClass).removeClass("invisible");
+    const hideInfo = () => $(this.id + favoritesInfoClass).addClass("invisible");
+
+    /**
+     * Update view
+     */
+    this.setSignedIn = signedIn => this.signedIn = signedIn;
+
+    this.setFavorites = favs => {
+      if (favs) this.favorites = favs;
+
+      if (this.signedIn) {
+        if (favs.length > 0) {
+          showFavorites();
+          hideInfo();
+        } else {
+          hideFavorites();
+          this.showFavoritesHelperMsg();
+        }
+      } else {
+        hideFavorites();
+        this.showSignIn();
+      }
+    };
+
+    this.showSignIn = () => {
+      const signInMsg = "You need to sign in see favorites";
+      $(this.id + helperMsgClass).text(signInMsg);
+      $(this.id + signInBtnClass).removeClass("invisible");
+
+      showInfo();
+    };
+
+    this.showFavoritesHelperMsg = () => {
+      const favsHelperMsg = "You do not have any favorites";
+      $(this.id + helperMsgClass).text(favsHelperMsg);
+      $(this.id + signInBtnClass).addClass("invisible");
+
+      showInfo();
     };
 
     // MARK: - Update view state

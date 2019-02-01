@@ -16,32 +16,36 @@
 
     let _this = this;
 
-    this.controllerIndex = null;
+    let controllerIndex = null;
+    let consumerId = null;
 
     this.view = null;
 
     /**
      * Callbacks
      */
-    this.createController = null; // create new controller
-    this.removeSelf = null; // remove self
+    let createController = null; // create new controller
+    let removeSelf = null; // remove self
 
     this.init = options => {
       showSpinner();
 
-      let args = options.args;
-      let callbacks = options.callbacks;
+      const args = options.args;
+      const callbacks = options.callbacks;
 
-      this.controllerIndex = args.controllerIndex;
+      controllerIndex = args.controllerIndex;
 
-      this.createController = callbacks.createController;
-      this.removeSelf = callbacks.removeController;
+      createController = callbacks.createController;
+      removeSelf = callbacks.removeController;
 
-      this.createView();
+      this.fetchFavorites(this.createView);
     };
 
     this.createView = () => {
-      let viewArgs = {};
+      let viewArgs = {
+        signedIn: this.isSignedIn(),
+        favorites: this.favorites
+      };
 
       let view = new FavoritesView();
       view.init(viewArgs);
@@ -49,6 +53,38 @@
       this.trigger("loadComplete");
 
       hideSpinner();
+    };
+
+    this.isSignedIn = () => {
+      // TODO: add logic to determine if sign in is needed (favorites via api)
+      let accessToken = localStorage.getItem("accessToken");
+      return (accessToken) ? true : false;
+    };
+
+    this.fetchFavorites = callback => {
+      // TODO: add logic for getting favorites from local storage vs api
+
+      let emptyFavsCallback = () => {
+        this.favorites = [];
+        callback();
+      };
+
+      if (this.isSignedIn()) {
+        let accessToken = localStorage.getItem("accessToken");
+        ZypeApiHelpers.getConsumerFavorites(zypeApi, accessToken).then(
+          favorites => {
+            if (favorites.length > 0) {
+              this.favorites = favorites;
+              callback();
+            } else {
+              emptyFavsCallback();
+            }
+          },
+          err => { emptyFavsCallback(); }
+        );
+      } else {
+        emptyFavsCallback();
+      }
     };
 
     /**
@@ -71,20 +107,15 @@
           break;
         case TvKeys.BACK:
         case TvKeys.RETURN:
-          this.removeSelf();
+          removeSelf();
           break;
         default:
           break;
       }
     };
 
-    this.show = () => {
-			this.view.trigger("show");
-    };
-
-    this.hide = () => {
-      this.view.trigger("hide");
-    };
+    this.show = () => this.view.trigger("show");
+    this.hide = () => this.view.trigger("hide");
 
     this.close = () => {
       if (this.view) {
