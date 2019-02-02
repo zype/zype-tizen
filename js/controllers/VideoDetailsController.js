@@ -364,7 +364,7 @@
 
 		this.currentVideoIsFav = () => {
 			let video = this.content[this.videoIndex];
-			return (this.favoriteIds[video._id]) ? true : false;
+			return (this.favoriteIds && this.favoriteIds[video._id]) ? true : false;
 		};
 
 		this.fetchConsumer = (accessToken, callback) => {
