@@ -20,6 +20,11 @@
     let consumerId = null;
 
     this.view = null;
+    this.viewIndex = null;
+    const ViewIndex = {
+      SIGN_IN: 0,
+      VIDEOS: 1
+    };
 
     /**
      * Callbacks
@@ -38,19 +43,19 @@
       createController = callbacks.createController;
       removeSelf = callbacks.removeController;
 
-      this.fetchFavorites(this.createView);
+      this.trigger("show");
     };
 
     this.createView = () => {
       let viewArgs = {
         signedIn: this.isSignedIn(),
-        favorites: this.favorites
+        favorites: this.favorites,
       };
 
       let view = new FavoritesView();
       view.init(viewArgs);
       this.view = view;
-      this.trigger("loadComplete");
+      this.view.trigger("show");
 
       hideSpinner();
     };
@@ -74,6 +79,7 @@
         ZypeApiHelpers.getConsumerFavorites(zypeApi, accessToken).then(
           favorites => {
             if (favorites.length > 0) {
+              this.viewIndex = ViewIndex.VIDEOS;
               this.favorites = favorites;
               callback();
             } else {
@@ -83,6 +89,7 @@
           err => { emptyFavsCallback(); }
         );
       } else {
+        this.viewIndex = ViewIndex.SIGN_IN;
         emptyFavsCallback();
       }
     };
@@ -93,17 +100,27 @@
     this.handleButtonPress = buttonPress => {
       switch (buttonPress) {
         case TvKeys.UP:
-          break;
-
         case TvKeys.DOWN:
           break;
 
         case TvKeys.LEFT:
+          if (this.viewIndex == ViewIndex.VIDEOS) {
+            this.view.setFocusedVideo(this.view.index - 1);
+          }
           break;
 
         case TvKeys.RIGHT:
-          break
+          if (this.viewIndex == ViewIndex.VIDEOS) {
+            this.view.setFocusedVideo(this.view.index + 1);
+          }
+          break;
+
         case TvKeys.ENTER:
+          if (this.viewIndex == ViewIndex.SIGN_IN) {
+            createController(OAuthController, {});
+          } else if (this.viewIndex == ViewIndex.VIDEOS) {
+            createController(VideoDetailsController, {content: this.favorites, index: 0});
+          }
           break;
         case TvKeys.BACK:
         case TvKeys.RETURN:
@@ -114,7 +131,14 @@
       }
     };
 
-    this.show = () => this.view.trigger("show");
+    this.show = () => {
+      showSpinner();
+      if (this.view) {
+        this.view.close();
+        this.view = null;
+      }
+      this.fetchFavorites(this.createView);
+    };
     this.hide = () => this.view.trigger("hide");
 
     this.close = () => {

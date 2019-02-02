@@ -13,16 +13,23 @@
   background-color: white;
 }
 
+.favorites-view .header-container {
+  position: absolute;
+  width: 100%;
+  top: 20%;
+  text-align: center;
+}
+.favorites-view .header-container .header {
+  font-size: 4em;
+}
+
 .favorites-view .favorites-info {
   position: absolute;
   width: 50%;
   height: 50%;
   top: 25%;
   left: 25%;
-
   text-align: center;
-
-  /* background-color: purple; */
 }
 
 .favorites-view .favorites-info .sign-in-button {
@@ -44,15 +51,16 @@
 }
 .favorites-view .favorites-info .helper-message.dark-theme,
 .favorites-view .favorites-info .sign-in-button-text.dark-theme,
-.favorites-view .video-favorites-container .video-title.dark-theme {
+.favorites-view .video-favorites-container .video-title.dark-theme,
+.favorites-view .header-container .header.dark-theme {
   color: white;
 }
 .favorites-view .favorites-info .helper-message.light-theme,
 .favorites-view .favorites-info .sign-in-button-text.light-theme,
-.favorites-view .video-favorites-container .video-title.light-theme {
+.favorites-view .video-favorites-container .video-title.light-theme,
+.favorites-view .header-container .header.light-theme {
   color: black;
 }
-
 
 /**
  * Video Favorites Container

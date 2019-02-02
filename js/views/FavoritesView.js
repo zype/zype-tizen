@@ -45,7 +45,8 @@
           ids: { id: id }
         },
         labels: {
-          signInButton: appDefaults.labels.signInButton
+          signInButton: appDefaults.labels.signInButton,
+          header: "Favorites"
         }
       };
 
