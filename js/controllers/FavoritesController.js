@@ -105,13 +105,31 @@
 
         case TvKeys.LEFT:
           if (this.viewIndex == ViewIndex.VIDEOS) {
-            this.view.setFocusedVideo(this.view.index - 1);
+            let nextIndex = this.view.index - 1;
+            let nextVideo = this.view.favorites[nextIndex];
+
+            if (nextVideo) {
+              this.view.setFocusedVideo(nextIndex);
+            } else {
+              this.view.setFocusedVideo(this.view.favorites.length - 1);
+            }
+
+            this.view.moveVideoContainer();
           }
           break;
 
         case TvKeys.RIGHT:
           if (this.viewIndex == ViewIndex.VIDEOS) {
-            this.view.setFocusedVideo(this.view.index + 1);
+            let nextIndex = this.view.index + 1;
+            let nextVideo = this.view.favorites[nextIndex];
+
+            if (nextVideo) {
+              this.view.setFocusedVideo(nextIndex);
+            } else {
+              this.view.setFocusedVideo(0);
+            }
+
+            this.view.moveVideoContainer();
           }
           break;
 

@@ -158,7 +158,7 @@
       let video = $(this.id).find(videoClass)[0];
       let videoThumbnailWidth = $(video).width();
       let videoMargin = videoThumbnailWidth * 0.10;
-      let newLeft = -(this.videoIndex * (videoThumbnailWidth + videoMargin));
+      let newLeft = -(this.index * (videoThumbnailWidth + videoMargin));
 
       $(videosContainer).animate({
         "left": String(newLeft) + "px"
