@@ -5,8 +5,8 @@
 	background-color: #ffffff;
 }
 
-.account-view .account-header,
-.account-view .account-email,
+/* .account-view .account-header,
+.account-view .account-email, */
 .account-view .account-header.button {
 	text-align: center;
 }
@@ -48,7 +48,7 @@
 }
 
 .account-view .buttons-container .container {
-	padding-top: 20%;
+	padding-top: 10%;
 }
 
 .account-view .buttons-container .container.dark-theme .button {
