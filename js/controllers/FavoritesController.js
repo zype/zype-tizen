@@ -137,7 +137,7 @@
           if (this.viewIndex == ViewIndex.SIGN_IN) {
             createController(OAuthController, {});
           } else if (this.viewIndex == ViewIndex.VIDEOS) {
-            createController(VideoDetailsController, {content: this.favorites, index: 0});
+            createController(VideoDetailsController, {content: this.favorites, index: this.view.index});
           }
           break;
         case TvKeys.BACK:
