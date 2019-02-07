@@ -84,7 +84,7 @@
 			if (accessToken && refreshToken) {
 				zypeApi.refreshAccessToken(refreshToken)
 				.then(
-					resp => { _this.handleRefreshToken(resp); },
+					resp => { _this.handleRefreshTokenResp(resp); },
 					err => { _this.handleRefreshTokenErr(); }
 				);
 			}	else {
