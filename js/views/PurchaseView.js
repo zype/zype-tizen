@@ -39,6 +39,12 @@
       let id = "purchase-view-" + this.video._id;
       this.id = "#" + id;
 
+      let text = viewText;
+      if (this.products.length <= 1) {
+        text.header = "";
+        text.description = "";
+      }
+
       let context = {
         video: this.video,
         products: this.formattedProducts(this.products),
@@ -47,7 +53,7 @@
           brandColor: appDefaults.brandColor,
           ids: { id: id }
         },
-        text: viewText
+        text: text
       };
 
       this.productIndex = 0;

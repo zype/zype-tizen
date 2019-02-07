@@ -91,14 +91,14 @@
       let showToggle = appDefaults.features.nativeSubscription;
 
       let signUpArgs = {
-        title: "Sign up for Account",
+        title: "Sign up for account",
         confirmButton: "Create Account",
         id: "auth-view",
         toggleStateText: "Already have an account?",
         showToggle: showToggle
       };
       let signInArgs = {
-        title: "Sign into your Account",
+        title: "Sign into your account",
         confirmButton: "Sign In",
         id: "auth-view",
         toggleStateText: "Sign up for an account",

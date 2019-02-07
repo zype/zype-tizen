@@ -88,6 +88,8 @@
 		 * Update view
 		 */ 
 		this.show = function(){
+			showSpinner();
+
 			let cb = () => {
 				this.updateButtons();
 				this.view.show();
