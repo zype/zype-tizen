@@ -58,7 +58,7 @@
 			}
 
 			if (!ObjectHelpers.isObjectEmpty(consumer)) {
-				if (consumer.id) akamaiAnalytics.dimensions.consumerId = consumer.id;
+				if (consumer._id) akamaiAnalytics.dimensions.consumerId = consumer._id;
 			}
 
 			return akamaiAnalytics;

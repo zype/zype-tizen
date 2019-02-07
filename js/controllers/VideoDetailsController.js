@@ -156,6 +156,7 @@
 					videoIds: videoIds,
 					index: this.videoIndex,
 					auth: auth,
+					consumer: this.consumer || {},
 					videoEndCallback: this.goToNextVideo
 				});
 
@@ -223,6 +224,7 @@
 						videoIds: videoIds,
 						index: this.videoIndex,
 						auth: auth,
+						consumer: this.consumer || {},
 						videoEndCallback: this.goToNextVideo
 					});
 					break;
@@ -248,6 +250,7 @@
 						index: this.videoIndex,
 						playbackTime: playbackTime,
 						auth: auth,
+						consumer: this.consumer || {},
 						videoEndCallback: this.goToNextVideo
 					});
 					break;
