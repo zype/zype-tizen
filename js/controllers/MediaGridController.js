@@ -94,6 +94,7 @@
       this.gridView.setFocus();
     };
     this.close = () => {
+      showSpinner();
       if (this.gridView) {
         this.gridView.trigger("close");
         this.gridView = null;

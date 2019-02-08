@@ -107,6 +107,7 @@
       }
     };
     this.close = () => {
+      showSpinner();
       this.clearInterval();
       if (this.gridView) {
         this.gridView.trigger("close");
