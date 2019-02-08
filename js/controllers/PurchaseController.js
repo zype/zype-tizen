@@ -250,10 +250,9 @@
     };
 
     this.show = () => {
+      this.viewIndex = ViewIndexes.PRODUCTS;
+      this.view.trigger("show");
       let cb = () => {
-        this.viewIndex = ViewIndexes.PRODUCTS;
-        this.view.trigger("show");
-
         if (this.isSignedIn()) {
           this.view.updateEmail(this.consumer.email);
           this.view.showSignedIn();
