@@ -22,7 +22,7 @@
     this.productIndex = null;
 
     const viewText = {
-      header: "Choose an option",
+      header: "Select Plan",
       description: "Please select one of the options to view content",
       signInText: "Already have an account?",
       signInButton: appDefaults.labels.signInButton,
@@ -40,10 +40,6 @@
       this.id = "#" + id;
 
       let text = viewText;
-      if (this.products.length <= 1) {
-        text.header = "";
-        text.description = "";
-      }
 
       let context = {
         video: this.video,

@@ -230,7 +230,11 @@
             let product = this.products[this.view.productIndex];
 
             if (this.isSignedIn()) {
-              this.purchaseSubscription(product);
+              if (this.consumer.subscription_count > 0 && product.ItemType == 4) {
+                alert("Warning: Subscription already purchased");
+              } else {
+                this.purchaseSubscription(product);
+              }
             } else {
               this.view.trigger("hide");
               this.createController(OAuthController, { isSignUp: true });

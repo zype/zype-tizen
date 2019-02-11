@@ -16,6 +16,8 @@ var appDefaults = {
 	appIconUrl: "assets/images/app-icon.png",
 	playButtonUrl: "assets/images/play-button.png",
 	pauseButtonUrl: "assets/images/pause-button.png",
+	fastForwardUrl: "assets/images/ff-button.png",
+	rewindUrl: "assets/images/rw-button.png",
 	labels: {
 		playButton: "Play",
 		playFromBegButton: "Play from beginning",

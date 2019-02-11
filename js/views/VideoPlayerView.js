@@ -119,6 +119,18 @@
 			} else {
 				$(this.id + " .play-pause-image").attr("src", appDefaults.playButtonUrl)
 			}
+
+			$(this.id + " .scrub-container").addClass("invisible");
+		};
+
+		this.setScrub = (state, speed) => {
+			if (state == "ff" || state == "rw") {
+				$(this.id + " .scrub-container").removeClass("invisible");
+
+				let imageUrl = (state == "ff") ? appDefaults.fastForwardUrl : appDefaults.rewindUrl;
+				$(this.id + " .ff-rw-image").attr("src", imageUrl);
+				$(this.id + " .scrub-label").text(String(speed) + "x");
+			}
 		};
 
 		this.show = () => $(this.id).removeClass("invisible");

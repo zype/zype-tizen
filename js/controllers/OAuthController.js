@@ -98,7 +98,7 @@
         showToggle: showToggle
       };
       let signInArgs = {
-        title: "Sign into your account",
+        title: "Create account",
         confirmButton: "Sign In",
         id: "auth-view",
         toggleStateText: "Sign up for an account",
