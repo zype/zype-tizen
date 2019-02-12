@@ -58,7 +58,12 @@
         this.removeSelf();
       };
 
+      // comment if debugging in browser
       this.fetchAssociatedProducts(successCb, errorCb);
+
+      // uncomment if debugging in browser
+      // this.products = appDefaults.mockData.products;
+      // successCb();
     };
 
     /**
