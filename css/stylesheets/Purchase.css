@@ -90,6 +90,7 @@
   font-size: 2em;
 }
 
+.signin-text-container .signin-text,
 .signin-text-container .signin-button {
   padding: 0.5em;
 }
@@ -104,9 +105,19 @@
   left: -5%;
 }
 
+.purchase-view .signin-text-container {
+  text-align: center;
+  vertical-align: middle;
+}
+.purchase-view .signin-text-container .signin-text,
 .purchase-view .signed-in-container .signedin-text {
   float: right;
 }
+.purchase-view .signin-text-container .signin-button,
 .purchase-view .signed-in-container .email {
   float: left;
+}
+
+.no-padding {
+  padding: 0;
 }

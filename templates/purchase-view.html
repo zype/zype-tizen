@@ -54,11 +54,15 @@
     </div>
 
     <!-- Sign in text -->
-    <div class="signin-text-container invisible">
-      <div class="">
-        <p class="signin-text {{ css.classes.theme }}">{{ text.signInText }}</p>
+    <div class="signin-text-container container invisible">
+      <div class="row">
+        <div class="col-sm-8 no-padding">
+          <p class="signin-text {{ css.classes.theme }}">{{ text.signInText }}</p>
+        </div>
+        <div class="col-sm-4 no-padding">
+          <p class="signin-button {{ css.classes.theme }}">{{ text.signInButton }}</p>
+        </div>
       </div>
-      <div class="signin-button {{ css.classes.theme }}">{{ text.signInButton }}</div>
     </div>
 
     <style>
@@ -66,7 +70,7 @@
         border: 0.5em solid {{ css.brandColor }};
       }
       .signin-text-container .signin-button.focused {
-        border: 0.2em solid {{ css.brandColor }};
+        color: {{ css.brandColor }};
       }
     </style>
   </div>
