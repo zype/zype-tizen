@@ -111,7 +111,7 @@
       let toggleContainerTop = 0.70;
       let descriptionContainerTop = 0.85;
 
-      let appIconImageTop = -0.15;
+      let appIconImageTop = -0.20;
       let appIconImageLeft = -0.05;
 
       return {
