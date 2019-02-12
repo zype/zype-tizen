@@ -4,6 +4,7 @@ var appDefaults = {
 	clientId: "< client id >",
 	clientSecret: "< client secret >",
 	rootPlaylistId: "< root playlist id >",
+	displayName: "< display name >",
 	marketplace: {
 		url: "https://checkoutapi.samsungcheckout.com/openapi",
 		serverType: "PRD",

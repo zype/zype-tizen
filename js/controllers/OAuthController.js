@@ -91,17 +91,19 @@
       let showToggle = appDefaults.features.nativeSubscription;
 
       let signUpArgs = {
-        title: "Sign up for account",
-        confirmButton: "Create Account",
+        title: "Sign up to create an account",
+        confirmButton: "CREATE ACCOUNT",
         id: "auth-view",
-        toggleStateText: "Already have an account?",
+        toggleStateText: "Sign in",
+        toggleStateHelper: "Already have an account?",
         showToggle: showToggle
       };
       let signInArgs = {
-        title: "Create account",
-        confirmButton: "Sign In",
+        title: "Sign in to your account",
+        confirmButton: "SIGN IN",
         id: "auth-view",
-        toggleStateText: "Sign up for an account",
+        toggleStateText: "Sign up",
+        toggleStateHelper: "Don't have an account?",
         showToggle: showToggle
       };
 

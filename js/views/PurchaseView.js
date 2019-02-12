@@ -22,8 +22,8 @@
     this.productIndex = null;
 
     const viewText = {
-      header: "Select Plan",
-      description: "Please select one of the options to view content",
+      header: "Select Plan:",
+      description: "You need to be a " + appDefaults.displayName + " subscriber to watch this content. <br> Purchase a subscription for access to subscription content on all devices",
       signInText: "Already have an account?",
       signInButton: appDefaults.labels.signInButton,
       signedInText: "Signed in as:"

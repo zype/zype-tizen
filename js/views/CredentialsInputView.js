@@ -44,6 +44,7 @@
       this.confirmButton = args.confirmButton;
       this.showToggle = args.showToggle;
       this.toggleStateText = args.toggleStateText;
+      this.toggleStateHelper = args.toggleStateHelper;
 
       this.id = "#" + args.id;
 
@@ -52,6 +53,7 @@
         confirmButton: this.confirmButton,
         toggleStateText: this.toggleStateText,
         showToggle: this.showToggle,
+        toggleStateHelper: this.toggleStateHelper,
         css: {
           classes: {
             theme: appDefaults.theme,
@@ -72,7 +74,10 @@
         this.id + ".credentials-input-view input.highlight",
       ];
       let properties = [
-        { "border": "solid 0.15em " + appDefaults.brandColor },
+        { 
+          "border": "solid 0.15em " + appDefaults.brandColor,
+          "background-color": appDefaults.brandColor
+        },
         { "border-bottom": "solid 0.1em " + appDefaults.brandColor }
       ];
       let dynamicStyle = CssHelpers.createStyles(selectors, properties);
@@ -90,7 +95,7 @@
     // Figure out height/top pixels to set
     this.getPositionPixels = function(){
       let windowHeight = window.innerHeight;
-      
+
       let titleContainerHeight = 0.10;
       let inputContainerHeight = 0.15;
       let confirmContainerHeight = 0.10;
@@ -100,7 +105,8 @@
       let passwordContainerTop = 0.35;
       let confirmContainerTop = 0.60;
       let toggleContainerTop = 0.70;
-      
+      let descriptionContainerTop = 0.85;
+
       return {
         title: {
           height: String(windowHeight * titleContainerHeight) + "px",
@@ -120,6 +126,9 @@
         },
         toggle: {
           top: String(windowHeight * toggleContainerTop) + "px"
+        },
+        description: {
+          top: String(windowHeight * descriptionContainerTop) + "px"
         }
       }
     };
@@ -220,10 +229,12 @@
       this.confirmButton = args.confirmButton;
       this.showToggle = args.showToggle;
       this.toggleStateText = args.toggleStateText;
+      this.toggleStateHelper = args.toggleStateHelper;
 
       $(this.id + " .title").text(this.title);
       $(this.id + " .confirm-text").text(this.confirmButton);
       $(this.id + " .toggle-state-text").text(this.toggleStateText);
+      $(this.id + " .toggle-state-helper").text(this.toggleStateHelper);
     };
 
     this.focusToggle = () => {

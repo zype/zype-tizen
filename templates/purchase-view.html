@@ -2,7 +2,7 @@
   <div class="purchase-view full-screen-view invisible {{ css.classes.theme }}" id="{{ css.ids.id }}">
     <div class="purchase-text">
       <h1 class="purchase-header {{ css.classes.theme }}">{{ text.header }}</h1>
-      <p class="purchase-description {{ css.classes.theme }}">{{ text.description }}</p>
+      <p class="purchase-description {{ css.classes.theme }}">{{{ text.description }}}</p>
     </div>
 
     <!-- Samsung Checkout products -->
@@ -11,25 +11,26 @@
       {{#each products}}
       <div class="product {{ ../css.classes.theme }}">
         <h1 class="text">
-        {{#ifCond ItemType "==" 4 }}
-          <!-- Subscription Product -->
-          Subscribe - {{ Price }} {{ CurrencyID }}
+          {{ ItemTitle }}
+          <br>
+          <br>
+
+          {{#ifCond ItemType "==" 4 }}
+            <!-- Subscription Product -->
+            Subscribe - {{ Price }} {{ CurrencyID }}
 
             {{#ifCond SubscriptionInfo.freeTrialDayCount "!=" null }}
-            <!-- Free Trail -->
-            <br>
-            {{ SubscriptionInfo.freeTrialDayCount }} Day Trial
+              {{#ifCond SubscriptionInfo.freeTrialDayCount ">" 0}}
+              <!-- Free Trail -->
+              <br>After {{ SubscriptionInfo.freeTrialDayCount }} Day Trial
+              {{/ifCond}}
+            {{/ifCond}}
           {{/ifCond}}
-        {{/ifCond}}
 
-        {{#ifCond ItemType "!=" 4 }}
-          <!-- Non-subscription Product -->
-          Purchase - {{ Price }} {{ CurrencyID }}
-        {{/ifCond}}
-
-          <br>
-          <br>
-          {{ ItemTitle }}
+          {{#ifCond ItemType "!=" 4 }}
+            <!-- Non-subscription Product -->
+            Purchase - {{ Price }} {{ CurrencyID }}
+          {{/ifCond}}
         </h1>
       </div>
       {{/each}}
