@@ -93,3 +93,19 @@
 .signin-text-container .signin-button {
   padding: 0.5em;
 }
+
+.purchase-view .app-icon-container {
+  height: 20%;
+  text-align: center;
+}
+.purchase-view .app-icon-container .app-icon {
+  position: relative;
+  left: -5%;
+}
+
+.purchase-view .signed-in-container .signedin-text {
+  float: right;
+}
+.purchase-view .signed-in-container .email {
+  float: left;
+}

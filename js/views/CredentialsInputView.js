@@ -61,6 +61,9 @@
           },
           ids: { id: args.id },
           positions: this.getPositionPixels()
+        },
+        images: {
+          appIcon: appDefaults.appIconUrl
         }
       };
 
@@ -96,18 +99,30 @@
     this.getPositionPixels = function(){
       let windowHeight = window.innerHeight;
 
+      let appIconContainerHeight = 0.20;
       let titleContainerHeight = 0.10;
       let inputContainerHeight = 0.15;
       let confirmContainerHeight = 0.10;
 
-      let titleContainerTop = 0.05;
+      let titleContainerTop = 0.10;
       let emailContainerTop = 0.20;
       let passwordContainerTop = 0.35;
       let confirmContainerTop = 0.60;
       let toggleContainerTop = 0.70;
       let descriptionContainerTop = 0.85;
 
+      let appIconImageTop = -0.15;
+      let appIconImageLeft = -0.05;
+
       return {
+        appIcon: {
+          container: {
+            height: String(windowHeight * appIconContainerHeight) + "px"
+          },
+          image: {
+            top: String(windowHeight * appIconImageTop) + "px"
+          }
+        },
         title: {
           height: String(windowHeight * titleContainerHeight) + "px",
           top: String(windowHeight * titleContainerTop) + "px"

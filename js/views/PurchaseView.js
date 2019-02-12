@@ -49,6 +49,9 @@
           brandColor: appDefaults.brandColor,
           ids: { id: id }
         },
+        images: {
+          appIcon: appDefaults.appIconUrl
+        },
         text: text
       };
 
