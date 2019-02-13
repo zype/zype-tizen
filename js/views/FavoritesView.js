@@ -47,6 +47,9 @@
         labels: {
           signInButton: appDefaults.labels.signInButton,
           header: "Favorites"
+        },
+        images: {
+          appIcon: appDefaults.appIconUrl
         }
       };
 
