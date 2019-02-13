@@ -23,7 +23,7 @@ var appDefaults = {
 		playButton: "Play",
 		playFromBegButton: "Play from beginning",
 		resumeButton: "Resume",
-		signInButton: "Sign In",
+		signInButton: "Sign in",
 		subscribeButton: "Subscribe"
 	},
 	features: {
