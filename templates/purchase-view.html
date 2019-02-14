@@ -22,7 +22,12 @@
 
           {{#ifCond ItemType "==" 4 }}
             <!-- Subscription Product -->
+            {{#ifCond CurrencyID "==" "USD"}}
+            Subscribe - $ {{ Price }}
+            {{/ifCond}}
+            {{#ifCond CurrencyID "!=" "USD"}}
             Subscribe - {{ Price }} {{ CurrencyID }}
+            {{/ifCond}}
 
             {{#ifCond SubscriptionInfo.freeTrialDayCount "!=" null }}
               {{#ifCond SubscriptionInfo.freeTrialDayCount ">" 0}}

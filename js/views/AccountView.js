@@ -30,7 +30,7 @@
 					classes: { theme: appDefaults.theme },
 					ids: { id: id }
 				},
-				appIconUrl: appDefaults.appIconUrl,
+				images: { appIcon: appDefaults.appIconUrl },
 				email: email
 			};
 

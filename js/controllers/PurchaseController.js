@@ -236,7 +236,12 @@
 
             if (this.isSignedIn()) {
               if (this.consumer.subscription_count > 0 && product.ItemType == 4) {
-                alert("Warning: Subscription already purchased");
+                let args = {
+                  title: "Warning",
+                  message: "Subscription already purchased"
+                };
+                showSpinner();
+                this.createController(DialogController, args, true);
               } else {
                 this.purchaseSubscription(product);
               }
