@@ -95,7 +95,7 @@
   padding: 0.5em;
 }
 
-.purchase-view .app-icon-container {
+/* .purchase-view .app-icon-container {
   height: 20%;
   text-align: center;
 }
@@ -103,7 +103,7 @@
   position: relative;
   top: -10%;
   left: -5%;
-}
+} */
 
 .purchase-view .signin-text-container {
   text-align: center;

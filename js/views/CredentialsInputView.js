@@ -99,7 +99,7 @@
     this.getPositionPixels = function(){
       let windowHeight = window.innerHeight;
 
-      let appIconContainerHeight = 0.20;
+      let appIconContainerHeight = 0.15;
       let titleContainerHeight = 0.10;
       let inputContainerHeight = 0.15;
       let confirmContainerHeight = 0.10;
