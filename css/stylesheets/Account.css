@@ -5,8 +5,8 @@
 	background-color: #ffffff;
 }
 
-.account-view .account-header,
-.account-view .account-email,
+/* .account-view .account-header,
+.account-view .account-email, */
 .account-view .account-header.button {
 	text-align: center;
 }
@@ -15,7 +15,7 @@
 	font-size: 4em;
 	font-weight: bold;
 
-	margin-top: 20%;
+	/* margin-top: 20%; */
 	max-height: 10%;
 }
 
@@ -42,13 +42,11 @@
 
 .account-view .app-icon {
 	display: block;
-	margin: 0 auto;
-
 	max-width: 30%;
 }
 
 .account-view .buttons-container .container {
-	padding-top: 20%;
+	padding-top: 10%;
 }
 
 .account-view .buttons-container .container.dark-theme .button {

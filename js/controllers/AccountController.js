@@ -77,7 +77,7 @@
 					let currentButton = this.buttons[ this.buttonIndex ];
 
 					if (currentButton.role == "sign-in") {
-						this.createController(SignInController, {});
+						this.createController(OAuthController, {});
 					} else if (currentButton.role == "sign-out") {
 						localStorage.removeItem("accessToken");
 						localStorage.removeItem("refreshToken");

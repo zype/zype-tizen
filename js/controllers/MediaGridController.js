@@ -94,6 +94,7 @@
       this.gridView.setFocus();
     };
     this.close = () => {
+      showSpinner();
       if (this.gridView) {
         this.gridView.trigger("close");
         this.gridView = null;
@@ -307,6 +308,9 @@
             } else if (currentTab.role == "search") { // search
               let controllerArgs = {};
               this.createController(SearchController, controllerArgs);
+            } else if (currentTab.role == "favorites") { // favorites
+              let controllerArgs = {};
+              this.createController(FavoritesController, controllerArgs);
             }
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {

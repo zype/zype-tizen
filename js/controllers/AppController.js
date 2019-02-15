@@ -45,8 +45,8 @@
 			return (this.controllers.length > 0) ? this.controllers[this.controllers.length - 1] : null;
 		};
 
-		this.createControllerCallback = (controller, args) => {
-			_this.createNewController(controller, args);
+		this.createControllerCallback = (controller, args, showCurrent) => {
+			_this.createNewController(controller, args, showCurrent);
 		};
 
 		this.removeControllerCallback = () => {
@@ -84,7 +84,7 @@
 			if (accessToken && refreshToken) {
 				zypeApi.refreshAccessToken(refreshToken)
 				.then(
-					resp => { _this.handleRefreshToken(resp); },
+					resp => { _this.handleRefreshTokenResp(resp); },
 					err => { _this.handleRefreshTokenErr(); }
 				);
 			}	else {
@@ -134,10 +134,10 @@
 		/**
 		 * Create / Remove controllers
 		 */
-		this.createNewController = (controller, args) => {
+		this.createNewController = (controller, args, showCurrent) => {
 			if (this.controllers.length > 0){
 				let currentController = this.currentController();
-				currentController.trigger("hide");
+				if (!showCurrent) currentController.trigger("hide");
 			}
 
 			let newController = new controller();

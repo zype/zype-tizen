@@ -99,13 +99,15 @@
       this.gridView.trigger("show");
       this.gridView.unfocusThumbnails();
 
-      if (this.viewIndex == ViewIndexes.SLIDERS) {
-        this.gridView.setFocusedSlider(this.gridView.sliderIndex);
-      } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
+      if (this.viewIndex == ViewIndexes.MEDIA_GRID) {
         this.gridView.setFocus();
+      } else {
+        this.viewIndex = ViewIndexes.SLIDERS;
+        this.gridView.setFocusedSlider(this.gridView.sliderIndex);
       }
     };
     this.close = () => {
+      showSpinner();
       this.clearInterval();
       if (this.gridView) {
         this.gridView.trigger("close");
@@ -359,6 +361,9 @@
             } else if (currentTab.role == "search") { // search
               let controllerArgs = {};
               this.createController(SearchController, controllerArgs);
+            } else if (currentTab.role == "favorites") { // favorites
+              let controllerArgs = {};
+              this.createController(FavoritesController, controllerArgs);
             }
 
           } else if (this.viewIndex == ViewIndexes.MEDIA_GRID) { // transition to video/playlist
