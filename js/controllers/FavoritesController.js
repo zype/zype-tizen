@@ -63,7 +63,13 @@
     this.isSignedIn = () => {
       // TODO: add logic to determine if sign in is needed (favorites via api)
       let accessToken = localStorage.getItem("accessToken");
-      return (accessToken) ? true : false;
+      let signInFlag;
+      if(appDefaults.favouriteViaAPI){
+    	  signInFlag = (accessToken) ? true : false;  
+      }else{
+    	  signInFlag = true ;  
+      }
+      return signInFlag;
     };
 
     this.fetchFavorites = callback => {
@@ -75,19 +81,36 @@
       };
 
       if (this.isSignedIn()) {
-        let accessToken = localStorage.getItem("accessToken");
-        ZypeApiHelpers.getConsumerFavorites(zypeApi, accessToken).then(
-          favorites => {
-            if (favorites.length > 0) {
-              this.viewIndex = ViewIndex.VIDEOS;
-              this.favorites = favorites;
-              callback();
-            } else {
-              emptyFavsCallback();
-            }
-          },
-          err => { emptyFavsCallback(); }
-        );
+    	  if(appDefaults.favouriteViaAPI){
+            let accessToken = localStorage.getItem("accessToken");
+            ZypeApiHelpers.getConsumerFavorites(zypeApi, accessToken).then(
+              favorites => {
+                if (favorites.length > 0) {
+                  this.viewIndex = ViewIndex.VIDEOS;
+                  this.favorites = favorites;
+                  callback();
+                } else {
+                  emptyFavsCallback();
+                }
+              },
+              err => { emptyFavsCallback(); }
+            );
+    	  }else{
+    		  var favorites = JSON.parse(localStorage.getItem("myFavorites"));
+        	  
+        	  if(favorites === null){
+        		  emptyFavsCallback()
+        	  }
+        	  if (favorites.length > 0) {
+                this.viewIndex = ViewIndex.VIDEOS;
+                this.favorites = favorites;
+                callback();
+              } else {
+                emptyFavsCallback();
+              }
+    	  }
+    	  
+
       } else {
         this.viewIndex = ViewIndex.SIGN_IN;
         emptyFavsCallback();

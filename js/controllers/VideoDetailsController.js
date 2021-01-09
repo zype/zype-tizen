@@ -219,7 +219,7 @@
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
 					} else {
-						auth = { app_key: zypeApi.appKey };
+						auth = { app_key: zypeApi.appKey, ...data.additionalPlayerParams };
 					}
 
 					this.createController(VideoPlayerController, {
@@ -244,7 +244,7 @@
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
 					} else {
-						auth = { app_key: zypeApi.appKey };
+						auth = { app_key: zypeApi.appKey, ...data.additionalPlayerParams };
 					}
 
 					this.createController(VideoPlayerController, {
@@ -263,19 +263,36 @@
 					break;
 
 				case "favorite":
-					zypeApi.createConsumerVideoFavorite(this.consumer._id, data.id, localStorage.getItem("accessToken"))
-					.then(
-						resp => { this.trigger("show"); },
-						err => { this.trigger("show"); }
-					);
+					 if(appDefaults.favouriteViaAPI){
+							zypeApi.createConsumerVideoFavorite(this.consumer._id, data.id, localStorage.getItem("accessToken"))
+							.then(resp => { this.trigger("show"); },err => { this.trigger("show"); }); 
+					 }else{
+						 delete data.categories;
+							var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
+							if(localFavorites === null || localFavorites === ""){
+								localFavorites = [];
+								localFavorites.push(data)
+							}else{
+								localFavorites.push(data);
+							}					
+							localStorage.setItem("myFavorites", JSON.stringify(localFavorites))
+							this.trigger("show");
+					 }
 					break;
 
 				case "unfavorite":
-					zypeApi.deleteConsumerVideoFavorite(this.consumer._id, this.favoriteIds[data.id], localStorage.getItem("accessToken"))
-					.then(
-						resp => { this.trigger("show"); },
-						err => { this.trigger("show"); }
-					);
+					if(appDefaults.favouriteViaAPI){
+						zypeApi.deleteConsumerVideoFavorite(this.consumer._id, this.favoriteIds[data.id], localStorage.getItem("accessToken"))
+						.then(
+							resp => { this.trigger("show"); },
+							err => { this.trigger("show"); }
+						);
+					}else{
+						var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
+						localFavorites.forEach((e, i) => { if(e._id == data.id){ localFavorites.splice(i,1) } })
+						localStorage.setItem("myFavorites", JSON.stringify(localFavorites))
+						this.trigger("show");
+					}
 					break;
 				default:
 					break;
@@ -286,6 +303,12 @@
 		 * Helpers
 		 */
 		this.getButtons = videoIds => {
+			
+			let userAgent = navigator.userAgent;
+			let ipAddress = webapis.network.getIp();
+			let model = webapis.productinfo.getModel();
+			let deviceIFA = webapis.adinfo.getTIFA();
+			
 			let buttons = [];
 			let requiresEntitlement = this.videoRequiresEntitlement();
 			let signedIn = this.isSignedIn();
@@ -293,7 +316,29 @@
 			let videoIsFav = this.currentVideoIsFav();
 
 			let universalSvodEnabled = appDefaults.features.universalSubscription;
-
+			
+			let additionalPlayerParams = {
+					title: currentVideo.title,
+					description: currentVideo.description,
+					id: currentVideo._id,
+					duration: currentVideo.duration,
+					episode: currentVideo.episode,
+					season: currentVideo.season,
+					keywords: currentVideo.keywords.join(),
+					user_agent: userAgent,
+					device_ua: userAgent,
+					position: null,
+					uuid: null,
+					app_name: appDefaults.displayName,
+					app_bundle: null,
+					app_domain: null,
+					device_ifa: deviceIFA, //need
+					ip_address: ipAddress,
+					device_make: "Samsung",
+					device_type: "7", 
+					device_model: model
+			}
+			console.log(additionalPlayerParams)
 			let addPlayBtns = () => {
 				let playbackTime = StorageManager.playbackTimes.getVideoTime(currentVideo._id);
 				let btnTitle = (playbackTime) ? appDefaults.labels.playFromBegButton : appDefaults.labels.playButton;
@@ -301,7 +346,7 @@
 				let playButton = {
 					title: btnTitle,
 					role: "play",
-					data: { videoIds: videoIds, index: this.videoIndex }
+					data: { videoIds: videoIds, index: this.videoIndex, additionalPlayerParams : additionalPlayerParams }
 				};
 
 				buttons.push(playButton);
@@ -311,7 +356,7 @@
 					let resumeButton = {
 						title: appDefaults.labels.resumeButton,
 						role: "resume",
-						data: { videoIds: videoIds, index: this.videoIndex }
+						data: { videoIds: videoIds, index: this.videoIndex, additionalPlayerParams: additionalPlayerParams }
 					};
 					buttons.push(resumeButton);
 				}
@@ -322,13 +367,13 @@
 						buttons.push({
 							title: "Unfavorite",
 							role: "unfavorite",
-							data: { id: currentVideo._id }
+							data: { id: currentVideo._id, ...currentVideo }
 						});
 					} else {
 						buttons.push({
 							title: "Favorite",
 							role: "favorite",
-							data: { id: currentVideo._id }
+							data: { id: currentVideo._id, ...currentVideo }
 						});
 					}
 				}
@@ -364,7 +409,13 @@
 
 		this.isSignedIn = function(){
 			let accessToken = localStorage.getItem("accessToken");
-			return (accessToken) ? true : false;
+			let signInFlag;
+		      if(appDefaults.favouriteViaAPI){
+		    	  signInFlag = (accessToken) ? true : false;  
+		      }else{
+		    	  signInFlag = true ;  
+		      }
+		      return signInFlag;
 		};
 
 		this.currentVideoIsFav = () => {
@@ -373,29 +424,45 @@
 		};
 
 		this.fetchConsumer = (accessToken, callback) => {
-			ZypeApiHelpers.getConsumer(zypeApi, accessToken)
-			.then(
-				consumer => {
-					this.consumer = consumer;
-					this.fetchVideoFavIds(this.consumer._id, accessToken, callback);
-				},
-				err => { 
-					callback(); 
-				}
-			);
+			 if(appDefaults.favouriteViaAPI){
+				ZypeApiHelpers.getConsumer(zypeApi, accessToken)
+				.then(
+					consumer => {
+						this.consumer = consumer;
+						this.fetchVideoFavIds(this.consumer._id, accessToken, callback);
+					},
+					err => { 
+						callback(); 
+					}
+				); 
+			 }else{
+				this.fetchVideoFavIds(null, accessToken, callback);
+			 }
 		};
 
 		this.fetchVideoFavIds = (consumerId, accessToken, callback) => {
-			zypeApi.getConsumerVideoFavorites(consumerId, accessToken)
-			.then(
-				videoFavsResp => {
-					let favoriteIds = {};
-					videoFavsResp.response.forEach(vidFav => favoriteIds[vidFav.video_id] = vidFav._id);
+			if(appDefaults.favouriteViaAPI){
+				zypeApi.getConsumerVideoFavorites(consumerId, accessToken)
+				.then(videoFavsResp => {
+						let favoriteIds = {};
+						videoFavsResp.response.forEach(vidFav => favoriteIds[vidFav.video_id] = vidFav._id);
+						this.favoriteIds = favoriteIds;
+						callback();
+					},
+					callback
+				);
+			}else{
+				var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
+				let favoriteIds = {};
+				if(localFavorites === null){
 					this.favoriteIds = favoriteIds;
 					callback();
-				},
-				callback
-			);
+				}
+				
+				localFavorites.forEach(vidFav => favoriteIds[vidFav.id] = vidFav.id);
+				this.favoriteIds = favoriteIds;
+				callback();
+			}
 		};
 
 		/**

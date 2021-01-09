@@ -30,5 +30,7 @@ var appDefaults = {
 		nativeSubscription: false,
 		universalSubscription: false,
 		showThumbnailTitles: true
-	}
+	},
+	accountVisible: false,
+	favouriteViaAPI: false
 };

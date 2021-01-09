@@ -20,7 +20,8 @@
 	<icon src="icon.png"/>
 	<tizen:metadata key="http://samsung.com/tv/metadata/use.preview" value="endpoint_URL=< URL FOR PREVIEW JSON >"/>
 	<name>< APP NAME ></name>
-
+	<tizen:privilege name="http://developer.samsung.com/privilege/productinfo"/>
+	<tizen:privilege name="http://developer.samsung.com/privilege/adinfo"/>
 	<tizen:privilege name="http://developer.samsung.com/privilege/avplay"/>
 	<tizen:privilege name="http://developer.samsung.com/privilege/network.public"/>
 	<tizen:privilege name="http://tizen.org/privilege/application.launch"/>

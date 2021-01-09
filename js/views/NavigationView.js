@@ -63,10 +63,12 @@
 			];
 
 			// Comment below out if not using signin
-			let accountTab = { index: "2", title: "Account", role: "account" };
-			tabs.push(accountTab);
+			if(appDefaults.accountVisible){
+				let accountTab = { index: "2", title: "Account", role: "account" };
+				tabs.push(accountTab);
+			}
 
-			tabs.push({index: "3", title: "Favorites", role: "favorites"});
+			tabs.push({index: (appDefaults.accountVisible ? "3" : "2" ), title: "Favorites", role: "favorites"});
 
 			return tabs;
 		};
