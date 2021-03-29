@@ -124,7 +124,7 @@
     };
 
     this.showSignIn = () => {
-      const signInMsg = "You need to sign in see favorites";
+      const signInMsg = "Please sign in to get Favorites list";
       $(this.id + helperMsgClass).text(signInMsg);
       $(this.id + signInBtnClass).removeClass("invisible");
 
