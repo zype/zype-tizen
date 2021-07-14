@@ -468,15 +468,17 @@
 					}
 				);
 			}else{
-				var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
-				let favoriteIds = {};
-				if(localFavorites === null){
+				if(localStorage.getItem("myFavorites")){
+					var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
+					let favoriteIds = {};
+					if(localFavorites === null){
+						this.favoriteIds = favoriteIds;
+						callback();
+					}
+					
+					localFavorites.forEach(vidFav => favoriteIds[vidFav.id] = vidFav.id);
 					this.favoriteIds = favoriteIds;
-					callback();
-				}
-				
-				localFavorites.forEach(vidFav => favoriteIds[vidFav.id] = vidFav.id);
-				this.favoriteIds = favoriteIds;
+				}				
 				callback();
 			}
 		};
