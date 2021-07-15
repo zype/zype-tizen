@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="< COMPANY WEBSITE >" version="1.0.0" viewmodes="fullscreen">
+	<access origin="*" subdomains="true"></access>
 	<tizen:account multiple-account-support="false">
 		<tizen:icon section="Account">company-logo-72x72.png</tizen:icon>
 		<tizen:icon section="AccountSmall">company-logo-45x45.png</tizen:icon>
