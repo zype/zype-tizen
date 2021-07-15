@@ -219,7 +219,10 @@
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
 					} else {
-						auth = { app_key: zypeApi.appKey, ...data.additionalPlayerParams };
+						auth = { app_key: zypeApi.appKey };
+						Object.entries(data.additionalPlayerParams).forEach(function(k) { 
+							auth[k[0]] = k[1]
+						})
 					}
 
 					this.createController(VideoPlayerController, {
@@ -244,7 +247,10 @@
 					if (localStorage.getItem("accessToken")) {
 						auth = { access_token: localStorage.getItem("accessToken") };
 					} else {
-						auth = { app_key: zypeApi.appKey, ...data.additionalPlayerParams };
+						auth = { app_key: zypeApi.appKey };
+						Object.entries(data.additionalPlayerParams).forEach(function(k) { 
+							auth[k[0]] = k[1]
+						})
 					}
 
 					this.createController(VideoPlayerController, {
@@ -328,11 +334,11 @@
 					user_agent: userAgent,
 					device_ua: userAgent,
 					position: null,
-					uuid: null,
+					uuid: deviceIFA,
 					app_name: appDefaults.displayName,
-					app_bundle: null,
-					app_domain: null,
-					device_ifa: deviceIFA, //need
+					app_bundle: appDefaults.packageId,
+					app_domain: appDefaults.packageId,
+					device_ifa: deviceIFA,
 					ip_address: ipAddress,
 					device_make: "Samsung",
 					device_type: "7", 
@@ -364,17 +370,25 @@
 				// Favorite
 				if (signedIn) {
 					if (videoIsFav) {
-						buttons.push({
+						let buttonObj = {
 							title: "Unfavorite",
 							role: "unfavorite",
-							data: { id: currentVideo._id, ...currentVideo }
-						});
+								data: { id: currentVideo._id, }
+						}
+						Object.entries(currentVideo).map((k) => {
+							buttonObj.data[k[0]] = k[1]
+			    		  })
+						buttons.push(buttonObj);
 					} else {
-						buttons.push({
+						let buttonObj = {
 							title: "Favorite",
 							role: "favorite",
-							data: { id: currentVideo._id, ...currentVideo }
-						});
+							data: { id: currentVideo._id, }
+						}
+						Object.entries(currentVideo).map((k) => {
+							buttonObj.data[k[0]] = k[1]
+			    		  })
+						buttons.push(buttonObj);
 					}
 				}
 			};
@@ -449,18 +463,22 @@
 						this.favoriteIds = favoriteIds;
 						callback();
 					},
-					callback
+					err => {
+						callback();
+					}
 				);
 			}else{
-				var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
-				let favoriteIds = {};
-				if(localFavorites === null){
+				if(localStorage.getItem("myFavorites")){
+					var localFavorites = JSON.parse(localStorage.getItem("myFavorites"));
+					let favoriteIds = {};
+					if(localFavorites === null){
+						this.favoriteIds = favoriteIds;
+						callback();
+					}
+					
+					localFavorites.forEach(vidFav => favoriteIds[vidFav.id] = vidFav.id);
 					this.favoriteIds = favoriteIds;
-					callback();
-				}
-				
-				localFavorites.forEach(vidFav => favoriteIds[vidFav.id] = vidFav.id);
-				this.favoriteIds = favoriteIds;
+				}				
 				callback();
 			}
 		};
