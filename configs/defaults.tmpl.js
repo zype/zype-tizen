@@ -32,5 +32,6 @@ var appDefaults = {
 		showThumbnailTitles: true
 	},
 	accountVisible: false,
-	favouriteViaAPI: false
+	favouriteViaAPI: false,
+	packageId: "< package id from the config.xml >"
 };
